@@ -14,7 +14,7 @@ compose() { docker compose -p study-test --env-file .env.test -f docker-compose.
 case "$1" in
   up)
     if [ ! -f .env.test ]; then
-      docker run --rm -v "$PWD:/work" -w /work -e ENV_FILE=.env.test -e DOMAIN=localhost -e SITE_URL=http://localhost:8090 \
+      docker run --rm --user "$(id -u):$(id -g)" -v "$PWD:/work" -w /work -e ENV_FILE=.env.test -e DOMAIN=localhost -e SITE_URL=http://localhost:8090 \
         -e ADMIN_EMAIL=mira@example.org node:24.22.2-bookworm-slim node infra/scripts/setup.mjs
     fi
     # STACK_NO_BUILD=1 uses images that are built already (tagged study-manager-server:test and study-manager-web:test).
