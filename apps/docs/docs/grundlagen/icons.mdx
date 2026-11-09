@@ -1,0 +1,33 @@
+---
+title: Icons
+sidebar_position: 5
+description: Ein Satz runder Linien-Icons auf 24 px, einige auch gefüllt.
+---
+
+import { IconGallery } from "@site/src/components/Foundations";
+import { PropsTable } from "@site/src/components/PropsTable";
+
+# Icons
+
+```tsx
+import { Icon } from "@study/ui";
+
+<Icon name="calendar" />
+<Icon name="star" filled size={24} />
+```
+
+Alle Icons sind auf einem Raster von 24 × 24 mit runden Linien von 2 px gezeichnet und nehmen die **Textfarbe** an. Einige haben eine **gefüllte** Form (zweites Icon in der Kachel) – für Fach-Kacheln und Zustände, die mehr wiegen sollen.
+
+Ein Klick kopiert den Code.
+
+<IconGallery />
+
+## Regeln
+
+- Keine Emojis, keine Icons aus anderen Sätzen. Fehlt eines, wird es in `Icon.tsx` im selben Stil ergänzt.
+- Neben Text ist ein Icon Schmuck und für Screenreader versteckt. Steht es allein, braucht es `label` – oder es sitzt in einem `IconButton`, der den Namen trägt.
+- Größen: 16 in kleinen Knöpfen, 18–20 im Text, 22 in der Navigation, 26–34 in Fach-Kacheln.
+
+## Props
+
+<PropsTable of="Icon" />

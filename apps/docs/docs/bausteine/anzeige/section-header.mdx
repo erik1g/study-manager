@@ -1,0 +1,43 @@
+---
+title: SectionHeader
+sidebar_position: 8
+description: Der Titel einer Seite oder eines Abschnitts.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { DoDont, Do, Dont } from "@site/src/components/DoDont";
+import { SectionHeader, LinkButton, Button } from "@study/ui";
+
+# SectionHeader
+
+`import { SectionHeader } from "@study/ui"`
+
+```jsx live
+<div className="ui-stack">
+  <SectionHeader level={1} size="xl" title="Guten Morgen, Mira" description="Dienstag, 3. November" action={<Button variant="primary" icon="plus">Neu</Button>} />
+  <SectionHeader title="Deine Fächer" size="lg" action={<LinkButton href="#" variant="ghost" size="sm">Alle anzeigen</LinkButton>} />
+</div>
+```
+
+## Varianten und Zustände
+
+<Preview column>
+  <SectionHeader size="xl" title="Seitentitel" />
+  <SectionHeader size="lg" title="Abschnitt" description="mit Beschreibung" />
+  <SectionHeader size="md" title="Kartentitel" />
+</Preview>
+
+## Wann benutzen
+
+- Jede Seite hat genau einen Titel mit `level={1}` und `size="xl"`.
+- `level` folgt der Gliederung, `size` dem Aussehen – die beiden sind getrennt.
+- Rechts höchstens zwei Aktionen.
+
+## Props
+
+<PropsTable of="SectionHeader" />
+
+## Barrierefreiheit
+
+- Echte Überschriften `h1`–`h3`; Screenreader springen damit durch die Seite.

@@ -1,0 +1,19 @@
+node_modules/
+dist/
+dist-next/
+.env
+*.log
+.DS_Store
+coverage/
+# Created at run time; data lives under /data and /srv, not in the repository.
+infra/caddy/root.crt
+.pnpm-store/
+# Copies of the secrets, too
+.env.*
+!.env.example
+
+# Build output and test reports
+build/
+.docusaurus/
+apps/e2e/test-results/
+apps/e2e/playwright-report/

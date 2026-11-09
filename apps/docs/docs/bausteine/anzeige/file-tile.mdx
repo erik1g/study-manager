@@ -1,0 +1,40 @@
+---
+title: FileTile
+sidebar_position: 6
+description: Die Art einer Datei auf einen Blick.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { DoDont, Do, Dont } from "@site/src/components/DoDont";
+import { FileTile, fileKind, List, ListRow } from "@study/ui";
+
+# FileTile
+
+`import { FileTile, fileKind } from "@study/ui"`
+
+```jsx live
+<List style={{ maxWidth: 480 }}>
+  {["Skript Kapitel 4.pdf", "Formelsammlung.docx", "Vorlesung 27. Okt.m4a", "Tafelbild.jpg"].map((name) => (
+    <ListRow key={name} leading={<FileTile kind={fileKind(name)} />} title={name} meta="Skripte · heute" />
+  ))}
+</List>
+```
+
+## Varianten und Zustände
+
+<Preview>
+  <FileTile kind="pdf" /><FileTile kind="word" /><FileTile kind="slides" /><FileTile kind="sheet" />
+  <FileTile kind="text" /><FileTile kind="image" /><FileTile kind="audio" /><FileTile kind="other" />
+  <FileTile kind="pdf" size={32} />
+</Preview>
+
+`fileKind(name, mime?)` bestimmt die Art aus Endung oder MIME-Typ.
+
+## Props
+
+<PropsTable of="FileTile" />
+
+## Barrierefreiheit
+
+- Reiner Schmuck (`aria-hidden`); der Dateiname daneben sagt alles.

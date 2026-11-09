@@ -1,0 +1,61 @@
+---
+title: "Mitmachen"
+sidebar_position: 5
+description: "Branches, Commits im Conventional-Commits-Format und Pull Requests."
+---
+
+# Mitmachen
+
+Schön, dass du hilfst! Alles, was die App für mehr Studierende nützlicher macht, ist willkommen.
+
+## Ablauf
+
+1. **Issue suchen oder anlegen.** Bei größeren Ideen sprich vorher mit uns, damit deine Arbeit passt. Ein Kommentar „Ich übernehme das“ reicht, damit niemand doppelt arbeitet.
+2. **Repository forken**, Branch anlegen (`fix/wochenansicht-handy`, `feat/studip-feed`).
+3. **Ändern**, [lokal testen](/entwickler/tests).
+4. **Pull Request** gegen `main` öffnen. Die CI läuft automatisch; sie muss grün sein.
+5. Wir schauen drüber, besprechen Änderungen und **mergen** (Squash). Der **PR-Titel** wird zum Commit-Titel – er muss das Format unten haben.
+
+Mit deinem Beitrag stimmst du zu, dass er unter der **GPL-3.0** des Projekts steht.
+
+## Commits: Conventional Commits
+
+Versionen und Changelog entstehen **automatisch** aus den Commit-Titeln (siehe [Releases](/entwickler/releases)). Dafür gilt:
+
+```
+<typ>(<bereich>): <kurze Beschreibung>
+```
+
+| Typ | Wofür | Version |
+|---|---|---|
+| `feat` | neue Funktion | Minor (`0.1.0` → `0.2.0`) |
+| `fix` | Fehlerbehebung | Patch (`0.1.0` → `0.1.1`) |
+| `perf` | schneller | Patch |
+| `docs`, `test`, `refactor`, `style`, `build`, `ci`, `chore` | alles andere | allein kein Release |
+| `feat!`, `fix!` oder `BREAKING CHANGE:` im Text | Betreiber müssen beim Update etwas tun | Minor vor 1.0, ab 1.0 Major |
+
+Beispiele:
+
+```
+feat(vorlesungsmodus): Tabs und zwei Hälften nebeneinander
+fix(deadlines): Bearbeiten stürzte ab
+docs(admin): Beispiel für Traefik ergänzt
+feat(docker)!: Daten liegen jetzt in benannten Volumes
+
+BREAKING CHANGE: Wer Ordner auf dem Host nutzt, setzt DATA_DIR und DB_DIR in der .env.
+```
+
+Einen Hinweis `BREAKING CHANGE` setzt du immer dann, wenn Betreiber beim Update etwas tun müssen: eine neue oder geänderte Umgebungsvariable, eine geänderte Compose-Datei, ein Schritt außerhalb der automatischen Migration.
+
+## Regeln für den Code
+
+- **Nur Bausteine aus `@study/ui`** in `apps/web`, keine Farben als Hex-Werte ([Design-System](/entwickler/design)).
+- **Rechte gehören nach `apps/server/src/domain`**, nicht in die Routen.
+- **Texte der Oberfläche** stehen in `apps/web/src/i18n/de.ts`.
+- **Tests** für neues Verhalten; bei Oberflächenänderungen schau dir das Ergebnis im Browser auf Laptop **und** Handy an.
+- **Erfundene Daten** in Tests, Beispielen und Doku. Keine echten Personen, Hochschulen oder Zugangsdaten.
+- **Dokumentation** mitpflegen: Nutzer, Admin oder Entwickler, je nachdem, wen deine Änderung betrifft.
+
+## Mit einem KI-Assistenten arbeiten
+
+Das Repository enthält eine `CLAUDE.md` mit den Regeln für Assistenten (u. a. Commit-Format). Nutzt du Claude Code, hält er sich daran.

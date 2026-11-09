@@ -1,0 +1,58 @@
+---
+title: Sidebar und NavItem
+sidebar_position: 2
+description: Die Spalte links mit den Orten der App.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { DoDont, Do, Dont } from "@site/src/components/DoDont";
+import { Sidebar, NavSection, NavItem, Logo, Card, Avatar, ListRow, List } from "@study/ui";
+
+# Sidebar, NavSection und NavItem
+
+`import { Sidebar, NavSection, NavItem } from "@study/ui"`
+
+Auf breiten Bildschirmen links. Auf dem Handy übernimmt die [TabBar](./tab-bar).
+
+```jsx live
+<div style={{ width: 260, height: 620, border: "1.5px solid var(--ui-line)", borderRadius: 24, overflow: "hidden" }}>
+  <Sidebar
+    brand={<Logo />}
+    footer={
+      <Card padding="sm" tone="gelb">
+        <strong>Claude ist verbunden</strong>
+      </Card>
+    }
+  >
+    <NavSection>
+      <NavItem icon="sun" label="Heute" href="#" active />
+      <NavItem icon="grid" label="Fächer" href="#" />
+      <NavItem icon="calendar" label="Kalender" href="#" />
+      <NavItem icon="search" label="Suchen" shortcut="⌘K" onClick={() => {}} />
+    </NavSection>
+    <NavSection title="Deine Fächer">
+      <NavItem dot="blau" label="Regelungstechnik" href="#" size="sm" />
+      <NavItem dot="orange" label="Technische Mechanik" href="#" size="sm" />
+      <NavItem dot="violett" label="Mathe III" href="#" size="sm" badge={11} />
+    </NavSection>
+  </Sidebar>
+</div>
+```
+
+## Wann benutzen
+
+- Oben die festen Orte mit Icon, darunter die Fächer mit ihrer Farbe als Punkt (`dot`).
+- Ein Ort ist aktiv, wenn man in ihm oder darunter ist (eine Fachseite gehört zu „Fächer“ **und** zu ihrem Fach).
+- Unten das Konto und die Einstellungen.
+
+## Props
+
+<PropsTable of="Sidebar" />
+<PropsTable of="NavSection" />
+<PropsTable of="NavItem" />
+
+## Barrierefreiheit
+
+- Eine `nav` „Hauptnavigation“ mit Listen; der aktive Ort ist `aria-current="page"`.
+- Mit dem Router: `linkAs={NavLink}` oder `Link` – `href` wird zu `to`.

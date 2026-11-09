@@ -1,0 +1,38 @@
+---
+title: Spinner
+sidebar_position: 4
+description: Etwas ist unterwegs.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { DoDont, Do, Dont } from "@site/src/components/DoDont";
+import { Spinner, Button } from "@study/ui";
+
+# Spinner
+
+`import { Spinner } from "@study/ui"`
+
+```jsx live
+<div style={{ display: "flex", gap: 16, alignItems: "center" }}>
+  <Spinner />
+  <Spinner size={32} />
+  <span style={{ display: "inline-flex", gap: 8, alignItems: "center", color: "var(--ui-muted)" }}>
+    <Spinner size={16} label="" /> Wird transkribiert …
+  </span>
+</div>
+```
+
+## Wann benutzen
+
+- Für Wartezeiten unbekannter Länge, die länger als einen Moment dauern.
+- In Knöpfen nicht selbst einbauen – `loading` am [Button](../aktionen/button).
+- Ganze Seiten: `PageSkeleton`. Bekannter Fortschritt: [ProgressRing](../anzeige/progress-ring).
+
+## Props
+
+<PropsTable of="Spinner" />
+
+## Barrierefreiheit
+
+- Mit `label` ist er ein `status` („Lädt“); steht der Text daneben, `label=""`.

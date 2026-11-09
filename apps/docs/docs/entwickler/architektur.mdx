@@ -1,0 +1,55 @@
+---
+title: "Aufbau"
+sidebar_position: 2
+description: "Container, Server, Web-App und wie eine Anfrage durch das System läuft."
+---
+
+# Aufbau
+
+## Container
+
+```
+Browser / Claude
+      │  HTTPS (dein Reverse Proxy)
+      ▼
+   web (Caddy) ── /            → fertige Web-App (statische Dateien)
+      │            /api /mcp /ical → server:3000
+      │            /auth/v1, /.well-known/* → auth:9999
+      ▼
+   server (Node.js) ──► db (PostgreSQL 17) ◄── auth (GoTrue)
+```
+
+- `web` ist **Caddy** mit der gebauten Web-App und der Datei `infra/caddy/Caddyfile`: Es ist die eine Adresse nach außen.
+- `server` ist **Fastify**: REST-API unter `/api`, der **MCP-Server** unter `/mcp`, der Kalender-Abo-Feed unter `/ical` und **pg-boss**-Hintergrundjobs (Kalender-Abos, Suchindex, Backups, Papierkorb).
+- `auth` ist **Supabase Auth (GoTrue)**: Anmeldung, Passkeys, TOTP und ein **OAuth-2.1-Server**, über den MCP-Clients wie Claude sich anmelden. Der Server prüft die Tokens gegen das JWKS.
+- `db` ist **PostgreSQL 17** (Supabase-Image mit `pgvector` für die Suche).
+
+## Server (`apps/server/src`)
+
+| Ordner | Rolle |
+|---|---|
+| `domain/` | Die Fachlogik, je eine Datei pro Bereich (`courses`, `files`, `planning`, `calendar`, `notes`, `flashcards`, `programs`, `recordings`, `inbox` …). Reine Funktionen auf der Datenbank, **hier gehören die Rechte hin** (`access.ts`: Rollen) |
+| `http/` | Fastify-Routen, die dünn auf `domain/` zeigen |
+| `mcp/` | Der MCP-Server: Werkzeuge, die dieselbe `domain/`-Logik mit den Rechten des Nutzers aufrufen |
+| `jobs/` | Zeitgesteuerte Jobs (`scheduler.ts`, `backup.ts`) |
+| `search/` | Suche nach Bedeutung (Embeddings, lokal) und Wortlaut |
+| `db/` | Drizzle-Schema (`schema.ts`) und Migrationen (`drizzle/`) |
+
+Eine Regel zieht sich durch: **Rechte werden in `domain/` geprüft**, nicht in den Routen. Dann gelten sie für die Web-App und für MCP gleich.
+
+## Web-App (`apps/web/src`)
+
+`views/` sind die Seiten (`CourseView`, `PlanningView` …), `components/` wiederverwendbare Teile, `lib/` Hilfen (API-Client, Sitzung, Zoom, gespeicherte Einstellungen), `i18n/de.ts` alle Texte. Die Oberfläche benutzt nur Bausteine aus `@study/ui`.
+
+## Daten
+
+- **Dokumente** liegen als normale Ordner unter `FILES_DIR/courses/<Fach>/<Ordner>/`; die Datenbank kennt sie mit Metadaten.
+- **Nutzer** (`profiles`) hängen an den Konten von GoTrue. Rollen gelten **pro Fach** (`course_members`).
+- **Deadlines** sind geteilt (mit Fach) oder privat (ohne). Das Abhaken ist pro Nutzer (`deadline_done`).
+
+## Entscheidungen
+
+Wichtige Entscheidungen stehen in `docs/adr/`:
+
+- `0001`: Eine Web-App auf einem eigenen Server statt synchronisierter Desktop-App.
+- `0002`: Die KI-Arbeit macht jedes Nutzers eigenes Claude über MCP.

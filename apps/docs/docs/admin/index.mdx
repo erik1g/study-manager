@@ -1,0 +1,38 @@
+---
+title: "Überblick für Admins"
+sidebar_position: 1
+description: "Was du brauchst, um den Study Manager für dich und deine Lerngruppe zu betreiben."
+---
+
+# Überblick für Admins
+
+Der Study Manager läuft bei dir: auf einem kleinen Server, einem Raspberry Pi oder einem Rechner zu Hause. Diese Anleitung richtet sich an Studierende, die sich **mit Docker und einem Reverse Proxy auskennen** (oder es lernen möchten).
+
+## Was du brauchst
+
+- Einen **Linux-Server** (oder Mac/Windows mit Docker) mit **Docker Compose**. 2 GB Arbeitsspeicher und ein paar GB Platz reichen für eine Lerngruppe; Dokumente und Backups brauchen Platz je nach Menge.
+- Eine **Domain** (oder Subdomain), die auf den Server oder deinen Tunnel zeigt.
+- Einen **Reverse Proxy mit HTTPS** davor (Nginx Proxy Manager, Traefik, Caddy, Cloudflare Tunnel …). Die App spricht auf Port 80 nur unverschlüsselt; TLS endet bei deinem Proxy. Das ist nötig, weil Passkeys und die Anmeldung von Claude (OAuth) HTTPS verlangen.
+- Optional: einen **SMTP-Zugang** für Einladungs- und Passwort-Mails. Ohne ihn gibst du Links von Hand weiter.
+
+## Woraus die App besteht
+
+Vier Container in einem Docker-Compose-Projekt:
+
+| Container | Aufgabe |
+|---|---|
+| `web` | Caddy mit der fertigen Web-App; die **eine Adresse**, auf die dein Proxy zeigt. Reicht `/api`, `/mcp`, `/ical` und `/auth` an die anderen weiter. |
+| `server` | API, MCP-Server und Hintergrundjobs (Kalender-Abos, Suche, Backups) |
+| `auth` | Anmeldung, Passkeys und OAuth (Supabase Auth / GoTrue) |
+| `db` | PostgreSQL 17 |
+
+Die Images kommen von Docker Hub (`erik1g/study-manager-server`, `erik1g/study-manager-web`); Datenbank und Anmeldung nutzen die Images von Supabase. Alles läuft bei dir – nichts davon geht zu Supabase oder zu uns.
+
+## Der Weg
+
+1. [Installieren](/admin/installation)
+2. [Reverse Proxy einrichten](/admin/reverse-proxy)
+3. [Konfigurieren](/admin/konfiguration) (Mail, Zeitzone, Speicherorte)
+4. [Betrieb: Konten, Updates, Logs](/admin/betrieb)
+5. [Backups](/admin/backups) einrichten und die Wiederherstellung **einmal ausprobieren**
+6. [Sicherheit](/admin/sicherheit) lesen

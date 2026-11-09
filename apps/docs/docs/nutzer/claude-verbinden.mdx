@@ -1,0 +1,31 @@
+---
+title: "Claude verbinden"
+sidebar_position: 9
+description: "Dein eigenes Claude über MCP mit dem Study Manager verbinden – und was es dann tun kann."
+---
+
+# Claude verbinden
+
+Der Study Manager rechnet **keine KI**. Stattdessen verbindest du **dein eigenes Claude** über den MCP-Server der App. Es arbeitet mit **deinen Rechten**: Es sieht nur, was du siehst.
+
+## Verbinden
+
+- **Claude.ai und Claude Desktop**: *Einstellungen → Konnektoren → eigenen Konnektor hinzufügen*, URL `https://<deine-domain>/mcp`. Die Anmeldung läuft über OAuth; die Adresse muss dafür öffentlich erreichbar sein.
+- **Claude Code**: Erzeuge in der App unter *Einstellungen → Claude* einen persönlichen Schlüssel und führe aus:
+
+```sh
+claude mcp add --transport http study-manager https://<deine-domain>/mcp \
+  --header "Authorization: Bearer sm_…"
+```
+
+Du kannst Verbindungen unter *Einstellungen → Claude* jederzeit trennen.
+
+## Was Claude tun kann
+
+- **Arbeitseingang**: Sag *„Arbeite den Study-Manager-Eingang ab“*. Claude gliedert Skripte ohne Gliederung, wertet transkribierte Vorlesungen aus und trägt Kernpunkte und Prüfungshinweise in die Notizen ein.
+- **Modulhandbuch** einlesen und Studiengänge füllen.
+- **Fächer, Dokumente und Notizen durchsuchen** und daraus antworten, mit Seitenzahl.
+- **Aufgaben und Deadlines** anlegen und deine Woche planen (es schaut vorher in den Kalender, um freie Zeiten zu finden).
+- **Lernkarten vorschlagen**, die du in der App übernimmst.
+
+Nichts davon geschieht von allein: Claude arbeitet, wenn du es bittest.

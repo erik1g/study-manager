@@ -1,0 +1,40 @@
+/* Illustration: outline in the illustration line colour, fills from the tones. */
+
+.ui-illustration {
+  display: block;
+  width: 100%;
+  height: auto;
+  fill: none;
+  stroke: var(--ui-ill-line);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.ui-illustration .ground {
+  fill: var(--ui-ill-ground);
+  stroke: none;
+}
+.ui-illustration .paper {
+  fill: var(--ui-ill-paper);
+}
+.ui-illustration .paper-shade {
+  fill: var(--ui-ill-paper-shade);
+}
+.ui-illustration .ink {
+  fill: var(--ui-ill-line);
+}
+.ui-illustration .no-line {
+  stroke: none;
+}
+.ui-illustration .blau { fill: var(--ui-blau-strong); }
+.ui-illustration .petrol { fill: var(--ui-petrol-strong); }
+.ui-illustration .gruen { fill: var(--ui-gruen-strong); }
+.ui-illustration .gelb { fill: var(--ui-gelb-strong); }
+.ui-illustration .orange { fill: var(--ui-orange-strong); }
+.ui-illustration .rot { fill: var(--ui-rot-strong); }
+.ui-illustration .violett { fill: var(--ui-violett-strong); }
+.ui-illustration .grau { fill: var(--ui-grau-strong); }
+.ui-illustration .line-blau { stroke: var(--ui-blau-strong); }
+.ui-illustration .line-violett { stroke: var(--ui-violett-strong); }
+.ui-illustration .line-paper { stroke: var(--ui-ill-paper); }
+.ui-illustration .line-muted { stroke: var(--ui-muted); }

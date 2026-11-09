@@ -1,0 +1,50 @@
+---
+title: Listen mit Aktionen
+sidebar_position: 5
+description: Zeilen, die woandershin führen und trotzdem Aktionen haben.
+---
+
+# Listen mit Aktionen
+
+Eine Zeile führt zu ihrem Ding (die Datei öffnet sich). Was man **mit** dem Ding tun kann – umbenennen, verschieben, löschen – liegt hinter ⋯ und per Rechtsklick in einem [Menu](/bausteine/navigation/menu).
+
+Weil eine Zeile, die selbst ein Link ist, keinen Knopf enthalten darf, steht das ⋯ **neben** der Zeile (`actions`):
+
+```jsx live
+function Beispiel() {
+  const [at, setAt] = useState(null);
+  const files = ["Skript Kapitel 4.pdf", "Übungsblatt 5.pdf"];
+  return (
+    <Card style={{ maxWidth: 520 }}>
+      <List>
+        {files.map((name) => (
+          <ListRow
+            key={name}
+            href="#"
+            leading={<FileTile kind="pdf" />}
+            title={name}
+            meta="Skripte · heute"
+            onContextMenu={(e) => { e.preventDefault(); setAt({ x: e.clientX, y: e.clientY }); }}
+            actions={<IconButton icon="more" label={`Aktionen für ${name}`} size="sm" onClick={(e) => setAt(menuPositionFrom(e.currentTarget))} />}
+          />
+        ))}
+      </List>
+      {at && (
+        <Menu at={at} label="Aktionen" onClose={() => setAt(null)}>
+          <MenuItem icon="edit" onSelect={() => setAt(null)}>Umbenennen</MenuItem>
+          <MenuSeparator />
+          <MenuItem icon="trash" danger onSelect={() => setAt(null)}>In den Papierkorb</MenuItem>
+        </Menu>
+      )}
+    </Card>
+  );
+}
+```
+
+`ListRow` hat dafür die Prop `actions`: Sie stellt die Knöpfe **neben** die Zeile. Mit `onContextMenu` öffnet ein Rechtsklick dasselbe Menü.
+
+## Regeln
+
+- Rechtsklick und ⋯ zeigen dasselbe Menü.
+- Das ⋯ hat einen Namen mit dem Ding: „Aktionen für Skript.pdf“.
+- Mehrfachauswahl nur, wo man wirklich viele Dinge auf einmal bewegt (Dateien).

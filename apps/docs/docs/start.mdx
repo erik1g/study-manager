@@ -1,0 +1,44 @@
+---
+title: "Study Manager"
+slug: /
+description: "Die selbst gehostete Web-App für Studierende – Fächer, Deadlines, Planung, Notizen und dein eigenes Claude."
+hide_table_of_contents: true
+---
+
+import { Card, Illustration } from "@study/ui";
+
+# Study Manager
+
+<Card tone="blau" glow grain padding="lg" style={{ display: "flex", flexWrap: "wrap", gap: 24, alignItems: "center", marginBottom: 32 }}>
+  <div style={{ flex: "1 1 320px" }}>
+    <p className="ui-display" style={{ fontSize: 30, margin: 0 }}>Dein Studium, gemütlich sortiert.</p>
+    <p style={{ margin: "10px 0 0", fontWeight: 600 }}>
+      Fächer mit Skripten und Altklausuren, geteilte Deadlines, Planung, Notizen neben dem Skript, Lernkarten und ein MCP-Server für dein eigenes Claude – frei, selbst gehostet und von Studierenden für Studierende.
+    </p>
+  </div>
+  <div style={{ width: 220 }}>
+    <Illustration kind="schreibtisch" />
+  </div>
+</Card>
+
+Der Study Manager ist freie Software unter der [GPL-3.0](https://github.com/erik1g/study-manager/blob/main/LICENSE). Du betreibst ihn selbst auf einem eigenen Server – deine Daten bleiben bei dir und deiner Lerngruppe.
+
+## Wo möchtest du anfangen?
+
+### Ich möchte ihn benutzen → [Nutzer](/nutzer)
+
+Fächer, Dokumente, Deadlines, Planung, Notizen, Vorlesungsmodus, Lernkarten und Claude verbinden.
+
+### Ich betreibe einen Server → [Admin](/admin)
+
+Installieren mit Docker, konfigurieren, hinter einen Reverse Proxy stellen, sichern, aktualisieren.
+
+### Ich möchte mitentwickeln → [Entwickler](/entwickler)
+
+Aufbau, lokal starten, Tests, Beiträge, Releases – und wie man eine neue Hochschule anbindet.
+
+## Was heute unterstützt wird
+
+- Die Oberfläche ist **deutsch**; Semester heißen `WiSe`/`SoSe`.
+- Das **Kalender-Abo** versteht iCal-Feeds im Stil von CAMPUSonline (Stundenplan mit Serien und Sitzungen). Andere Systeme (Stud.IP, HISinOne, ILIAS) sind noch nicht angebunden – **dabei kannst du helfen**: siehe [Hochschulen anbinden](/entwickler/hochschulen-anbinden).
+- Alles andere ist hochschulunabhängig: Fächer, Dokumente, Deadlines, Aufgaben, Notizen, Lernkarten, Suche, Modulhandbuch (als PDF) und die Anbindung an Claude.

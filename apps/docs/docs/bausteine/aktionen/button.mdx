@@ -1,0 +1,100 @@
+---
+title: Button
+sidebar_position: 1
+description: Ein Knopf – hier passiert etwas.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { DoDont, Do, Dont } from "@site/src/components/DoDont";
+import { Button } from "@study/ui";
+
+# Button
+
+`import { Button } from "@study/ui"`
+
+Ein Knopf löst etwas aus: speichern, anlegen, hochladen. Sein Text sagt als **Verb**, was passiert. Führt er nur woandershin, ist er ein [LinkButton](./link-button).
+
+```jsx live
+function Beispiel() {
+  const [saving, setSaving] = useState(false);
+  return (
+    <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+      <Button variant="primary" icon="check" loading={saving} onClick={() => { setSaving(true); setTimeout(() => setSaving(false), 1500); }}>
+        Speichern
+      </Button>
+      <Button>Abbrechen</Button>
+    </div>
+  );
+}
+```
+
+## Varianten und Zustände
+
+<Preview column>
+  <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+    <Button variant="primary" icon="plus">Neu</Button>
+    <Button>Bearbeiten</Button>
+    <Button variant="soft" tone="gelb" icon="claude">Mit Claude</Button>
+    <Button variant="danger" icon="trash">Löschen</Button>
+    <Button variant="ghost">Später</Button>
+  </div>
+  <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+    <Button size="sm">Klein</Button>
+    <Button>Mittel</Button>
+    <Button size="lg" variant="primary">Groß</Button>
+  </div>
+  <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+    <Button variant="primary" loading>Speichern</Button>
+    <Button disabled>Nicht verfügbar</Button>
+    <Button iconEnd="arrow-right">Weiter</Button>
+  </div>
+</Preview>
+
+| Variante | Wofür |
+| --- | --- |
+| `primary` | die **eine** Hauptaktion einer Ansicht |
+| `secondary` | alles andere (Standard) |
+| `soft` | freundliche Nebenaktion auf einer Farbe, z. B. „Mit Claude“ (`tone`) |
+| `danger` | Löschen, Verlassen, Abmelden |
+| `ghost` | leise Aktionen in Leisten und Listen |
+
+## Wann benutzen
+
+<DoDont>
+  <Do caption="Eine Hauptaktion, daneben die Alternative. Die Hauptaktion steht rechts.">
+    <Button>Abbrechen</Button>
+    <Button variant="primary">Fach anlegen</Button>
+  </Do>
+  <Dont caption="Mehrere Hauptaktionen nebeneinander – keiner weiß, was zählt.">
+    <Button variant="primary">Speichern</Button>
+    <Button variant="primary">Teilen</Button>
+    <Button variant="primary">Exportieren</Button>
+  </Dont>
+</DoDont>
+
+<DoDont>
+  <Do caption="Der Text sagt, was passiert.">
+    <Button variant="danger" icon="trash">Fach löschen</Button>
+  </Do>
+  <Dont caption="„OK“ und „Ja“ sagen nichts.">
+    <Button variant="primary">OK</Button>
+  </Dont>
+</DoDont>
+
+- Mit `loading` statt eigener Spinner – der Knopf ist dann gesperrt und sagt Screenreadern, dass er arbeitet.
+- `type="submit"` nur im Formular; sonst ist ein Button immer `type="button"`.
+- Für Elemente, die kein `Button` sein können, gibt `buttonClass({ variant, size })` die Klassen.
+
+## Props
+
+Dazu alle Attribute eines `<button>` (`onClick`, `type`, `disabled` …).
+
+<PropsTable of="Button" />
+
+## Barrierefreiheit
+
+- Ein echtes `<button>`: mit Tab erreichbar, mit Enter und Leertaste auszulösen.
+- Deutlicher Fokusring (3 px, `--ui-focus`), nur bei Tastaturbedienung.
+- Mindestens 44 px hoch in `md`; `sm` nur, wo eine Maus wahrscheinlich ist.
+- `loading` setzt `aria-busy` und sperrt doppelte Klicks.

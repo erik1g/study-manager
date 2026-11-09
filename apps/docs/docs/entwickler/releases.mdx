@@ -1,0 +1,53 @@
+---
+title: "Releases und Versionen"
+sidebar_position: 6
+description: "Wie aus Commits automatisch Versionen, Changelog und Docker-Images werden."
+---
+
+# Releases und Versionen
+
+Der Study Manager folgt **Semantic Versioning** (`MAJOR.MINOR.PATCH`). Versionen, Changelog und Docker-Images entstehen automatisch aus den [Conventional Commits](/entwickler/mitmachen).
+
+## Der Ablauf
+
+```
+Pull Request (Titel: feat: …)  ──merge──►  main
+                                              │
+                          release-please sammelt die Commits
+                                              ▼
+                       Release-PR "chore: release 0.2.0"  (Version + CHANGELOG.md)
+                                              │  du mergst ihn
+                                              ▼
+                  Git-Tag v0.2.0  +  GitHub-Release mit Changelog
+                                              │
+                                              ▼
+              Docker Hub: study-manager-server und study-manager-web
+              mit den Tags 0.2.0, 0.2, 0 und latest (amd64 und arm64)
+```
+
+1. Jede Änderung kommt per Pull Request auf `main`; der **Titel** folgt Conventional Commits.
+2. **release-please** hält einen offenen **Release-PR** bereit. Er schlägt die nächste Version vor (`fix` → Patch, `feat` → Minor, `BREAKING CHANGE` → Major) und schreibt den Changelog.
+3. Wer den Release-PR **mergt**, löst das Release aus: Tag, GitHub-Release, und die Pipeline baut und veröffentlicht die Images.
+4. Betreiber ziehen die neue Version mit `docker compose pull && docker compose up -d`.
+
+Solange die Version unter **1.0** liegt, erhöht ein Bruch die Minor-Version (`0.2.0` → `0.3.0`). Ab 1.0 erhöht er die Major-Version.
+
+## Die Images
+
+| Image | Inhalt |
+|---|---|
+| `docker.io/erik1g/study-manager-server` | API, MCP-Server und Jobs |
+| `docker.io/erik1g/study-manager-web` | Caddy mit der gebauten Web-App |
+
+Tags je Release: `X.Y.Z`, `X.Y`, `X` und `latest`. Auf `main` entstehen zusätzlich `edge` und `sha-<commit>` für Tests. Beide Images gibt es für `linux/amd64` und `linux/arm64` (zum Beispiel für einen Raspberry Pi).
+
+## Einmalig einrichten (Maintainer)
+
+- **GitHub**: Repository-Einstellungen → *Actions → General*: Workflows dürfen Pull Requests anlegen (für den Release-PR).
+- **Docker Hub**: Zugriffstoken mit Schreibrecht erzeugen und im Repository unter *Settings → Secrets and variables → Actions* als `DOCKERHUB_USERNAME` und `DOCKERHUB_TOKEN` anlegen.
+- **Pages**: *Settings → Pages → Source: GitHub Actions* (für diese Doku).
+- **Hauptzweig schützen**: nur Pull Requests, die Prüfungen „Typen, Tests, Build“ und „Titel folgt Conventional Commits“ müssen grün sein.
+
+## Eine Version zurückziehen
+
+Ein fehlerhaftes Release behebst du mit einem `fix:` und einem neuen Release. Den Tag oder das Image löschst du nur im äußersten Notfall; Betreiber, die schon aktualisiert haben, brauchen ein Folge-Release.

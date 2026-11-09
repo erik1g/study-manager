@@ -1,0 +1,186 @@
+/* Dialog, Notice, Toast, Tooltip */
+
+.ui-dialog {
+  width: min(560px, calc(100vw - 32px));
+  max-height: calc(100dvh - 48px);
+  padding: 0;
+  border: 0;
+  border-radius: var(--ui-radius-xl);
+  background: var(--ui-surface);
+  color: var(--ui-ink);
+  box-shadow: var(--ui-shadow-pop);
+  font-family: var(--ui-font-body);
+  overflow: auto;
+}
+.ui-dialog.ui-size-sm {
+  width: min(440px, calc(100vw - 32px));
+}
+.ui-dialog.ui-size-lg {
+  width: min(760px, calc(100vw - 32px));
+}
+.ui-dialog[open] {
+  animation: ui-dialog-in var(--ui-base) var(--ui-ease-out);
+}
+.ui-dialog::backdrop {
+  background: var(--ui-scrim);
+  animation: ui-fade var(--ui-base) ease;
+}
+@keyframes ui-dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.97);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ui-dialog[open] {
+    animation-name: ui-fade;
+  }
+}
+.ui-dialog-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--ui-space-3);
+  padding: var(--ui-space-6) var(--ui-space-6) 0;
+}
+.ui-dialog-title {
+  margin: 4px 0 0;
+  font: 800 var(--ui-display-md) / 1.2 var(--ui-font-display);
+}
+.ui-dialog-description {
+  margin: 6px 0 0;
+  color: var(--ui-muted);
+}
+.ui-dialog-body {
+  padding: var(--ui-space-5) var(--ui-space-6) 0;
+}
+.ui-dialog-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: var(--ui-space-6);
+}
+.ui-dialog:not(:has(.ui-dialog-footer)) .ui-dialog-body {
+  padding-bottom: var(--ui-space-6);
+}
+@media (max-width: 480px) {
+  .ui-dialog-footer > * {
+    flex: 1;
+  }
+}
+
+/* Notice */
+.ui-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--ui-radius-md);
+  background: var(--ui-tone-tint);
+  color: var(--ui-tone-ink);
+  font: 500 var(--ui-text-md) / 1.5 var(--ui-font-body);
+}
+.ui-notice-icon {
+  flex: none;
+  margin-top: 1px;
+}
+.ui-notice-text {
+  flex: 1;
+  min-width: 0;
+}
+.ui-notice-text p {
+  margin: 0;
+}
+.ui-notice-title {
+  font-weight: 700;
+}
+.ui-notice-action {
+  flex: none;
+  align-self: center;
+}
+
+/* Toast */
+.ui-toaster {
+  position: fixed;
+  left: 50%;
+  bottom: calc(96px + env(safe-area-inset-bottom));
+  z-index: 1100;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+@media (min-width: 900px) {
+  .ui-toaster {
+    bottom: 28px;
+  }
+}
+.ui-toast {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: calc(100vw - 32px);
+  padding: 12px 20px;
+  border-radius: var(--ui-radius-pill);
+  background: var(--ui-ink);
+  color: var(--ui-bg);
+  box-shadow: var(--ui-shadow-pop);
+  font: 700 var(--ui-text-md) / 1.3 var(--ui-font-body);
+  animation: ui-toast-in var(--ui-slow) var(--ui-ease-out);
+}
+.ui-toast[class*="ui-tone-"] {
+  background: var(--ui-tone-tint);
+  color: var(--ui-tone-ink);
+}
+@keyframes ui-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ui-toast {
+    animation-name: ui-fade;
+  }
+}
+
+/* Tooltip */
+.ui-tooltip-anchor {
+  position: relative;
+  display: inline-flex;
+}
+.ui-tooltip {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  z-index: 900;
+  width: max-content;
+  max-width: 240px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: var(--ui-ink);
+  color: var(--ui-bg);
+  font: 600 var(--ui-text-sm) / 1.35 var(--ui-font-body);
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, 4px);
+  transition:
+    opacity var(--ui-fast) ease,
+    transform var(--ui-fast) var(--ui-ease-out);
+}
+.ui-side-bottom .ui-tooltip {
+  bottom: auto;
+  top: calc(100% + 8px);
+  transform: translate(-50%, -4px);
+}
+.ui-tooltip-anchor:hover .ui-tooltip,
+.ui-tooltip-anchor:focus-within .ui-tooltip {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  transition-delay: 300ms;
+}
+.ui-dialog-top {
+  margin-top: min(12vh, 120px);
+}
+.ui-dialog-bare .ui-dialog-body {
+  padding: var(--ui-space-4);
+}

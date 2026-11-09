@@ -1,0 +1,62 @@
+---
+title: "Installieren"
+sidebar_position: 2
+description: "In wenigen Schritten vom leeren Server zum laufenden Study Manager."
+---
+
+# Installieren
+
+## 1. Dateien holen
+
+```sh
+git clone --depth 1 https://github.com/erik1g/study-manager.git
+cd study-manager
+```
+
+Du brauchst daraus nur `docker-compose.yml` und den Ordner `infra/db`. Für ein bestimmtes Release nimm statt dessen den Tag: `git clone --depth 1 --branch v0.1.0 …`.
+
+## 2. Die Einstellungen erzeugen
+
+Die Datei `.env` enthält die Geheimnisse deiner Installation. Ein Skript erzeugt sie mit frischen Schlüsseln, ohne dass du das Repository bauen musst:
+
+```sh
+docker run --rm \
+  -e ADMIN_EMAIL=du@example.org \
+  -e DOMAIN=study.example.org \
+  docker.io/erik1g/study-manager-server \
+  node /app/infra/scripts/setup.mjs --stdout > .env
+chmod 600 .env
+```
+
+- `ADMIN_EMAIL` ist **deine** Adresse: Der erste Einrichtungslink ist für sie.
+- `DOMAIN` ist die öffentliche Adresse ohne `https://`. Ändere sie später nur mit Bedacht: **Passkeys sind an die Domain gebunden** und gehen bei einem Wechsel verloren.
+
+Öffne `.env` und prüfe sie; alle Einstellungen sind in der [Konfiguration](/admin/konfiguration) erklärt. **Sichere die Datei** (besonders `BACKUP_PASSPHRASE`) an einem zweiten Ort: Ohne sie sind Backups nicht lesbar.
+
+## 3. Starten
+
+```sh
+docker compose pull
+docker compose up -d
+docker compose logs server
+```
+
+Beim ersten Start legt der Server die Datenbank an und gibt in einer Zeile einen **Link zum Einrichten des Admin-Kontos** aus (`No admin yet. Set up … with: https://…`). Öffne ihn, sobald dein Reverse Proxy läuft (nächster Schritt) und lege Passwort und Passkey oder Authenticator-App fest. Admins brauchen einen zweiten Faktor.
+
+Brauchst du den Link später noch einmal:
+
+```sh
+docker compose exec server node --import tsx src/cli/admin-link.ts
+```
+
+## 4. Den Reverse Proxy einrichten
+
+Die App lauscht standardmäßig nur auf `127.0.0.1:8080` deines Servers. Wie dein Proxy sie unter deiner Domain mit HTTPS erreichbar macht, steht unter [Reverse Proxy](/admin/reverse-proxy).
+
+## 5. Prüfen
+
+- `https://<deine-domain>/api/health` antwortet mit `{"ok":true}`.
+- Die Startseite zeigt die Anmeldung.
+- `docker compose ps` zeigt alle vier Container als `running` (die Datenbank und `auth` zusätzlich als `healthy`).
+
+Weiter: [Betrieb](/admin/betrieb).

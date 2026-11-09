@@ -1,0 +1,323 @@
+/* The docs in the Snug Simple look: Docusaurus' own variables point at the building blocks' tokens. */
+
+:root {
+  --ifm-font-family-base: var(--ui-font-body);
+  --ifm-heading-font-family: var(--ui-font-display);
+  --ifm-font-family-monospace: var(--ui-font-mono);
+  --ifm-heading-font-weight: 800;
+  --ifm-font-size-base: 16px;
+  --ifm-line-height-base: 1.6;
+
+  --ifm-background-color: var(--ui-bg);
+  --ifm-background-surface-color: var(--ui-bg);
+  --ifm-font-color-base: var(--ui-ink);
+  --ifm-color-content: var(--ui-ink);
+  --ifm-color-content-secondary: var(--ui-muted);
+  --ifm-toc-border-color: var(--ui-line);
+  --ifm-hr-border-color: var(--ui-line);
+  --ifm-color-emphasis-200: var(--ui-line-soft);
+  --ifm-color-emphasis-300: var(--ui-line);
+
+  --ifm-color-primary: #2e4f7c;
+  --ifm-color-primary-dark: #29476f;
+  --ifm-color-primary-darker: #274369;
+  --ifm-color-primary-darkest: #203756;
+  --ifm-color-primary-light: #335789;
+  --ifm-color-primary-lighter: #355b8f;
+  --ifm-color-primary-lightest: #3c67a2;
+  --ifm-link-color: var(--ui-blau-ink);
+
+  --ifm-global-radius: 14px;
+  --ifm-code-border-radius: 8px;
+  --ifm-code-background: var(--ui-sunken);
+  --ifm-code-font-size: 90%;
+  --ifm-navbar-background-color: var(--ui-bg);
+  --ifm-navbar-shadow: none;
+  --ifm-footer-background-color: var(--ui-bg);
+  --ifm-menu-color: var(--ui-muted);
+  --ifm-menu-color-active: var(--ui-ink);
+  --ifm-menu-color-background-active: var(--ui-surface);
+  --ifm-menu-color-background-hover: var(--ui-hover);
+  --ifm-table-border-color: var(--ui-line);
+  --ifm-table-stripe-background: transparent;
+  --ifm-table-head-background: var(--ui-sunken);
+  --docusaurus-highlighted-code-line-bg: var(--ui-hover);
+}
+
+[data-theme="dark"] {
+  --ifm-color-primary: #c3d7f1;
+  --ifm-color-primary-dark: #a9c5eb;
+  --ifm-color-primary-darker: #9cbce8;
+  --ifm-color-primary-darkest: #74a1df;
+  --ifm-color-primary-light: #ddeaf8;
+  --ifm-color-primary-lighter: #eaf1fa;
+  --ifm-color-primary-lightest: #ffffff;
+}
+
+body {
+  background: var(--ui-bg);
+}
+
+h1 {
+  letter-spacing: -0.02em;
+}
+h2,
+h3 {
+  letter-spacing: -0.01em;
+}
+
+.navbar {
+  border-bottom: 1.5px solid var(--ui-line);
+}
+.navbar__title {
+  font-family: var(--ui-font-display);
+  font-weight: 800;
+}
+.footer {
+  border-top: 1.5px solid var(--ui-line);
+  color: var(--ui-muted);
+}
+
+.menu__link {
+  border-radius: 12px;
+  font-weight: 600;
+}
+.menu__link--active:not(.menu__link--sublist) {
+  font-weight: 700;
+  box-shadow: var(--ui-shadow-card);
+}
+
+/* Live code: the playground as a card. */
+[class*="playgroundContainer"] {
+  border-radius: var(--ui-radius-lg) !important;
+  overflow: hidden;
+  border: 1.5px solid var(--ui-line) !important;
+  margin-bottom: var(--ui-space-6) !important;
+}
+[class*="playgroundPreview"] {
+  background: var(--ui-bg);
+  padding: var(--ui-space-6) !important;
+}
+[class*="playgroundHeader"] {
+  background: var(--ui-sunken) !important;
+  color: var(--ui-muted) !important;
+  font-family: var(--ui-font-body);
+  letter-spacing: 0.04em;
+}
+
+table {
+  font-size: 14px;
+}
+/* Wide tables fill the column on wide screens and scroll sideways on phones. */
+@media (min-width: 997px) {
+  table {
+    display: table;
+    width: 100%;
+  }
+}
+table code {
+  white-space: nowrap;
+}
+
+/* The docs' own pieces. */
+.doc-preview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  border: 1.5px solid var(--ui-line);
+  border-radius: var(--ui-radius-lg);
+  overflow: hidden;
+  margin-bottom: var(--ui-space-6);
+}
+.doc-preview-pane {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: var(--ui-space-6);
+  background: var(--ui-bg);
+  color: var(--ui-ink);
+  min-width: 0;
+}
+.doc-preview-pane.column {
+  flex-direction: column;
+  align-items: stretch;
+}
+.doc-preview-label {
+  width: 100%;
+  margin: 0 0 4px;
+  font: 700 12px / 1 var(--ui-font-body);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ui-muted);
+}
+
+.doc-dodont {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  gap: var(--ui-space-4);
+  margin-bottom: var(--ui-space-6);
+}
+.doc-do,
+.doc-dont {
+  border-radius: var(--ui-radius-lg);
+  overflow: hidden;
+  border: 1.5px solid var(--ui-line);
+}
+.doc-do-stage {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  min-height: 110px;
+  padding: var(--ui-space-5);
+  background: var(--ui-bg);
+}
+.doc-do-caption {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  font-size: 14px;
+  line-height: 1.45;
+  border-top: 3px solid var(--ui-gruen-strong);
+  background: var(--ui-gruen-tint);
+  color: var(--ui-gruen-ink);
+}
+.doc-dont .doc-do-caption {
+  border-top-color: var(--ui-rot-strong);
+  background: var(--ui-rot-tint);
+  color: var(--ui-rot-ink);
+}
+.doc-do-caption strong {
+  flex: none;
+}
+
+.doc-swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: var(--ui-space-6);
+}
+.doc-swatch {
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1.5px solid var(--ui-line);
+  font-size: 13px;
+  line-height: 1.4;
+}
+.doc-swatch-color {
+  height: 64px;
+}
+.doc-swatch-text {
+  padding: 10px 12px;
+  background: var(--ui-surface);
+}
+.doc-swatch-text code {
+  font-size: 12px;
+  background: none;
+  padding: 0;
+  border: 0;
+}
+
+.doc-tone {
+  border-radius: 20px;
+  overflow: hidden;
+  font-size: 13px;
+  line-height: 1.4;
+}
+.doc-tone-top {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 72px;
+  padding: 12px;
+  box-sizing: border-box;
+}
+.doc-tone-dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+}
+.doc-tone-body {
+  padding: 0 12px 12px;
+}
+
+.doc-icons-search {
+  margin-bottom: var(--ui-space-4);
+  max-width: 420px;
+}
+.doc-icons {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+  gap: 10px;
+  margin-bottom: var(--ui-space-6);
+}
+.doc-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 8px 12px;
+  border: 0;
+  border-radius: 18px;
+  background: var(--ui-surface);
+  color: var(--ui-ink);
+  box-shadow: var(--ui-shadow-card);
+  font: 600 12px / 1.2 var(--ui-font-mono);
+  cursor: pointer;
+}
+.doc-icon:hover {
+  background: var(--ui-sunken);
+}
+
+.doc-illustrations {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 12px;
+  margin-bottom: var(--ui-space-6);
+}
+.doc-illustration {
+  margin: 0;
+  padding: 12px 10px 10px;
+  border-radius: 22px;
+  background: var(--ui-surface);
+  box-shadow: var(--ui-shadow-card);
+  text-align: center;
+}
+.doc-illustration figcaption {
+  font: 600 12px / 1.3 var(--ui-font-mono);
+  color: var(--ui-muted);
+}
+
+.doc-scale {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: var(--ui-space-6);
+}
+.doc-scale-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.doc-scale-name {
+  flex: none;
+  width: 190px;
+  font: 600 13px / 1.2 var(--ui-font-mono);
+  color: var(--ui-muted);
+}
+.doc-bar {
+  height: 18px;
+  border-radius: 6px;
+  background: var(--ui-blau-strong);
+}
+.doc-radius {
+  width: 88px;
+  height: 64px;
+  background: var(--ui-violett-tint);
+  border: 2px solid var(--ui-violett-strong);
+}
+
+.doc-props-none {
+  color: var(--ui-muted);
+}

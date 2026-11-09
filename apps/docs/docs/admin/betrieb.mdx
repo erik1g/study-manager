@@ -1,0 +1,51 @@
+---
+title: "Betrieb"
+sidebar_position: 5
+description: "Konten verwalten, aktualisieren, Logs lesen und Fehler finden."
+---
+
+# Betrieb
+
+## Konten und Einladungen
+
+Konten gibt es **nur auf Einladung**; eine offene Registrierung gibt es nicht. Als Admin öffnest du den **Admin-Bereich** (`/admin`, im Konto-Menü links unten):
+
+- **Nutzer einladen**: E-Mail eingeben, optional „Admin“ ankreuzen. Ist Mail eingerichtet, geht die Einladung per Mail raus; sonst zeigt die App einen **Einladungslink**, den du der Person schickst. Er gilt einmal und läuft nach einem Tag ab.
+- **Passwort zurücksetzen**: erzeugt einen Link zum Zurücksetzen.
+- **Sperren und entsperren** und ein **Speicher-Limit** pro Person (in GB, leer = keins).
+- **Aktivität**: wer hat wann was geändert. **Server**: Speicher, Datenbank, Dateien, Backups und Kalender-Abos mit Fehlern.
+
+Der erste Admin entsteht mit dem Link aus dem Server-Log (siehe [Installieren](/admin/installation)).
+
+## Aktualisieren
+
+```sh
+cd study-manager
+git pull                      # nur wenn du docker-compose.yml aus dem Repository nutzt
+docker compose pull
+docker compose up -d
+```
+
+- Der Server führt **Datenbank-Migrationen beim Start** selbst aus. Ein Update braucht keinen weiteren Schritt.
+- Lies vorher den [Changelog](https://github.com/erik1g/study-manager/releases): Ein Hinweis **BREAKING CHANGE** heißt, dass du etwas an deiner `.env` oder Compose-Datei tun musst.
+- **Mache vor Updates ein Backup** (Admin-Bereich → *Jetzt sichern*) und setze `STUDY_VERSION` auf eine feste Version, die du gezielt hochziehst.
+- Zurück auf eine ältere Version: `STUDY_VERSION` ändern und `docker compose up -d`. Hat die neuere Version die Datenbank migriert, spiele vorher das Backup ein.
+
+## Logs und Gesundheit
+
+```sh
+docker compose ps
+docker compose logs -f server      # oder auth, db, web
+docker compose exec server node -e "fetch('http://127.0.0.1:3000/api/health').then(r=>r.text()).then(console.log)"
+```
+
+| Problem | Wo suchen |
+|---|---|
+| Anmeldung geht nicht | `docker compose logs auth`; `SITE_URL`/`API_EXTERNAL_URL` prüfen |
+| Seite lädt nicht | `docker compose logs web`; Proxy und Port prüfen |
+| Suche findet neue Dokumente nicht | Beim ersten Start lädt der Server ein kleines Suchmodell herunter (`/data/models`); er braucht dafür Internet. Ein Moment Geduld, die Erfassung läuft alle 10 Minuten |
+| Kalender-Abo zeigt Fehler | Admin-Bereich → *Kalender-Abos mit Fehlern*; der Feed-Link muss öffentlich erreichbar sein |
+
+## Aufräumen
+
+Hintergrundjobs laufen selbst: Kalender-Abos stündlich, die Suche alle 10 Minuten, das Backup nachts um 3:30 Uhr und das Leeren des Papierkorbs (nach 30 Tagen) um 3:45 Uhr, jeweils in deiner `TZ`.

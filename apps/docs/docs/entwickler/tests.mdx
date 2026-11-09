@@ -1,0 +1,46 @@
+---
+title: "Tests"
+sidebar_position: 4
+description: "Unit-Tests, Typprüfung, UI-Prüfung und die End-to-End-Tests mit dem Test-Stack."
+---
+
+# Tests
+
+| Was | Befehl | Wo |
+|---|---|---|
+| Typen | `pnpm typecheck` | alle Pakete |
+| Unit-Tests | `pnpm test` | `packages/ui/test`, `packages/shared`, `apps/server/test`, `apps/web` |
+| UI-Prüfung | `node infra/scripts/ui-gate.mjs` | prüft `apps/web`: nur Bausteine aus `@study/ui` |
+| Ende zu Ende | `./infra/test/stack.sh e2e` | `apps/e2e` (Playwright) |
+
+Die CI führt Typen, Tests, UI-Prüfung und Build bei jedem Pull Request aus; die Playwright-Tests laufen auf dem Hauptzweig und bei Pull Requests mit dem Label `e2e`.
+
+## Unit-Tests des Servers
+
+Sie laufen gegen eine **echte PostgreSQL-Datenbank**: Die Tests legen eine eigene Datenbank `study_test` an und leeren sie zwischen den Dateien. Setze `DATABASE_URL` auf einen Server, den du dafür nutzen darfst, oder starte sie im Dev-Container:
+
+```sh
+docker compose -f docker-compose.dev.yml exec server sh -c "cd apps/server && pnpm exec vitest run"
+```
+
+Die Anmeldung wird in den Tests durch eine Attrappe ersetzt (`memoryAccounts`), die Termin-Feeds durch Dateien aus `test/fixtures/`.
+
+## Der Test-Stack
+
+Eine zweite, abgeschottete Instanz **mit den Images, die du aus deinem Checkout baust**, eigener Datenbank, eigenen Schlüsseln und **erfundenen Daten** (Mira, Jonas und Sina mit festen Rollen). Sie lauscht nur auf `127.0.0.1:8090`:
+
+```sh
+pnpm install                                   # einmal, für Playwright
+./infra/test/stack.sh up      # baut und startet
+./infra/test/stack.sh seed    # füllt die Daten (SEED_DAY=2026-11-03 für den festen Tag)
+./infra/test/stack.sh e2e     # zurücksetzen, füllen, alle Playwright-Tests
+./infra/test/stack.sh e2e --reporter=line tests/course.spec.ts   # nur ein Teil
+./infra/test/stack.sh down | reset
+```
+
+`e2e` setzt den Stack **zurück**, füllt ihn mit den Daten eines festen Tages (3. November 2026, 10:00 Uhr Berlin; die Browser-Uhr steht dort still) und startet dann die Tests in einem Playwright-Container. Dabei laufen zuerst die Bildvergleiche (Aussehen, Hell und Dunkel), dann die Tests, die Daten ändern, zuletzt das Löschen eines Kontos.
+
+- Neue Tests gehören nach `apps/e2e/tests/` und nutzen `helpers.ts` (`signIn`, `openSubject`, `isPhone`). Die Tests laufen in Chromium, WebKit und einem iPhone-Profil; Dinge, die es nur auf breiten oder schmalen Bildschirmen gibt, überspringst du mit `test.skip(isPhone(page), "…")`.
+- Ändert ein Test geteilte Daten, ist er **robust gegen Wiederholung** und räumt auf oder legt eigene Daten an (Titel mit `info.project.name`).
+- Warte auf eine **sichtbare Bestätigung** (z. B. die Meldung „Deadline angelegt“), bevor du die Seite wechselst; sonst brichst du die Anfrage ab.
+- Absichtliche Änderungen am Aussehen: `./infra/test/stack.sh e2e --update-snapshots tests/visual.spec.ts`, danach die geänderten Bilder in `apps/e2e/tests/__screenshots__` im Pull Request prüfen.

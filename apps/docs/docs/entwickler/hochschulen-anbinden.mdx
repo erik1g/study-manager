@@ -1,0 +1,39 @@
+---
+title: "Hochschulen anbinden"
+sidebar_position: 7
+description: "Was heute unterstützt wird, was fehlt und wie du eine weitere Hochschule oder Sprache anbindest."
+---
+
+# Hochschulen anbinden
+
+Der Study Manager soll für **alle** Studierenden funktionieren. Heute passt er am besten zu deutschsprachigen Hochschulen mit **CAMPUSonline**. Hier steht, was angepasst ist, was nicht, und wo du helfen kannst.
+
+## Was schon allgemein ist
+
+Fächer, Dokumente, Deadlines, Aufgaben, Notizen, Lernkarten, Suche, Vorlesungsmodus, das **Modulhandbuch** (Claude liest ein beliebiges PDF) und die Anbindung an Claude sind **nicht** an eine Hochschule gebunden.
+
+## Was heute auf eine Art von Hochschule zugeschnitten ist
+
+| Bereich | Heute | Wo im Code |
+|---|---|---|
+| **Stundenplan-Feeds** | iCal im Stil von CAMPUSonline: Titel mit Kürzeln (`VO`, `UE`, `VU`, `SE`, `PR`), Beschreibung mit „fix; Abhaltung“ bzw. „Entfall“ | `apps/server/src/domain/feeds.ts`, `apps/web/src/views/PlanningView.tsx` (`sessionKind`) |
+| **Absagen erkennen** | Die Wörter `entfall`, `abgesagt`, `cancelled` in der Beschreibung | `isCancelled` in `feeds.ts` |
+| **Semesterschema** | `WiSe26-27`, `SoSe26` (deutsches System; Wintersemester ab Oktober) | `semesterOf` in `apps/web/src/i18n/de.ts` |
+| **Sprache** | Die ganze Oberfläche, die Mails und die Hinweise für Claude sind deutsch | `i18n/de.ts`, `apps/server/src/mcp/server.ts`, `http/mails.ts` |
+| **Zeitzone** | Standard `Europe/Berlin`, per `TZ` einstellbar | `config.ts` |
+
+## Ideen für Beiträge
+
+Such dir etwas aus oder lege ein Issue an:
+
+1. **Weitere Stundenplan-Quellen**: Stud.IP, HISinOne, Moodle- und ILIAS-Kalender, generische iCal-Feeds. Die Zuordnung eines wiederkehrenden Titels zu einem Fach (`suggestCourse`) funktioniert mit jedem Feed, wenn der Titel einen Teil des Fachnamens enthält; Kürzel und Absagen sind der hochschulspezifische Teil.
+2. **Konfigurierbare Regeln**: Semesterschema (Trimester, Quartale), Wörter für abgesagte Termine und Sitzungskürzel in eine Einstellung statt in den Code verlagern.
+3. **Weitere Sprachen**: Die Texte liegen gebündelt in `i18n/de.ts`. Der Weg zu einer Sprachumschaltung ist eine zweite Datei plus eine Auswahl in den Einstellungen.
+4. **Inhalte aus einem Lernsystem holen** (z. B. ILIAS): Offene Frage, weil die meisten Hochschulen keine Schnittstelle für Studierende freigeben. Ideen sind ein WebDAV-Import, wenn die Hochschule ihn erlaubt, oder ein Browser-Skript, das im angemeldeten Browser der Nutzerin läuft.
+
+## So gehst du vor
+
+1. **Beispieldaten**: Hol einen echten Feed deiner Hochschule, aber speichere für Tests nur eine **erfundene** Fassung ab (ändere Namen, Räume und Adressen; siehe `apps/server/test/fixtures/timetable-sample.ics`).
+2. **Test zuerst**: Ergänze in `apps/server/test/calendar.test.ts` einen Fall mit deinem Beispiel.
+3. **Kleine Schritte**: Eine Quelle pro Pull Request, ohne das Verhalten der bestehenden zu ändern.
+4. **Dokumentiere** in der [Nutzer-Doku](/nutzer/planung-und-kalender), welche Systeme funktionieren.

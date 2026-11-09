@@ -1,0 +1,20 @@
+name: Idee oder Wunsch
+description: Eine neue Funktion oder eine Verbesserung vorschlagen.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Welches Problem möchtest du lösen?
+      description: Beschreibe, was dir im Studienalltag fehlt – nicht nur die Lösung.
+    validations:
+      required: true
+  - type: textarea
+    id: vorschlag
+    attributes:
+      label: Wie könnte es aussehen?
+  - type: dropdown
+    id: helfen
+    attributes:
+      label: Möchtest du selbst daran mitarbeiten?
+      options: [Ja, ich baue es, Ja, mit etwas Hilfe, Nein, ich wünsche es mir nur]

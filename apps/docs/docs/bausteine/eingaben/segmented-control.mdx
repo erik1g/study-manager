@@ -1,0 +1,62 @@
+---
+title: SegmentedControl
+sidebar_position: 6
+description: Zwei bis vier Möglichkeiten nebeneinander.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { DoDont, Do, Dont } from "@site/src/components/DoDont";
+import { SegmentedControl, Select } from "@study/ui";
+
+# SegmentedControl
+
+`import { SegmentedControl } from "@study/ui"`
+
+```jsx live
+function Beispiel() {
+  const [theme, setTheme] = useState("system");
+  return (
+    <SegmentedControl
+      label="Darstellung"
+      value={theme}
+      onChange={setTheme}
+      options={[
+        { value: "light", label: "Hell", icon: "sun" },
+        { value: "dark", label: "Dunkel", icon: "star" },
+        { value: "system", label: "System", icon: "settings" },
+      ]}
+    />
+  );
+}
+```
+
+## Varianten und Zustände
+
+<Preview column>
+  <SegmentedControl label="Ansicht" value="woche" onChange={() => {}} options={[{ value: "tag", label: "Tag" }, { value: "woche", label: "Woche" }, { value: "monat", label: "Monat" }]} />
+  <SegmentedControl label="Ansicht" size="sm" value="liste" onChange={() => {}} options={[{ value: "liste", label: "Liste", icon: "list" }, { value: "raster", label: "Raster", icon: "grid" }]} />
+  <SegmentedControl label="Ansicht" iconsOnly value="liste" onChange={() => {}} options={[{ value: "liste", label: "Liste", icon: "list" }, { value: "raster", label: "Raster", icon: "grid" }]} />
+</Preview>
+
+## Wann benutzen
+
+<DoDont>
+  <Do caption="Wenige Möglichkeiten, alle sichtbar, eine gilt.">
+    <SegmentedControl label="Ansicht" value="woche" onChange={() => {}} options={[{ value: "tag", label: "Tag" }, { value: "woche", label: "Woche" }]} />
+  </Do>
+  <Dont caption="Mehr als vier – dann Select.">
+    <SegmentedControl label="Fach" size="sm" value="a" onChange={() => {}} options={["RT", "TM", "WK", "M3", "TD", "KL"].map((x) => ({ value: x.toLowerCase(), label: x }))} />
+  </Dont>
+</DoDont>
+
+Zum Wechseln zwischen Bereichen einer Seite sind [Tabs](../navigation/tabs) da.
+
+## Props
+
+<PropsTable of="SegmentedControl" />
+
+## Barrierefreiheit
+
+- Echte Optionsfelder in einer `radiogroup`: Pfeiltasten wechseln, Tab springt hinein und hinaus.
+- Mit `iconsOnly` bleiben die Namen für Screenreader und als Tooltip.

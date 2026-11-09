@@ -1,0 +1,81 @@
+---
+title: "Reverse Proxy"
+sidebar_position: 4
+description: "Beispiele für Nginx Proxy Manager, Caddy, Traefik und Cloudflare Tunnel."
+---
+
+# Reverse Proxy
+
+Der `web`-Container spricht **HTTP auf Port 8080** (siehe `HTTP_PORT`). Dein Reverse Proxy nimmt Anfragen an deiner Domain mit **HTTPS** an und leitet **alles** an diesen Port weiter: die Web-App, `/api`, `/mcp`, `/ical` und `/auth`. Der Study Manager braucht keine besonderen Pfadregeln.
+
+Wichtig für jeden Proxy:
+
+- **Host-Header** und **`X-Forwarded-For`** durchreichen. Die App begrenzt Anfragen pro Besucher.
+- **Upload-Größe**: Dokumente können groß sein. Erlaube mindestens **100 MB** pro Anfrage (die App lädt Dateien einzeln hoch).
+- **HTTPS ist Pflicht**: Passkeys und die Anmeldung von Claude (OAuth) funktionieren nur darüber.
+- Läuft der Proxy auf einem **anderen Rechner**, setze `BIND_ADDRESS=0.0.0.0` und schütze den Port mit einer Firewall, sodass nur der Proxy ihn erreicht. Trage die Adresse des Proxys in `TRUSTED_PROXIES` ein, wenn sie nicht in einem privaten Netz liegt.
+
+## Caddy
+
+Der einfachste Weg, wenn du keinen Proxy hast: Caddy holt sich das Zertifikat selbst.
+
+```caddyfile
+study.example.org {
+	request_body {
+		max_size 100MB
+	}
+	reverse_proxy 127.0.0.1:8080
+}
+```
+
+## Nginx Proxy Manager
+
+1. *Proxy Hosts → Add Proxy Host*: Domain `study.example.org`, Schema `http`, Weiterleiten an `<IP des Servers>` Port `8080`, **Websockets Support** an.
+2. Reiter *SSL*: ein Let's-Encrypt-Zertifikat anfordern, *Force SSL* an.
+3. Reiter *Advanced*: `client_max_body_size 100m;`
+
+## Traefik
+
+Hänge den `web`-Container mit Labels an dein Traefik. In einer `docker-compose.override.yml` neben der `docker-compose.yml`:
+
+```yaml
+services:
+  web:
+    ports: !reset []
+    networks: [default, traefik]
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik
+      - traefik.http.routers.study.rule=Host(`study.example.org`)
+      - traefik.http.routers.study.entrypoints=websecure
+      - traefik.http.routers.study.tls.certresolver=letsencrypt
+      - traefik.http.services.study.loadbalancer.server.port=80
+
+networks:
+  traefik:
+    external: true
+```
+
+Die Namen von Netzwerk, Entrypoint und Resolver passt du an dein Traefik an.
+
+## Cloudflare Tunnel
+
+Ein Tunnel braucht keinen offenen Port. Zeige ihn auf den Host-Port:
+
+```yaml
+# config.yml von cloudflared
+ingress:
+  - hostname: study.example.org
+    service: http://localhost:8080
+  - service: http_status:404
+```
+
+Beachte: Cloudflare lässt pro Anfrage höchstens **100 MB** durch (im kostenlosen Tarif); größere Dateien lassen sich dann nicht hochladen. Die App sendet Dateien einzeln. Du kannst vor `/admin` und `/api/admin` zusätzlich **Cloudflare Access** schalten, dann kommt der Admin-Bereich nur noch mit zweiter Prüfung. Das ist optional; die App verlangt für Admins ohnehin Passkey oder Authenticator-App.
+
+## Prüfen
+
+```sh
+curl -I https://study.example.org/api/health
+```
+
+muss `200` liefern. Zeigt die Anmeldung einen Fehler, stimmen meist `SITE_URL` und `API_EXTERNAL_URL` in der `.env` nicht mit der Adresse überein, die du im Browser benutzt.

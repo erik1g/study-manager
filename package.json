@@ -1,0 +1,28 @@
+{
+  "name": "study-manager",
+  "private": true,
+  "description": "Study Manager – the shared study cloud with an MCP server",
+  "packageManager": "pnpm@12.16.1",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "setup": "node infra/scripts/setup.mjs",
+    "dev": "docker compose -f docker-compose.dev.yml up -d && docker compose -f docker-compose.dev.yml logs -f server web",
+    "build": "pnpm -r build",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "admin:link": "docker compose exec server node --import tsx src/cli/admin-link.ts",
+    "e2e": "./infra/test/stack.sh e2e"
+  },
+  "version": "0.0.0",
+  "license": "GPL-3.0-only",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/erik1g/study-manager.git"
+  },
+  "homepage": "https://erik1g.github.io/study-manager/",
+  "bugs": {
+    "url": "https://github.com/erik1g/study-manager/issues"
+  }
+}

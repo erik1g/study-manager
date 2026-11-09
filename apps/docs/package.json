@@ -1,0 +1,33 @@
+{
+  "name": "@study/docs",
+  "version": "0.1.0",
+  "private": true,
+  "description": "The Study Manager's documentation (users, admins, developers), published on GitHub Pages.",
+  "scripts": {
+    "props": "node scripts/props.mjs",
+    "start": "node scripts/props.mjs && docusaurus start --host 0.0.0.0 --port 3002",
+    "build": "node scripts/props.mjs && docusaurus build --out-dir build",
+    "serve": "docusaurus serve --dir build",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@docusaurus/core": "3.10.2",
+    "@docusaurus/preset-classic": "3.10.2",
+    "@docusaurus/theme-live-codeblock": "3.10.2",
+    "@easyops-cn/docusaurus-search-local": "^0.55.3",
+    "@mdx-js/react": "^3.1.1",
+    "@study/ui": "workspace:*",
+    "clsx": "^2.1.1",
+    "prism-react-renderer": "^2.4.1",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@docusaurus/module-type-aliases": "3.10.2",
+    "@docusaurus/tsconfig": "3.10.2",
+    "@docusaurus/types": "3.10.2",
+    "@types/react": "^19.1.8",
+    "react-docgen-typescript": "^2.4.0",
+    "typescript": "^5.9.0"
+  }
+}

@@ -1,0 +1,34 @@
+---
+title: Schatten und Bewegung
+sidebar_position: 4
+description: Weiche Schatten auf weißen Flächen, kurze Bewegungen mit kräftigem Ausklang.
+---
+
+# Schatten und Bewegung
+
+## Schatten
+
+| Token | Wofür |
+| --- | --- |
+| `--ui-shadow-card` | weiße Karten, aktive Reiter und Navigationspunkte |
+| `--ui-shadow-pop` | was über der Seite schwebt: Menüs, Dialoge, Toasts, die Leiste unten auf dem Handy |
+
+Pastellflächen haben keinen Schatten – die Farbe trennt sie schon.
+
+## Bewegung
+
+| Token | Wert | Wofür |
+| --- | --- | --- |
+| `--ui-ease-out` | `cubic-bezier(0.23, 1, 0.32, 1)` | alles, was erscheint oder reagiert |
+| `--ui-ease-in-out` | `cubic-bezier(0.77, 0, 0.175, 1)` | was sich auf der Seite bewegt |
+| `--ui-fast` | 140 ms | Drücken, Hover, Häkchen |
+| `--ui-base` | 200 ms | Menüs, Dialoge, Schalter |
+| `--ui-slow` | 280 ms | Toasts |
+
+### Regeln
+
+- **Nicht animieren, was man oft tut**: Tastenkürzel, die Befehlspalette, Wechsel zwischen Reitern.
+- Gedrückte Knöpfe werden kurz kleiner (`scale(0.97)`) – das ist die Rückmeldung, dass der Druck ankam.
+- Nichts erscheint aus dem Nichts: Menüs und Dialoge starten bei 96–97 % Größe, nie bei 0.
+- Hover-Bewegungen (eine Karte hebt sich) nur mit Maus: `@media (hover: hover) and (pointer: fine)`.
+- Wer weniger Bewegung eingestellt hat (`prefers-reduced-motion`), sieht nur Überblendungen. Die Bausteine machen das selbst.

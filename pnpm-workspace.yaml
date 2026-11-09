@@ -1,0 +1,16 @@
+packages:
+  - apps/*
+  - packages/*
+
+# Dependencies whose install scripts may run (native builds and binaries).
+allowBuilds:
+  esbuild: true
+  onnxruntime-node: true
+  sharp: true
+  protobufjs: true
+  # Docusaurus brings it along; its install script only prints an advert.
+  core-js: false
+
+# One package store for the server and the development containers, which
+# mount the repository.
+storeDir: .pnpm-store

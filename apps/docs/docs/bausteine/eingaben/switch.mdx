@@ -1,0 +1,53 @@
+---
+title: Switch
+sidebar_position: 5
+description: Eine Einstellung an oder aus, sofort wirksam.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { DoDont, Do, Dont } from "@site/src/components/DoDont";
+import { Switch, Checkbox } from "@study/ui";
+
+# Switch
+
+`import { Switch } from "@study/ui"`
+
+```jsx live
+function Beispiel() {
+  const [on, setOn] = useState(true);
+  return (
+    <div style={{ maxWidth: 420 }}>
+      <Switch label="Erinnerungen per E-Mail" description="Einen Tag vor jeder Frist." checked={on} onChange={(e) => setOn(e.target.checked)} />
+    </div>
+  );
+}
+```
+
+## Varianten und Zustände
+
+<Preview column>
+  <Switch label="Aus" />
+  <Switch label="An" defaultChecked />
+  <Switch label="Gesperrt" disabled />
+</Preview>
+
+## Wann benutzen
+
+<DoDont>
+  <Do caption="Wirkt sofort, ohne Speichern.">
+    <Switch label="Transkription auf diesem Gerät" defaultChecked />
+  </Do>
+  <Dont caption="In einem Formular mit Speichern-Knopf – dort ist es eine Checkbox.">
+    <Switch label="Ich stimme zu" />
+  </Dont>
+</DoDont>
+
+## Props
+
+<PropsTable of="Switch" />
+
+## Barrierefreiheit
+
+- Ein Kontrollkästchen mit `role="switch"`: Screenreader sagen „an“ oder „aus“.
+- Grün heißt an – und der Knopf steht rechts. Beides zusammen, nicht die Farbe allein.

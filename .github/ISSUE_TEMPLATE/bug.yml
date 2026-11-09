@@ -1,0 +1,35 @@
+name: Fehler melden
+description: Etwas funktioniert nicht wie erwartet.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Danke für deine Meldung! Sicherheitslücken bitte **nicht** hier melden, sondern privat (siehe SECURITY.md).
+  - type: textarea
+    id: was
+    attributes:
+      label: Was ist passiert?
+      description: Was hast du getan, was hast du erwartet, was ist stattdessen passiert?
+    validations:
+      required: true
+  - type: textarea
+    id: nachstellen
+    attributes:
+      label: So lässt es sich nachstellen
+      placeholder: "1. …\n2. …\n3. …"
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Aus dem Image-Tag (`STUDY_VERSION`), z. B. 0.1.0, oder der Commit-Hash bei einer eigenen Entwicklungsversion.
+  - type: input
+    id: umgebung
+    attributes:
+      label: Browser und Gerät
+      placeholder: "z. B. Safari 18 auf iPhone, Chrome auf Windows"
+  - type: textarea
+    id: logs
+    attributes:
+      label: Fehlermeldungen oder Logs
+      render: shell

@@ -1,0 +1,82 @@
+# The one address of the app: the built web app, the API, the MCP server and the
+# sign-in service. It speaks plain HTTP on port 80; TLS ends at your reverse proxy
+# in front (see the admin documentation).
+
+{
+	servers {
+		# Only your reverse proxy may say who the visitor is; anyone else's headers are
+		# ignored. TRUSTED_PROXIES is a list of addresses or ranges (default: private networks).
+		trusted_proxies static {$TRUSTED_PROXIES:private_ranges}
+		client_ip_headers Cf-Connecting-Ip X-Forwarded-For
+	}
+}
+
+# A service behind Caddy, told the visitor's address as Caddy determined it.
+(to) {
+	reverse_proxy {args[0]} {
+		header_up X-Real-IP {client_ip}
+	}
+}
+
+(study) {
+	encode zstd gzip
+
+	# Proxies in front often pass at most 100 MB per request.
+	request_body {
+		max_size 100MB
+	}
+
+	header {
+		# Only the app's own code runs; Whisper loads its model and runtime
+		# from Hugging Face and jsDelivr, transcription services are called
+		# with the member's own key.
+		Content-Security-Policy "default-src 'self'; script-src 'self' 'wasm-unsafe-eval' blob: https://cdn.jsdelivr.net; worker-src 'self' blob:; connect-src 'self' https://huggingface.co https://*.huggingface.co https://*.hf.co https://cdn.jsdelivr.net https://api.groq.com https://api.openai.com; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+		Strict-Transport-Security "max-age=15552000"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Cross-Origin-Opener-Policy "same-origin"
+		Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+		-Server
+	}
+
+	# How MCP clients such as Claude find out where to sign in (RFC 9728, RFC 8414).
+	handle /.well-known/oauth-protected-resource* {
+		import to server:3000
+	}
+	handle /.well-known/oauth-authorization-server* {
+		rewrite * /.well-known/oauth-authorization-server
+		import to auth:9999
+	}
+	handle /.well-known/openid-configuration* {
+		rewrite * /.well-known/openid-configuration
+		import to auth:9999
+	}
+
+	handle_path /auth/v1/* {
+		import to auth:9999
+	}
+	handle /api/* {
+		import to server:3000
+	}
+	handle /mcp* {
+		import to server:3000
+	}
+	# Calendar subscriptions, reached by calendar apps without a session.
+	handle /ical/* {
+		import to server:3000
+	}
+	handle {
+		root * /srv/web
+		# The app routes in the browser; every unknown path is its page.
+		try_files {path} /index.html
+		@assets path /assets/*
+		header @assets Cache-Control "public, max-age=31536000, immutable"
+		file_server
+	}
+}
+
+# Whatever host name the proxy passes on: this container is reached only through it.
+:80 {
+	import study
+}

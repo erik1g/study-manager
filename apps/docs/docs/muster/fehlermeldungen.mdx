@@ -1,0 +1,38 @@
+---
+title: Fehlermeldungen
+sidebar_position: 3
+description: Was schiefging, und was jetzt hilft.
+---
+
+# Fehlermeldungen
+
+Eine gute Fehlermeldung sagt **was passiert ist** und **was man tun kann** – ohne Schuld, ohne Technik.
+
+| Statt | Besser |
+| --- | --- |
+| Error 413 | Die Datei ist größer als 95 MB. |
+| Request failed | Keine Verbindung. Versuch es gleich noch einmal. |
+| Invalid input | Gib dem Fach einen Namen. |
+| Unauthorized | Du bist abgemeldet worden. Melde dich wieder an. |
+| Forbidden | Nur Bearbeiter können hier hochladen. |
+
+## Wo erscheint was
+
+| Art | Baustein |
+| --- | --- |
+| zu einem Feld | `error` am Feld |
+| beim Speichern, Laden, Hochladen | `Notice tone="danger"` an der Stelle, mit „Erneut versuchen“ |
+| im Bestätigen-Dialog | erscheint im `ConfirmDialog` selbst |
+| eine ganze Seite fehlt | `EmptyState` mit `fehler` und einem Weg zurück |
+| nebenbei, nicht wichtig | `toast(…, "danger")` |
+
+```jsx live
+<div className="ui-stack" style={{ maxWidth: 480 }}>
+  <Notice tone="danger" title="Nicht gespeichert" action={<Button size="sm">Erneut versuchen</Button>}>
+    Keine Verbindung zum Server.
+  </Notice>
+  <EmptyState size="sm" illustration="fehler" title="Dieses Fach gibt es nicht mehr" actions={<Button icon="arrow-left">Zu deinen Fächern</Button>}>
+    Vielleicht wurde es gelöscht oder du bist nicht mehr Mitglied.
+  </EmptyState>
+</div>
+```

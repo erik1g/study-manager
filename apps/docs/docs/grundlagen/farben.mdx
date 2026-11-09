@@ -1,0 +1,76 @@
+---
+title: Farben
+sidebar_position: 1
+description: Der warme Grund, die Textfarben und die acht Fachfarben mit ihren vier Stufen.
+---
+
+import { Neutrals, Tones } from "@site/src/components/Foundations";
+import { Card, Chip, ProgressRing } from "@study/ui";
+
+# Farben
+
+Alle Farben sind **Tokens**: CSS-Variablen mit dem Präfix `--ui-`, für Hell und Dunkel. Die Werte stehen an einer einzigen Stelle, `packages/ui/src/tokens.ts`; daraus wird `tokens.css` erzeugt. Ein Test prüft, dass jeder Text mindestens 4,5 : 1 Kontrast hat.
+
+## Grund und Text
+
+Ein warmer, heller Grund statt Weiß; weiße Flächen (`surface`) heben sich davon sanft ab.
+
+### Hell
+
+<Neutrals theme="light" />
+
+### Dunkel
+
+<Neutrals theme="dark" />
+
+| Token | Wofür |
+| --- | --- |
+| `--ui-bg` | Grund der Seite |
+| `--ui-surface` | weiße Karten, Felder, Menüs |
+| `--ui-sunken` | vertiefte Flächen: Reiterleiste, Tastenkürzel, Ladeflächen |
+| `--ui-ink` | Text, Hauptknopf |
+| `--ui-muted` | zweite Zeilen, Hinweise, Platzhalter |
+| `--ui-line`, `--ui-line-soft` | Rahmen und Trennlinien |
+| `--ui-focus` | der Fokusring |
+
+## Fachfarben
+
+Jedes Fach hat eine von acht Farben. Die Namen im Code sind die, mit denen sie in der Datenbank stehen; gezeigt werden sie mit den Namen darunter.
+
+<Tones theme="light" />
+<Tones theme="dark" />
+
+Jede Farbe hat **vier Stufen**:
+
+| Stufe | Token | Wofür |
+| --- | --- | --- |
+| tint | `--ui-blau-tint` | Fläche einer Karte, eines Chips, einer Kachel |
+| glow | `--ui-blau-glow` | hellere Mitte im Verlauf großer Karten |
+| ink | `--ui-blau-ink` | **Text** und Icons auf der Fläche |
+| strong | `--ui-blau-strong` | Punkte, Ringe, gefüllte Icons – **nie für Text** |
+
+`strong` erreicht auf Weiß nicht überall 3 : 1 (Butter ist hell). Was es zeigt, steht deshalb immer auch als Text daneben oder im `aria-label`.
+
+### Eine Farbe für einen Bereich
+
+`ui-tone-<farbe>` setzt `--ui-tone-tint`, `--ui-tone-glow`, `--ui-tone-ink` und `--ui-tone-strong` für alles darin. Bausteine mit `tone`-Prop machen das selbst:
+
+```jsx live
+<Card tone="petrol" style={{ display: "flex", gap: 16, alignItems: "center" }}>
+  <ProgressRing value={0.71} label="71 Prozent" tone="petrol" onTint size={56}>71</ProgressRing>
+  <div>
+    <strong>Werkstoffkunde</strong>
+    <div><Chip tone="petrol" onTint>WK</Chip></div>
+  </div>
+</Card>
+```
+
+## Bedeutungen
+
+Zustände nehmen Fachfarben: **Info** Blau, **Erfolg** Salbei, **Warnung** Butter, **Fehler** Rosé (`STATUS` in `tokens.ts`). Was zählt, sagt der Text – nie die Farbe allein.
+
+## Regeln
+
+- Keine Farbe als Hex-Wert in der App – immer ein Token.
+- Pastellflächen bekommen keinen Schatten; nur weiße Flächen.
+- Pro Seite eine, höchstens zwei Karten mit Verlauf und Korn (`glow`, `grain`).

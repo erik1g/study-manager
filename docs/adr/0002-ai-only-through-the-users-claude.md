@@ -1,0 +1,7 @@
+# The AI work is done by each user's own Claude, through MCP
+
+The desktop app ran Claude Code itself: after a lecture was transcribed it evaluated it, and it outlined scripts and proposed flashcards on its own. A shared server would have to pay for that through the API, for every user. Instead the cloud runs no model at all (apart from a small embedding model for search). Every user connects their own Claude to its MCP server, which signs in through Supabase Auth's OAuth server and acts with the user's rights.
+
+What used to happen automatically is now listed in a work inbox: scripts the notes have no outline of yet, lectures not yet evaluated. Claude picks the items up when the user asks it to ("work through the Study Manager inbox"). The price is that nothing happens on its own; the gain is that nobody pays for anybody else's AI, and the server holds no API keys.
+
+Transcription follows the same idea: it runs in the user's browser (Whisper on WebGPU) or with the user's own key for a transcription service, sent straight from the browser. The home server only stores the text.

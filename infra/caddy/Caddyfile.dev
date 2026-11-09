@@ -1,0 +1,41 @@
+# The development stack's one address for everything: the web app (from Vite
+# here, with hot reloading), its API, the MCP server and the sign-in service.
+# The production image uses Caddyfile.
+
+http://{$DOMAIN} {
+	encode zstd gzip
+
+	# How MCP clients such as Claude find out where to sign in (RFC 9728, RFC 8414).
+	handle /.well-known/oauth-protected-resource* {
+		reverse_proxy server:3000
+	}
+	handle /.well-known/oauth-authorization-server* {
+		rewrite * /.well-known/oauth-authorization-server
+		reverse_proxy auth:9999
+	}
+	handle /.well-known/openid-configuration* {
+		rewrite * /.well-known/openid-configuration
+		reverse_proxy auth:9999
+	}
+
+	handle_path /auth/v1/* {
+		reverse_proxy auth:9999
+	}
+	handle /api/* {
+		reverse_proxy server:3000
+	}
+	handle /mcp* {
+		reverse_proxy server:3000
+	}
+	# Calendar subscriptions, reached by calendar apps without a session.
+	handle /ical/* {
+		reverse_proxy server:3000
+	}
+	handle {
+		reverse_proxy web:5173
+	}
+}
+
+http://{$DOMAIN} {
+	redir https://{host}{uri}
+}

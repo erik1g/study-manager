@@ -1,0 +1,53 @@
+---
+title: Menu
+sidebar_position: 5
+description: Eine kurze Liste von Aktionen an einem Knopf.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { DoDont, Do, Dont } from "@site/src/components/DoDont";
+import { Menu, MenuItem, MenuSeparator, IconButton } from "@study/ui";
+
+# Menu
+
+`import { Menu, MenuItem, MenuSeparator, menuPositionFrom } from "@study/ui"`
+
+```jsx live
+function Beispiel() {
+  const [at, setAt] = useState(null);
+  return (
+    <>
+      <IconButton icon="more" label="Aktionen für Skript.pdf" variant="secondary" onClick={(e) => setAt(menuPositionFrom(e.currentTarget))} />
+      {at && (
+        <Menu at={at} label="Aktionen für Skript.pdf" onClose={() => setAt(null)}>
+          <MenuItem icon="edit" onSelect={() => setAt(null)}>Umbenennen</MenuItem>
+          <MenuItem icon="folder" onSelect={() => setAt(null)}>Verschieben</MenuItem>
+          <MenuItem icon="download" onSelect={() => setAt(null)}>Herunterladen</MenuItem>
+          <MenuSeparator />
+          <MenuItem icon="trash" danger onSelect={() => setAt(null)}>In den Papierkorb</MenuItem>
+        </Menu>
+      )}
+    </>
+  );
+}
+```
+
+Auch bei Rechtsklick: `setAt({ x: event.clientX, y: event.clientY })`.
+
+## Wann benutzen
+
+- Für Aktionen, die man selten braucht: hinter ⋯ an Karten und Zeilen, per Rechtsklick auf Dateien.
+- Höchstens sieben Einträge; Gefährliches zuletzt, nach einem Trenner, mit `danger`.
+- Löschen aus dem Menü fragt nach – mit [ConfirmDialog](../rueckmeldung/dialog) – oder landet im Papierkorb.
+
+## Props
+
+<PropsTable of="Menu" />
+<PropsTable of="MenuItem" />
+
+## Barrierefreiheit
+
+- `role="menu"` mit `menuitem`s; der erste bekommt den Fokus.
+- Pfeiltasten, Pos1 und Ende bewegen; Escape schließt und gibt den Fokus an den Knopf zurück.
+- Das Menü bleibt im Fenster und wächst aus der Ecke, an der es geöffnet wurde.

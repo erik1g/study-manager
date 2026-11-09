@@ -1,0 +1,17 @@
+# Keeps the build context small and secrets out of the images.
+.git
+.github
+node_modules
+**/node_modules
+**/dist
+**/dist-next
+**/build
+**/.docusaurus
+apps/e2e/test-results
+apps/e2e/playwright-report
+.pnpm-store
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store

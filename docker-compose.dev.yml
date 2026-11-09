@@ -1,0 +1,200 @@
+# The development stack: the whole Study Manager on one machine, server and web run
+# from the mounted source with hot reload. `ADMIN_EMAIL=you@example.org DOMAIN=localhost
+# node infra/scripts/setup.mjs` writes .env first. (To run the app, not to work on it, use docker-compose.yml.)
+#
+#   docker compose -f docker-compose.dev.yml up -d                    everything
+#   docker compose -f docker-compose.dev.yml --profile studio up -d   plus Supabase Studio (database browser)
+#
+# The source is mounted at the same path as on the host, so that the
+# dependencies installed there (pnpm links by absolute path) work inside.
+
+name: study-manager-dev
+
+services:
+  db:
+    image: supabase/postgres:17.6.1.136
+    restart: unless-stopped
+    command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf", "-c", "log_min_messages=fatal"]
+    environment:
+      POSTGRES_HOST: /var/run/postgresql
+      PGPORT: ${POSTGRES_PORT}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGDATABASE: ${POSTGRES_DB}
+      POSTGRES_DB: ${POSTGRES_DB}
+      JWT_EXP: ${JWT_EXPIRY}
+    volumes:
+      - ./infra/db/roles.sql:/docker-entrypoint-initdb.d/init-scripts/99-roles.sql:ro
+      - ./infra/db/jwt.sql:/docker-entrypoint-initdb.d/init-scripts/99-jwt.sql:ro
+      - ${DB_DIR}:/var/lib/postgresql/data
+      - db-config:/etc/postgresql-custom
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  auth:
+    image: supabase/gotrue:v2.197.0
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      GOTRUE_API_HOST: 0.0.0.0
+      GOTRUE_API_PORT: 9999
+      API_EXTERNAL_URL: ${API_EXTERNAL_URL}
+      GOTRUE_DB_DRIVER: postgres
+      GOTRUE_DB_DATABASE_URL: postgres://supabase_auth_admin:${POSTGRES_PASSWORD}@db:${POSTGRES_PORT}/${POSTGRES_DB}
+      GOTRUE_SITE_URL: ${SITE_URL}
+      GOTRUE_URI_ALLOW_LIST: ${SITE_URL}/**
+      # Accounts only by invitation from an admin.
+      GOTRUE_DISABLE_SIGNUP: "true"
+      GOTRUE_EXTERNAL_EMAIL_ENABLED: "true"
+      GOTRUE_MAILER_AUTOCONFIRM: "true"
+      GOTRUE_EXTERNAL_PHONE_ENABLED: "false"
+      GOTRUE_EXTERNAL_ANONYMOUS_USERS_ENABLED: "false"
+      GOTRUE_JWT_ADMIN_ROLES: service_role
+      GOTRUE_JWT_AUD: authenticated
+      GOTRUE_JWT_DEFAULT_GROUP_NAME: authenticated
+      GOTRUE_JWT_EXP: ${JWT_EXPIRY}
+      # Sessions renew their token in the background; a taken token is of use only briefly.
+      GOTRUE_SECURITY_REFRESH_TOKEN_ROTATION_ENABLED: "true"
+      GOTRUE_SECURITY_REFRESH_TOKEN_REUSE_INTERVAL: "10"
+      GOTRUE_PASSWORD_MIN_LENGTH: "10"
+      # Limits count per visitor; Caddy tells who that is.
+      GOTRUE_RATE_LIMIT_HEADER: X-Real-IP
+      GOTRUE_RATE_LIMIT_TOKEN_REFRESH: "150"
+      GOTRUE_RATE_LIMIT_VERIFY: "30"
+      GOTRUE_RATE_LIMIT_OTP: "30"
+      GOTRUE_JWT_SECRET: ${JWT_SECRET}
+      GOTRUE_JWT_KEYS: ${JWT_KEYS}
+      GOTRUE_JWT_ISSUER: ${API_EXTERNAL_URL}
+      # Passkeys
+      GOTRUE_PASSKEY_ENABLED: "true"
+      GOTRUE_WEBAUTHN_RP_ID: ${DOMAIN}
+      GOTRUE_WEBAUTHN_RP_DISPLAY_NAME: Study Manager
+      GOTRUE_WEBAUTHN_RP_ORIGINS: ${SITE_URL}
+      # A second factor by authenticator app, required for admins.
+      GOTRUE_MFA_TOTP_ENROLL_ENABLED: "true"
+      GOTRUE_MFA_TOTP_VERIFY_ENABLED: "true"
+      # Claude and other MCP clients sign in through OAuth 2.1.
+      GOTRUE_OAUTH_SERVER_ENABLED: "true"
+      GOTRUE_OAUTH_SERVER_ALLOW_DYNAMIC_REGISTRATION: "true"
+      GOTRUE_OAUTH_SERVER_AUTHORIZATION_PATH: /oauth/consent
+      # Mail through Brevo, once SMTP_* are set in .env; without them the
+      # admin hands invitation and reset links on.
+      GOTRUE_SMTP_HOST: ${SMTP_HOST:-}
+      GOTRUE_SMTP_PORT: ${SMTP_PORT:-587}
+      GOTRUE_SMTP_USER: ${SMTP_USER:-}
+      GOTRUE_SMTP_PASS: ${SMTP_PASS:-}
+      GOTRUE_SMTP_ADMIN_EMAIL: noreply@${DOMAIN}
+      GOTRUE_SMTP_SENDER_NAME: Study Manager
+      GOTRUE_RATE_LIMIT_EMAIL_SENT: "30"
+      # A changed address counts once both the old and the new one confirmed it.
+      GOTRUE_MAILER_SECURE_EMAIL_CHANGE_ENABLED: "true"
+      GOTRUE_MAILER_URLPATHS_INVITE: /auth/v1/verify
+      GOTRUE_MAILER_URLPATHS_RECOVERY: /auth/v1/verify
+      GOTRUE_MAILER_URLPATHS_EMAIL_CHANGE: /auth/v1/verify
+      GOTRUE_MAILER_URLPATHS_CONFIRMATION: /auth/v1/verify
+      # The mails in German, served by the app inside the stack.
+      GOTRUE_MAILER_SUBJECTS_INVITE: Du bist zum Study Manager eingeladen
+      GOTRUE_MAILER_SUBJECTS_RECOVERY: Neues Passwort für den Study Manager
+      GOTRUE_MAILER_SUBJECTS_MAGIC_LINK: Dein Link zum Study Manager
+      GOTRUE_MAILER_SUBJECTS_EMAIL_CHANGE: Neue E-Mail-Adresse bestätigen
+      GOTRUE_MAILER_SUBJECTS_CONFIRMATION: E-Mail-Adresse bestätigen
+      GOTRUE_MAILER_SUBJECTS_REAUTHENTICATION: Dein Bestätigungscode
+      GOTRUE_MAILER_TEMPLATES_INVITE: http://server:3000/api/mail/invite
+      GOTRUE_MAILER_TEMPLATES_RECOVERY: http://server:3000/api/mail/recovery
+      GOTRUE_MAILER_TEMPLATES_MAGIC_LINK: http://server:3000/api/mail/magic_link
+      GOTRUE_MAILER_TEMPLATES_EMAIL_CHANGE: http://server:3000/api/mail/email_change
+      GOTRUE_MAILER_TEMPLATES_CONFIRMATION: http://server:3000/api/mail/confirmation
+      GOTRUE_MAILER_TEMPLATES_REAUTHENTICATION: http://server:3000/api/mail/reauthentication
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9999/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  server:
+    build: ./infra/dev
+    restart: unless-stopped
+    working_dir: ${PWD}
+    command: ["pnpm", "--filter", "@study/server", "dev"]
+    depends_on:
+      db:
+        condition: service_healthy
+      auth:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD}@db:${POSTGRES_PORT}/${POSTGRES_DB}
+      AUTH_URL: http://auth:9999
+      FILES_DIR: /data/files
+      BACKUP_DIR: /data/backups
+    volumes:
+      - .:${PWD}
+      - ${DATA_DIR}:/data
+
+  web:
+    build: ./infra/dev
+    restart: unless-stopped
+    working_dir: ${PWD}
+    command: ["pnpm", "--filter", "@study/web", "dev", "--host", "0.0.0.0"]
+    volumes:
+      - .:${PWD}
+
+  caddy:
+    image: caddy:2.10.2
+    restart: unless-stopped
+    # Plain HTTP; for development put it behind a TLS proxy or use http://localhost.
+    ports:
+      - "127.0.0.1:${HTTP_PORT:-8080}:80"
+    environment:
+      DOMAIN: ${DOMAIN}
+    volumes:
+      - ./infra/caddy/Caddyfile.dev:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+    depends_on:
+      - server
+      - web
+      - auth
+
+  meta:
+    image: supabase/postgres-meta:v0.100.0
+    profiles: [studio]
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PG_META_PORT: 8080
+      PG_META_DB_HOST: db
+      PG_META_DB_PORT: ${POSTGRES_PORT}
+      PG_META_DB_NAME: ${POSTGRES_DB}
+      PG_META_DB_USER: supabase_admin
+      PG_META_DB_PASSWORD: ${POSTGRES_PASSWORD}
+
+  studio:
+    image: supabase/studio:2026.10.12-sha-3699278
+    profiles: [studio]
+    restart: unless-stopped
+    depends_on:
+      - meta
+    ports:
+      - "127.0.0.1:3001:3000"
+    environment:
+      STUDIO_PG_META_URL: http://meta:8080
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      DEFAULT_ORGANIZATION_NAME: Study Manager
+      DEFAULT_PROJECT_NAME: Study Manager
+      SUPABASE_URL: http://auth:9999
+      SUPABASE_PUBLIC_URL: ${SITE_URL}
+      SUPABASE_ANON_KEY: ${ANON_KEY}
+      SUPABASE_SERVICE_KEY: ${SERVICE_ROLE_KEY}
+      AUTH_JWT_SECRET: ${JWT_SECRET}
+
+volumes:
+  db-config:
+  caddy-data:

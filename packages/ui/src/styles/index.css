@@ -1,0 +1,10 @@
+/* The Study Manager's building blocks. Everything is prefixed ui- so that it
+   lives next to older styles without either changing the other. */
+@import "./tokens.css";
+@import "./base.css";
+@import "./actions.css";
+@import "./inputs.css";
+@import "./display.css";
+@import "./navigation.css";
+@import "./feedback.css";
+@import "./illustration.css";

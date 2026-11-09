@@ -1,0 +1,43 @@
+---
+title: CountdownTile
+sidebar_position: 5
+description: Wie lange noch bis zu einer Frist.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { DoDont, Do, Dont } from "@site/src/components/DoDont";
+import { CountdownTile, List, ListRow } from "@study/ui";
+
+# CountdownTile
+
+`import { CountdownTile } from "@study/ui"`
+
+```jsx live
+<List variant="raised" style={{ maxWidth: 440 }}>
+  <ListRow leading={<CountdownTile value={2} unit="Tage" tone="orange" />} title="Abgabe Übungsblatt 4" meta="Technische Mechanik · Do, 5. Nov." />
+  <ListRow leading={<CountdownTile value="Heute" unit="23:59" tone="rot" />} title="Anmeldung Klausur" meta="Prüfungsamt" />
+</List>
+```
+
+## Varianten und Zustände
+
+<Preview>
+  <CountdownTile value={1} unit="Tag" tone="rot" />
+  <CountdownTile value={9} unit="Tage" tone="petrol" />
+  <CountdownTile value={106} unit="Tage" tone="blau" />
+  <CountdownTile value={3} unit="Wochen" size="sm" />
+</Preview>
+
+## Wann benutzen
+
+- Vor Fristen in Listen. Die Farbe ist die des Fachs – nicht „rot, weil bald“.
+- Einzahl beachten: „1 Tag“, „2 Tage“. Heute: `value="Heute"` und die Uhrzeit als `unit`.
+
+## Props
+
+<PropsTable of="CountdownTile" />
+
+## Barrierefreiheit
+
+- Zahl und Einheit sind Text und werden zusammen gelesen („2 Tage“).

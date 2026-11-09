@@ -1,0 +1,35 @@
+---
+title: Abstände und Radien
+sidebar_position: 3
+description: Ein Raster aus 4 px, runde Ecken, Knöpfe als Pillen.
+---
+
+import { RadiusScale, SpaceScale } from "@site/src/components/Foundations";
+
+# Abstände und Radien
+
+## Abstände
+
+Alle Abstände sind Vielfache von 4 px.
+
+<SpaceScale />
+
+- Zwischen Karten: `--ui-space-5` (20 px), auf dem Handy `--ui-space-4`.
+- Innen in Karten: `--ui-space-6` (24 px), auf dem Handy 20 px – `Card` macht das selbst.
+- Zwischen einem Titel und seinem Inhalt: `--ui-space-3` bis `--ui-space-4`.
+
+## Radien
+
+<RadiusScale />
+
+| Was | Radius |
+| --- | --- |
+| Große Karten | `xl` 28 px |
+| Kleine Karten, Leerflächen | `lg` 24 px |
+| Felder, Hinweise | `md` 18 px |
+| Kacheln, Zeilen auf Karten | 14–18 px |
+| Knöpfe, Reiter, Chips, Suche | `pill` – ganz rund |
+
+## Höhen
+
+Knöpfe und Felder sind **44 px** hoch (`--ui-control-md`) – die kleinste Höhe, die sich mit dem Finger sicher treffen lässt. `sm` (36 px) nur in dichten Werkzeugleisten am Schreibtisch, `lg` (52 px) für die Anmeldung und Hauptaktionen auf dem Handy.

@@ -1,0 +1,326 @@
+/* The ground under the app: resets, and how documents and written text look.
+   Everything else comes from @study/ui and app.css. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html,
+body,
+#root {
+  height: 100%;
+}
+body {
+  margin: 0;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+h1,
+h2,
+h3,
+p,
+ul,
+ol,
+dl,
+dd {
+  margin: 0;
+  padding: 0;
+}
+ul {
+  list-style: none;
+}
+img {
+  max-width: 100%;
+}
+a {
+  color: var(--ui-blau-ink);
+}
+::selection {
+  background: var(--ui-ink);
+  color: var(--ui-bg);
+}
+
+/* Pages appear without movement; only their content fades in. */
+.route {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  animation: ui-fade 120ms ease;
+}
+
+/* A document beside its list: the bar with its name, then the pages. */
+.viewer-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ui-space-3);
+}
+.viewer-bar .name {
+  overflow: hidden;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.viewer {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+.viewer.zoomable {
+  /* Two fingers zoom the page; one finger still scrolls it. */
+  touch-action: pan-x pan-y;
+}
+.viewer.zoomable :is(.word-page, .text) {
+  zoom: var(--viewer-zoom, 1);
+}
+.viewer .pdf-page {
+  position: relative;
+  margin: var(--ui-space-4) auto;
+  border-radius: 6px;
+  box-shadow: var(--ui-shadow-card);
+  /* ui-allow: a PDF page is paper, white in both themes */
+  background: #ffffff;
+  overflow: hidden;
+  /* Read by the PDF library when it sizes the text layer. */
+  --scale-round-x: 1px;
+  --scale-round-y: 1px;
+}
+.pdf-page canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.viewer img {
+  display: block;
+  max-width: calc(100% - 2 * var(--ui-space-4));
+  margin: var(--ui-space-4) auto;
+  border-radius: var(--ui-radius-sm);
+}
+.viewer .text {
+  max-width: 760px;
+  min-height: 100%;
+  margin: 0 auto;
+  padding: var(--ui-space-6);
+  background: var(--ui-surface);
+}
+.viewer pre.text {
+  font: 13px/1.6 var(--ui-font-mono);
+  white-space: pre-wrap;
+}
+
+/* The page's text, laid invisibly over its image so that it can be marked.
+   The rules mirror the PDF library's own text layer styles. */
+
+.textLayer {
+  position: absolute;
+  inset: 0;
+  overflow: clip;
+  line-height: 1;
+  text-align: initial;
+  transform-origin: 0 0;
+  --min-font-size: 1;
+  --text-scale-factor: calc(var(--total-scale-factor) * var(--min-font-size));
+  --min-font-size-inv: calc(1 / var(--min-font-size));
+}
+
+.textLayer :is(span,
+br) {
+  position: absolute;
+  color: transparent;
+  white-space: pre;
+  cursor: text;
+  transform-origin: 0% 0%;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.textLayer > :not(.markedContent),
+.textLayer .markedContent span:not(.markedContent) {
+  z-index: 1;
+  --font-height: 0;
+  --scale-x: 1;
+  --rotate: 0deg;
+  font-size: calc(var(--text-scale-factor) * var(--font-height));
+  transform: rotate(var(--rotate)) scaleX(var(--scale-x)) scale(var(--min-font-size-inv));
+}
+
+.textLayer .markedContent {
+  display: contents;
+}
+
+.textLayer .endOfContent {
+  display: block;
+  position: absolute;
+  inset: 100% 0 0;
+  z-index: 0;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* The marking has to let the page show through. */
+
+.textLayer ::selection {
+  /* ui-allow: the marking must let the page show through */
+  background: rgb(120 120 120 / 0.4);
+  color: transparent;
+}
+
+/* Written text: notes, cards, transcripts, Markdown files. */
+.prose {
+  overflow-wrap: anywhere;
+}
+.prose h1,
+.prose h2,
+.prose h3 {
+  margin: 1.4em 0 0.4em;
+  font-family: var(--ui-font-display);
+  font-weight: 800;
+  font-size: 18px;
+  line-height: 1.25;
+}
+.prose h1 {
+  font-size: 22px;
+}
+.prose > :first-child {
+  margin-top: 0;
+}
+.prose p,
+.prose ul,
+.prose ol {
+  margin: 0.6em 0;
+}
+.prose ul {
+  padding-left: 1.4em;
+  list-style: disc;
+}
+.prose ol {
+  padding-left: 1.6em;
+  list-style: decimal;
+}
+.prose code {
+  padding: 1px 5px;
+  border-radius: 6px;
+  background: var(--ui-sunken);
+  font-family: var(--ui-font-mono);
+  font-size: 0.92em;
+}
+.prose pre {
+  padding: var(--ui-space-3);
+  border-radius: var(--ui-radius-sm);
+  background: var(--ui-sunken);
+  overflow-x: auto;
+}
+.prose pre code {
+  padding: 0;
+  background: none;
+}
+.prose a {
+  color: inherit;
+}
+.prose blockquote {
+  margin: 0.6em 0;
+  padding: 4px var(--ui-space-3);
+  border-left: 3px solid var(--ui-line);
+  border-radius: 0 10px 10px 0;
+  background: var(--ui-hover);
+}
+.prose table {
+  border-collapse: collapse;
+  display: block;
+  overflow-x: auto;
+}
+.prose th,
+.prose td {
+  padding: 4px 8px;
+  border: 1px solid var(--ui-line);
+}
+.prose .katex-display {
+  overflow-x: auto;
+  padding: 4px 0;
+}
+.ui-row-meta .prose p,
+.ui-row-title .prose p {
+  margin: 0;
+}
+
+/* Word documents read like a page, white in both themes, as PDFs do: their
+   colours are the paper's, not the app's (ui-allow on each). */
+.word-page {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 780px;
+  margin: 16px auto;
+  padding: 56px 64px;
+  /* ui-allow: paper */
+  background: #fff;
+  /* ui-allow: ink on paper */
+  color: #23211e;
+  font-size: 15px;
+  line-height: 1.6;
+  color-scheme: light;
+  overflow-wrap: break-word;
+}
+.word-page h1,
+.word-page h2,
+.word-page h3 {
+  margin: 1.2em 0 0.4em;
+  text-transform: none;
+  letter-spacing: 0;
+  color: inherit;
+}
+.word-page h1 {
+  font-size: 24px;
+}
+.word-page h2 {
+  font-size: 19px;
+}
+.word-page h3 {
+  font-size: 16px;
+}
+.word-page p,
+.word-page ul,
+.word-page ol {
+  margin: 0 0 0.8em;
+}
+.word-page ul,
+.word-page ol {
+  padding-left: 1.5em;
+}
+.word-page ul {
+  list-style: disc;
+}
+.word-page ol {
+  list-style: decimal;
+}
+.word-page table {
+  width: 100%;
+  margin: 0 0 1em;
+  border-collapse: collapse;
+  display: block;
+  overflow-x: auto;
+}
+.word-page td,
+.word-page th {
+  padding: 6px 10px;
+  /* ui-allow: table lines on paper */
+  border: 1px solid #d9d2c6;
+  vertical-align: top;
+}
+.word-page img {
+  max-width: 100%;
+  height: auto;
+}
+.word-page a {
+  /* ui-allow: links on paper */
+  color: #2c5288;
+  text-decoration: underline;
+}
+@media (max-width: 760px) {
+  .word-page {
+    margin: 8px auto;
+    padding: 24px 20px;
+  }
+}
+

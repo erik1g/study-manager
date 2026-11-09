@@ -1,0 +1,149 @@
+/* Button, LinkButton, IconButton, Spinner */
+
+.ui-button {
+  --ui-button-h: var(--ui-control-md);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ui-space-2);
+  height: var(--ui-button-h);
+  padding: 0 calc(var(--ui-button-h) / 2.2);
+  border: 1.5px solid transparent;
+  border-radius: var(--ui-radius-pill);
+  font: 700 var(--ui-text-md) / 1 var(--ui-font-body);
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform var(--ui-fast) var(--ui-ease-out),
+    background-color var(--ui-fast) ease,
+    border-color var(--ui-fast) ease,
+    color var(--ui-fast) ease;
+}
+.ui-button.ui-size-sm {
+  --ui-button-h: var(--ui-control-sm);
+  font-size: var(--ui-text-sm);
+  gap: 6px;
+}
+.ui-button.ui-size-lg {
+  --ui-button-h: var(--ui-control-lg);
+  font-size: var(--ui-text-lg);
+}
+.ui-button.ui-wide {
+  width: 100%;
+}
+.ui-button:active:not(:disabled) {
+  transform: scale(0.97);
+}
+.ui-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.ui-button.ui-loading:disabled {
+  opacity: 0.8;
+  cursor: progress;
+}
+.ui-button-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ui-button-primary {
+  background: var(--ui-ink);
+  color: var(--ui-bg);
+}
+.ui-button-secondary {
+  background: var(--ui-surface);
+  border-color: var(--ui-line);
+  color: var(--ui-ink);
+}
+.ui-button-soft {
+  background: var(--ui-tone-tint, var(--ui-sunken));
+  color: var(--ui-tone-ink, var(--ui-ink));
+}
+.ui-button-danger {
+  background: var(--ui-rot-tint);
+  color: var(--ui-rot-ink);
+}
+.ui-button-ghost {
+  background: transparent;
+  color: var(--ui-muted);
+}
+/* On a tinted card a tinted button would vanish: it stands on white there. */
+.ui-card-tone .ui-button-danger,
+.ui-card-tone .ui-button-soft:not([class*="ui-tone-"]) {
+  background: var(--ui-surface);
+}
+.ui-card-tone .ui-button-ghost {
+  color: inherit;
+}
+@media (hover: hover) {
+  .ui-button-primary:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--ui-ink) 86%, var(--ui-bg));
+  }
+  .ui-button-secondary:hover:not(:disabled) {
+    border-color: var(--ui-muted);
+  }
+  .ui-button-soft:hover:not(:disabled),
+  .ui-button-danger:hover:not(:disabled) {
+    filter: brightness(0.97) saturate(1.1);
+  }
+  .ui-button-ghost:hover:not(:disabled) {
+    background: var(--ui-hover);
+    color: var(--ui-ink);
+  }
+}
+
+.ui-icon-button {
+  width: var(--ui-button-h);
+  padding: 0;
+  flex: none;
+}
+.ui-icon-button[aria-pressed="true"] {
+  background: var(--ui-ink);
+  color: var(--ui-bg);
+}
+
+.ui-spinner {
+  display: inline-block;
+  flex: none;
+  border-radius: 50%;
+  border: 2.5px solid currentColor;
+  border-right-color: transparent;
+  opacity: 0.8;
+  animation: ui-spin 700ms linear infinite;
+}
+@keyframes ui-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ui-spinner {
+    animation-duration: 1600ms;
+  }
+  .ui-button:active:not(:disabled) {
+    transform: none;
+  }
+}
+
+.ui-icon-button {
+  position: relative;
+}
+.ui-icon-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  box-sizing: border-box;
+  border-radius: var(--ui-radius-pill);
+  background: var(--ui-rot-ink);
+  color: var(--ui-rot-tint);
+  box-shadow: 0 0 0 2px var(--ui-bg);
+  font: 800 11px / 18px var(--ui-font-body);
+  text-align: center;
+}

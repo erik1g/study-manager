@@ -1,0 +1,73 @@
+---
+title: "Konfiguration"
+sidebar_position: 3
+description: "Alle Einstellungen der .env im Überblick."
+---
+
+# Konfiguration
+
+Alle Einstellungen stehen in der Datei `.env` neben der `docker-compose.yml`. Eine kommentierte Vorlage liegt als [`.env.example`](https://github.com/erik1g/study-manager/blob/main/.env.example) im Repository. Nach einer Änderung: `docker compose up -d` (die betroffenen Container werden neu erstellt).
+
+## Adressen
+
+| Variable | Bedeutung |
+|---|---|
+| `DOMAIN` | Öffentliche Adresse ohne `https://`, z. B. `study.example.org` |
+| `SITE_URL` | Mit Schema, z. B. `https://study.example.org`; ohne `/` am Ende |
+| `API_EXTERNAL_URL` | Wo Browser und Claude die Anmeldung erreichen: `SITE_URL` + `/auth/v1`. Auch der Aussteller (`iss`) der Tokens |
+| `ADMIN_EMAIL` | Adresse des ersten Admins |
+
+## Geheimnisse
+
+Erzeugt das Skript `setup.mjs`. **Nie** zwischen Installationen teilen oder ins Repository legen.
+
+| Variable | Bedeutung |
+|---|---|
+| `POSTGRES_PASSWORD`, `POSTGRES_DB`, `POSTGRES_PORT` | Datenbank |
+| `JWT_SECRET`, `JWT_KEYS`, `JWT_EXPIRY` | Signatur der Anmelde-Tokens (`JWT_EXPIRY` in Sekunden) |
+| `ANON_KEY`, `SERVICE_ROLE_KEY` | Zugangsschlüssel für die Anmeldung, abgeleitet aus `JWT_SECRET` |
+| `APP_SECRET` | Verschlüsselt, was die App für Nutzer speichert (z. B. API-Schlüssel) |
+| `BACKUP_PASSPHRASE` | Verschlüsselt die nächtlichen Backups. Ohne sie gibt es keine Backups; ohne ihre Kopie sind sie nicht lesbar |
+
+## Verhalten
+
+| Variable | Standard | Bedeutung |
+|---|---|---|
+| `TZ` | `Europe/Berlin` | Zeitzone für Aufgaben, Kalender und die Backup-Zeit |
+| `LOG_LEVEL` | `warn` | `debug`, `info`, `warn` oder `error` |
+| `RATE_LIMIT_SCALE` | – | Lockert die Anfragelimits (nur für Tests nötig) |
+
+## Erreichbarkeit
+
+| Variable | Standard | Bedeutung |
+|---|---|---|
+| `BIND_ADDRESS` | `127.0.0.1` | Auf welcher Adresse der Host den Port öffnet. Läuft dein Proxy auf einem anderen Rechner, setze `0.0.0.0` und schütze den Port mit einer Firewall |
+| `HTTP_PORT` | `8080` | Der Port des `web`-Containers auf dem Host |
+| `TRUSTED_PROXIES` | `private_ranges` | Adressen oder Bereiche deines Proxys, denen die App glaubt, wer der Besucher ist (`X-Forwarded-For`). Der Standard vertraut Proxys aus privaten Netzen |
+
+## Speicher
+
+Ohne Angabe legt Docker Dokumente/Backups (`study-data`) und die Datenbank (`study-db`) in **benannten Volumes** ab. Willst du Ordner auf dem Host nutzen:
+
+| Variable | Bedeutung |
+|---|---|
+| `DATA_DIR` | Ordner für Uploads, Backups und das Suchmodell. Muss dem Benutzer mit der ID **1000** gehören: `chown -R 1000:1000 /pfad` |
+| `DB_DIR` | Ordner für die Datenbank (PostgreSQL legt die Rechte selbst an) |
+
+## Mail (optional)
+
+Ohne Mail zeigt die App dem Admin Einladungs- und Wiederherstellungslinks an, die er weitergibt. Mit Mail verschickt sie diese selbst:
+
+| Variable | Bedeutung |
+|---|---|
+| `SMTP_HOST`, `SMTP_PORT` | Dein Mailserver (Standardport 587) |
+| `SMTP_USER`, `SMTP_PASS` | Zugangsdaten |
+
+Absender ist `noreply@<DOMAIN>`; dein Mailanbieter muss die Domain dafür zulassen (SPF/DKIM einrichten).
+
+## Images
+
+| Variable | Standard | Bedeutung |
+|---|---|---|
+| `STUDY_VERSION` | `latest` | Welche Version läuft, z. B. `0.2.1`. **Empfohlen: eine feste Version** und gezielt aktualisieren |
+| `STUDY_IMAGE_PREFIX` | `docker.io/erik1g` | Aus welcher Registry die Images kommen (für eigene Builds oder Spiegel) |

@@ -1,0 +1,43 @@
+---
+title: ProgressBar
+sidebar_position: 5
+description: Wie weit eine längere Arbeit ist, als Balken.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { ProgressBar } from "@study/ui";
+
+# ProgressBar
+
+`import { ProgressBar } from "@study/ui"`
+
+```jsx live
+function Beispiel() {
+  const [v, setV] = useState(0.35);
+  return (
+    <div className="ui-stack" style={{ maxWidth: 420 }}>
+      <ProgressBar value={v} label="Wird transkribiert" tone="violett" />
+      <Button size="sm" onClick={() => setV(Math.min(1, v + 0.15))}>Weiter</Button>
+    </div>
+  );
+}
+```
+
+<Preview column>
+  <ProgressBar value={0.2} label="Modell wird geladen" />
+  <ProgressBar value={0.8} label="Hochladen" tone="gruen" />
+</Preview>
+
+## Wann benutzen
+
+- Für Arbeiten mit bekanntem Fortschritt, die Sekunden bis Minuten dauern: Hochladen, Transkribieren.
+- Fortschritt eines Fachs: [ProgressRing](./progress-ring). Unbekannte Dauer: [Spinner](../rueckmeldung/spinner).
+
+## Props
+
+<PropsTable of="ProgressBar" />
+
+## Barrierefreiheit
+
+- `role="progressbar"` mit Wert 0–100 und dem Label als Namen; der Wert steht auch als Text da.

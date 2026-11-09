@@ -1,0 +1,54 @@
+---
+title: "Backups"
+sidebar_position: 6
+description: "Wie die Backups entstehen, wo sie liegen und wie du sie zurückspielst."
+---
+
+# Backups
+
+## Was gesichert wird
+
+Jede Nacht um **3:30 Uhr** (deiner `TZ`) legt der Server zwei verschlüsselte Dateien an:
+
+- `db-<datum>.dump.enc`: die Datenbank (`pg_dump`)
+- `files-<datum>.tar.gz.enc`: alle hochgeladenen Dokumente
+
+Beide sind mit **AES-256** und deiner `BACKUP_PASSPHRASE` verschlüsselt. **30 Tage** werden aufbewahrt, ältere löscht der Server. Du kannst jederzeit im Admin-Bereich *Jetzt sichern* drücken.
+
+Sie liegen im Ordner `/data/backups` im Container, also im Volume `study-data` (oder unter `DATA_DIR/backups`). **Ein Backup auf demselben Server schützt nicht vor einem Plattenausfall.** Kopiere den Ordner regelmäßig an einen zweiten Ort (anderer Rechner, Cloud-Speicher), zum Beispiel mit `rsync` oder `rclone`:
+
+```sh
+# bei Benutzung eines Host-Ordners (DATA_DIR)
+rclone copy /srv/study-manager/data/backups meinspeicher:study-manager-backups
+```
+
+Bei benannten Volumes findest du den Pfad mit `docker volume inspect study-manager_study-data`.
+
+## Wiederherstellen
+
+**Probiere das einmal auf einem Testsystem aus, bevor du es brauchst.**
+
+1. Neue, leere Installation starten (siehe [Installieren](/admin/installation)) **mit derselben `.env`** (gleiche `BACKUP_PASSPHRASE`, `JWT_*` und `APP_SECRET`).
+2. Backup-Dateien auf den Server kopieren.
+3. Datenbank einspielen:
+
+```sh
+docker compose stop server
+openssl enc -d -aes-256-cbc -pbkdf2 -pass env:BACKUP_PASSPHRASE -in db-<datum>.dump.enc \
+  | docker compose exec -T db pg_restore --clean --if-exists --no-owner -U postgres -d postgres
+```
+
+4. Dokumente zurückspielen:
+
+```sh
+openssl enc -d -aes-256-cbc -pbkdf2 -pass env:BACKUP_PASSPHRASE -in files-<datum>.tar.gz.enc \
+  | docker compose run --rm -T --no-deps --entrypoint sh server -c "tar xz -C /data/files"
+```
+
+5. `docker compose up -d` und prüfen, dass Anmeldung und Dokumente da sind.
+
+:::note Meldungen von pg_restore
+Bei Datenbanken aus dem Supabase-Image meldet `pg_restore` oft einige hundert Fehler („errors ignored on restore“), etwa zu Erweiterungen und Rollen, die schon vorhanden sind. Sie sind erwartbar und betreffen nicht deine Daten. Entscheidend ist, dass die Anmeldung funktioniert und deine Fächer und Dokumente da sind.
+:::
+
+Ohne `BACKUP_PASSPHRASE` lassen sich die Dateien **nicht** entschlüsseln. Bewahre sie getrennt vom Server auf.

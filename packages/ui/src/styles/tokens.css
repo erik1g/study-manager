@@ -1,0 +1,361 @@
+/* Written by scripts/tokens.ts from src/tokens.ts – change the values there. */
+
+:root {
+  color-scheme: light;
+  --ui-bg: #F7F2EA;
+  --ui-surface: #FFFDF9;
+  --ui-sunken: #EFE7DB;
+  --ui-ink: #2A2620;
+  --ui-muted: #6E665B;
+  --ui-line: #E2D7C6;
+  --ui-line-soft: #EDE5D8;
+  --ui-hover: rgba(42, 38, 32, 0.05);
+  --ui-scrim: rgba(42, 38, 32, 0.42);
+  --ui-focus: #3F6DAE;
+  --ui-shadow-card: 0 1px 0 rgba(42, 38, 32, 0.04), 0 10px 28px -14px rgba(42, 38, 32, 0.22);
+  --ui-shadow-pop: 0 2px 6px rgba(42, 38, 32, 0.06), 0 24px 56px -12px rgba(42, 38, 32, 0.3);
+  --ui-grain: 0.07;
+  --ui-ill-line: #2A2620;
+  --ui-ill-paper: #FFFDF9;
+  --ui-ill-paper-shade: #EFE7DB;
+  --ui-ill-ground: rgba(42, 38, 32, 0.08);
+  --ui-blau-tint: #DCE8F6;
+  --ui-blau-glow: #EEF4FB;
+  --ui-blau-ink: #2E4F7C;
+  --ui-blau-strong: #5B86C4;
+  --ui-petrol-tint: #D5EEE6;
+  --ui-petrol-glow: #EAF7F2;
+  --ui-petrol-ink: #1F5F55;
+  --ui-petrol-strong: #49A08F;
+  --ui-gruen-tint: #E3EED7;
+  --ui-gruen-glow: #F1F7EA;
+  --ui-gruen-ink: #3F5E2A;
+  --ui-gruen-strong: #84AE5F;
+  --ui-gelb-tint: #FBEFC6;
+  --ui-gelb-glow: #FDF8E3;
+  --ui-gelb-ink: #7A5D10;
+  --ui-gelb-strong: #E2B53E;
+  --ui-orange-tint: #FBE1D3;
+  --ui-orange-glow: #FDF0E8;
+  --ui-orange-ink: #8A3F22;
+  --ui-orange-strong: #E08A5E;
+  --ui-rot-tint: #F8DEDF;
+  --ui-rot-glow: #FCEEEE;
+  --ui-rot-ink: #8C2F3A;
+  --ui-rot-strong: #D9707B;
+  --ui-violett-tint: #E7E0F6;
+  --ui-violett-glow: #F4F0FC;
+  --ui-violett-ink: #4E3F86;
+  --ui-violett-strong: #8B74C9;
+  --ui-grau-tint: #E9E4DC;
+  --ui-grau-glow: #F4F1EC;
+  --ui-grau-ink: #4D4943;
+  --ui-grau-strong: #9A9286;
+  --ui-font-display: "Bricolage Grotesque Variable", "Bricolage Grotesque", "Figtree Variable", system-ui, sans-serif;
+  --ui-font-body: "Figtree Variable", "Figtree", -apple-system, "Segoe UI", system-ui, sans-serif;
+  --ui-font-mono: ui-monospace, "SF Mono", "Cascadia Mono", "Roboto Mono", Menlo, Consolas, monospace;
+  --ui-text-xs: 12px;
+  --ui-text-sm: 13px;
+  --ui-text-md: 15px;
+  --ui-text-lg: 17px;
+  --ui-display-sm: 18px;
+  --ui-display-md: 22px;
+  --ui-display-lg: 28px;
+  --ui-display-xl: 36px;
+  --ui-display-xxl: 46px;
+  --ui-space-1: 4px;
+  --ui-space-2: 8px;
+  --ui-space-3: 12px;
+  --ui-space-4: 16px;
+  --ui-space-5: 20px;
+  --ui-space-6: 24px;
+  --ui-space-7: 32px;
+  --ui-space-8: 40px;
+  --ui-space-9: 56px;
+  --ui-radius-xs: 8px;
+  --ui-radius-sm: 12px;
+  --ui-radius-md: 18px;
+  --ui-radius-lg: 24px;
+  --ui-radius-xl: 28px;
+  --ui-radius-pill: 999px;
+  --ui-control-sm: 36px;
+  --ui-control-md: 44px;
+  --ui-control-lg: 52px;
+  --ui-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ui-ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ui-fast: 140ms;
+  --ui-base: 200ms;
+  --ui-slow: 280ms;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --ui-bg: #1E1B17;
+    --ui-surface: #29251F;
+    --ui-sunken: #332E27;
+    --ui-ink: #F3ECE2;
+    --ui-muted: #B3A999;
+    --ui-line: #3D372F;
+    --ui-line-soft: #332E27;
+    --ui-hover: rgba(243, 236, 226, 0.06);
+    --ui-scrim: rgba(0, 0, 0, 0.55);
+    --ui-focus: #8FB3E6;
+    --ui-shadow-card: 0 1px 0 rgba(0, 0, 0, 0.2), 0 10px 28px -14px rgba(0, 0, 0, 0.6);
+    --ui-shadow-pop: 0 2px 6px rgba(0, 0, 0, 0.3), 0 24px 56px -12px rgba(0, 0, 0, 0.7);
+    --ui-grain: 0.05;
+    --ui-ill-line: #14110E;
+    --ui-ill-paper: #3A342C;
+    --ui-ill-paper-shade: #4A4238;
+    --ui-ill-ground: rgba(0, 0, 0, 0.3);
+    --ui-blau-tint: #243243;
+    --ui-blau-glow: #2E4058;
+    --ui-blau-ink: #C3D7F1;
+    --ui-blau-strong: #7FA6DB;
+    --ui-petrol-tint: #1F3631;
+    --ui-petrol-glow: #284840;
+    --ui-petrol-ink: #B5E3D5;
+    --ui-petrol-strong: #5DBBA8;
+    --ui-gruen-tint: #2A3424;
+    --ui-gruen-glow: #36442E;
+    --ui-gruen-ink: #CFE3BA;
+    --ui-gruen-strong: #9BC478;
+    --ui-gelb-tint: #3A321A;
+    --ui-gelb-glow: #4B4122;
+    --ui-gelb-ink: #F3DE9C;
+    --ui-gelb-strong: #E9C35A;
+    --ui-orange-tint: #3E2A21;
+    --ui-orange-glow: #50372B;
+    --ui-orange-ink: #F6CBB3;
+    --ui-orange-strong: #EE9F76;
+    --ui-rot-tint: #3F2427;
+    --ui-rot-glow: #523035;
+    --ui-rot-ink: #F4C3C8;
+    --ui-rot-strong: #E58A93;
+    --ui-violett-tint: #2D2840;
+    --ui-violett-glow: #3A3354;
+    --ui-violett-ink: #D6CCF2;
+    --ui-violett-strong: #A28FDB;
+    --ui-grau-tint: #312D28;
+    --ui-grau-glow: #3D3832;
+    --ui-grau-ink: #DCD5CA;
+    --ui-grau-strong: #A39A8C;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ui-bg: #1E1B17;
+  --ui-surface: #29251F;
+  --ui-sunken: #332E27;
+  --ui-ink: #F3ECE2;
+  --ui-muted: #B3A999;
+  --ui-line: #3D372F;
+  --ui-line-soft: #332E27;
+  --ui-hover: rgba(243, 236, 226, 0.06);
+  --ui-scrim: rgba(0, 0, 0, 0.55);
+  --ui-focus: #8FB3E6;
+  --ui-shadow-card: 0 1px 0 rgba(0, 0, 0, 0.2), 0 10px 28px -14px rgba(0, 0, 0, 0.6);
+  --ui-shadow-pop: 0 2px 6px rgba(0, 0, 0, 0.3), 0 24px 56px -12px rgba(0, 0, 0, 0.7);
+  --ui-grain: 0.05;
+  --ui-ill-line: #14110E;
+  --ui-ill-paper: #3A342C;
+  --ui-ill-paper-shade: #4A4238;
+  --ui-ill-ground: rgba(0, 0, 0, 0.3);
+  --ui-blau-tint: #243243;
+  --ui-blau-glow: #2E4058;
+  --ui-blau-ink: #C3D7F1;
+  --ui-blau-strong: #7FA6DB;
+  --ui-petrol-tint: #1F3631;
+  --ui-petrol-glow: #284840;
+  --ui-petrol-ink: #B5E3D5;
+  --ui-petrol-strong: #5DBBA8;
+  --ui-gruen-tint: #2A3424;
+  --ui-gruen-glow: #36442E;
+  --ui-gruen-ink: #CFE3BA;
+  --ui-gruen-strong: #9BC478;
+  --ui-gelb-tint: #3A321A;
+  --ui-gelb-glow: #4B4122;
+  --ui-gelb-ink: #F3DE9C;
+  --ui-gelb-strong: #E9C35A;
+  --ui-orange-tint: #3E2A21;
+  --ui-orange-glow: #50372B;
+  --ui-orange-ink: #F6CBB3;
+  --ui-orange-strong: #EE9F76;
+  --ui-rot-tint: #3F2427;
+  --ui-rot-glow: #523035;
+  --ui-rot-ink: #F4C3C8;
+  --ui-rot-strong: #E58A93;
+  --ui-violett-tint: #2D2840;
+  --ui-violett-glow: #3A3354;
+  --ui-violett-ink: #D6CCF2;
+  --ui-violett-strong: #A28FDB;
+  --ui-grau-tint: #312D28;
+  --ui-grau-glow: #3D3832;
+  --ui-grau-ink: #DCD5CA;
+  --ui-grau-strong: #A39A8C;
+}
+
+/* One part of a page in the other theme, e.g. a preview of both side by side. */
+.ui-theme-light {
+  color-scheme: light;
+  --ui-bg: #F7F2EA;
+  --ui-surface: #FFFDF9;
+  --ui-sunken: #EFE7DB;
+  --ui-ink: #2A2620;
+  --ui-muted: #6E665B;
+  --ui-line: #E2D7C6;
+  --ui-line-soft: #EDE5D8;
+  --ui-hover: rgba(42, 38, 32, 0.05);
+  --ui-scrim: rgba(42, 38, 32, 0.42);
+  --ui-focus: #3F6DAE;
+  --ui-shadow-card: 0 1px 0 rgba(42, 38, 32, 0.04), 0 10px 28px -14px rgba(42, 38, 32, 0.22);
+  --ui-shadow-pop: 0 2px 6px rgba(42, 38, 32, 0.06), 0 24px 56px -12px rgba(42, 38, 32, 0.3);
+  --ui-grain: 0.07;
+  --ui-ill-line: #2A2620;
+  --ui-ill-paper: #FFFDF9;
+  --ui-ill-paper-shade: #EFE7DB;
+  --ui-ill-ground: rgba(42, 38, 32, 0.08);
+  --ui-blau-tint: #DCE8F6;
+  --ui-blau-glow: #EEF4FB;
+  --ui-blau-ink: #2E4F7C;
+  --ui-blau-strong: #5B86C4;
+  --ui-petrol-tint: #D5EEE6;
+  --ui-petrol-glow: #EAF7F2;
+  --ui-petrol-ink: #1F5F55;
+  --ui-petrol-strong: #49A08F;
+  --ui-gruen-tint: #E3EED7;
+  --ui-gruen-glow: #F1F7EA;
+  --ui-gruen-ink: #3F5E2A;
+  --ui-gruen-strong: #84AE5F;
+  --ui-gelb-tint: #FBEFC6;
+  --ui-gelb-glow: #FDF8E3;
+  --ui-gelb-ink: #7A5D10;
+  --ui-gelb-strong: #E2B53E;
+  --ui-orange-tint: #FBE1D3;
+  --ui-orange-glow: #FDF0E8;
+  --ui-orange-ink: #8A3F22;
+  --ui-orange-strong: #E08A5E;
+  --ui-rot-tint: #F8DEDF;
+  --ui-rot-glow: #FCEEEE;
+  --ui-rot-ink: #8C2F3A;
+  --ui-rot-strong: #D9707B;
+  --ui-violett-tint: #E7E0F6;
+  --ui-violett-glow: #F4F0FC;
+  --ui-violett-ink: #4E3F86;
+  --ui-violett-strong: #8B74C9;
+  --ui-grau-tint: #E9E4DC;
+  --ui-grau-glow: #F4F1EC;
+  --ui-grau-ink: #4D4943;
+  --ui-grau-strong: #9A9286;
+}
+
+.ui-theme-dark {
+  color-scheme: dark;
+  --ui-bg: #1E1B17;
+  --ui-surface: #29251F;
+  --ui-sunken: #332E27;
+  --ui-ink: #F3ECE2;
+  --ui-muted: #B3A999;
+  --ui-line: #3D372F;
+  --ui-line-soft: #332E27;
+  --ui-hover: rgba(243, 236, 226, 0.06);
+  --ui-scrim: rgba(0, 0, 0, 0.55);
+  --ui-focus: #8FB3E6;
+  --ui-shadow-card: 0 1px 0 rgba(0, 0, 0, 0.2), 0 10px 28px -14px rgba(0, 0, 0, 0.6);
+  --ui-shadow-pop: 0 2px 6px rgba(0, 0, 0, 0.3), 0 24px 56px -12px rgba(0, 0, 0, 0.7);
+  --ui-grain: 0.05;
+  --ui-ill-line: #14110E;
+  --ui-ill-paper: #3A342C;
+  --ui-ill-paper-shade: #4A4238;
+  --ui-ill-ground: rgba(0, 0, 0, 0.3);
+  --ui-blau-tint: #243243;
+  --ui-blau-glow: #2E4058;
+  --ui-blau-ink: #C3D7F1;
+  --ui-blau-strong: #7FA6DB;
+  --ui-petrol-tint: #1F3631;
+  --ui-petrol-glow: #284840;
+  --ui-petrol-ink: #B5E3D5;
+  --ui-petrol-strong: #5DBBA8;
+  --ui-gruen-tint: #2A3424;
+  --ui-gruen-glow: #36442E;
+  --ui-gruen-ink: #CFE3BA;
+  --ui-gruen-strong: #9BC478;
+  --ui-gelb-tint: #3A321A;
+  --ui-gelb-glow: #4B4122;
+  --ui-gelb-ink: #F3DE9C;
+  --ui-gelb-strong: #E9C35A;
+  --ui-orange-tint: #3E2A21;
+  --ui-orange-glow: #50372B;
+  --ui-orange-ink: #F6CBB3;
+  --ui-orange-strong: #EE9F76;
+  --ui-rot-tint: #3F2427;
+  --ui-rot-glow: #523035;
+  --ui-rot-ink: #F4C3C8;
+  --ui-rot-strong: #E58A93;
+  --ui-violett-tint: #2D2840;
+  --ui-violett-glow: #3A3354;
+  --ui-violett-ink: #D6CCF2;
+  --ui-violett-strong: #A28FDB;
+  --ui-grau-tint: #312D28;
+  --ui-grau-glow: #3D3832;
+  --ui-grau-ink: #DCD5CA;
+  --ui-grau-strong: #A39A8C;
+}
+
+/* A tone for one part of the page: its parts use --ui-tone-…. */
+.ui-tone-blau {
+  --ui-tone-tint: var(--ui-blau-tint);
+  --ui-tone-glow: var(--ui-blau-glow);
+  --ui-tone-ink: var(--ui-blau-ink);
+  --ui-tone-strong: var(--ui-blau-strong);
+}
+
+.ui-tone-petrol {
+  --ui-tone-tint: var(--ui-petrol-tint);
+  --ui-tone-glow: var(--ui-petrol-glow);
+  --ui-tone-ink: var(--ui-petrol-ink);
+  --ui-tone-strong: var(--ui-petrol-strong);
+}
+
+.ui-tone-gruen {
+  --ui-tone-tint: var(--ui-gruen-tint);
+  --ui-tone-glow: var(--ui-gruen-glow);
+  --ui-tone-ink: var(--ui-gruen-ink);
+  --ui-tone-strong: var(--ui-gruen-strong);
+}
+
+.ui-tone-gelb {
+  --ui-tone-tint: var(--ui-gelb-tint);
+  --ui-tone-glow: var(--ui-gelb-glow);
+  --ui-tone-ink: var(--ui-gelb-ink);
+  --ui-tone-strong: var(--ui-gelb-strong);
+}
+
+.ui-tone-orange {
+  --ui-tone-tint: var(--ui-orange-tint);
+  --ui-tone-glow: var(--ui-orange-glow);
+  --ui-tone-ink: var(--ui-orange-ink);
+  --ui-tone-strong: var(--ui-orange-strong);
+}
+
+.ui-tone-rot {
+  --ui-tone-tint: var(--ui-rot-tint);
+  --ui-tone-glow: var(--ui-rot-glow);
+  --ui-tone-ink: var(--ui-rot-ink);
+  --ui-tone-strong: var(--ui-rot-strong);
+}
+
+.ui-tone-violett {
+  --ui-tone-tint: var(--ui-violett-tint);
+  --ui-tone-glow: var(--ui-violett-glow);
+  --ui-tone-ink: var(--ui-violett-ink);
+  --ui-tone-strong: var(--ui-violett-strong);
+}
+
+.ui-tone-grau {
+  --ui-tone-tint: var(--ui-grau-tint);
+  --ui-tone-glow: var(--ui-grau-glow);
+  --ui-tone-ink: var(--ui-grau-ink);
+  --ui-tone-strong: var(--ui-grau-strong);
+}

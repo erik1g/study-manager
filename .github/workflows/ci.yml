@@ -1,0 +1,75 @@
+# Checks for every pull request and every push to main: types, unit tests, UI check, build.
+# The end-to-end tests with the real container images run in e2e.yml.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Typen, Tests, Build
+    runs-on: ubuntu-latest
+    services:
+      # The server's tests run against a real PostgreSQL, like the app does.
+      postgres:
+        image: pgvector/pgvector:pg17
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres -h localhost"
+          --health-interval 5s --health-timeout 5s --health-retries 20
+    env:
+      # The server's tests create their own database (study_test) on this server.
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: UI-Prüfung (nur Bausteine aus @study/ui)
+        run: node infra/scripts/ui-gate.mjs
+      - name: Typprüfung
+        run: pnpm typecheck
+      - name: Tests
+        run: pnpm test
+      - name: Web-App bauen
+        run: pnpm --filter @study/web build
+      - name: Dokumentation bauen
+        run: pnpm --filter @study/docs build
+
+  commit-title:
+    name: Titel folgt Conventional Commits
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    steps:
+      - uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          types: |
+            feat
+            fix
+            docs
+            style
+            refactor
+            perf
+            test
+            build
+            ci
+            chore
+            revert

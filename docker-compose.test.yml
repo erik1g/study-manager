@@ -1,0 +1,27 @@
+# The test stack: the app as built from this checkout, with a database, accounts and
+# secrets of its own and invented data, for the Playwright tests (and for looking at pages).
+# On top of docker-compose.yml; start and fill it with infra/test/stack.sh. It listens only on
+# 127.0.0.1:8090 of the machine it runs on.
+
+services:
+  server:
+    build:
+      context: .
+      dockerfile: infra/docker/server.Dockerfile
+    image: study-manager-server:test
+    pull_policy: never
+    env_file: !override .env.test
+    environment:
+      # Every test comes from the same address; the limits of the real app would stop them.
+      RATE_LIMIT_SCALE: "20"
+    volumes:
+      - ./infra/test:/app/infra/test:ro
+
+  web:
+    build:
+      context: .
+      dockerfile: infra/docker/web.Dockerfile
+    image: study-manager-web:test
+    pull_policy: never
+    ports: !override
+      - "127.0.0.1:8090:80"

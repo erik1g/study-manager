@@ -1,0 +1,154 @@
+# Study Manager, ready to run: pulls the published images. Put your own reverse proxy (TLS, your domain)
+# in front of the "web" service (port 8080 on this machine by default). See the admin documentation.
+#
+#   cp .env.example .env          # or generate one, see the admin documentation; then edit it
+#   docker compose pull
+#   docker compose up -d
+#   docker compose logs server    # the very first start prints a link to set up the admin account
+#
+# Update:  docker compose pull && docker compose up -d     (pin STUDY_VERSION in .env to stay on one version)
+
+name: study-manager
+
+services:
+  db:
+    image: supabase/postgres:17.6.1.136
+    restart: unless-stopped
+    command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf", "-c", "log_min_messages=fatal"]
+    environment:
+      POSTGRES_HOST: /var/run/postgresql
+      PGPORT: ${POSTGRES_PORT}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGDATABASE: ${POSTGRES_DB}
+      POSTGRES_DB: ${POSTGRES_DB}
+      JWT_EXP: ${JWT_EXPIRY}
+    volumes:
+      - ./infra/db/roles.sql:/docker-entrypoint-initdb.d/init-scripts/99-roles.sql:ro
+      - ./infra/db/jwt.sql:/docker-entrypoint-initdb.d/init-scripts/99-jwt.sql:ro
+      - ${DB_DIR:-study-db}:/var/lib/postgresql/data
+      - db-config:/etc/postgresql-custom
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  auth:
+    image: supabase/gotrue:v2.197.0
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      GOTRUE_API_HOST: 0.0.0.0
+      GOTRUE_API_PORT: 9999
+      API_EXTERNAL_URL: ${API_EXTERNAL_URL}
+      GOTRUE_DB_DRIVER: postgres
+      GOTRUE_DB_DATABASE_URL: postgres://supabase_auth_admin:${POSTGRES_PASSWORD}@db:${POSTGRES_PORT}/${POSTGRES_DB}
+      GOTRUE_SITE_URL: ${SITE_URL}
+      GOTRUE_URI_ALLOW_LIST: ${SITE_URL}/**
+      # Accounts only by invitation from an admin.
+      GOTRUE_DISABLE_SIGNUP: "true"
+      GOTRUE_EXTERNAL_EMAIL_ENABLED: "true"
+      GOTRUE_MAILER_AUTOCONFIRM: "true"
+      GOTRUE_EXTERNAL_PHONE_ENABLED: "false"
+      GOTRUE_EXTERNAL_ANONYMOUS_USERS_ENABLED: "false"
+      GOTRUE_JWT_ADMIN_ROLES: service_role
+      GOTRUE_JWT_AUD: authenticated
+      GOTRUE_JWT_DEFAULT_GROUP_NAME: authenticated
+      GOTRUE_JWT_EXP: ${JWT_EXPIRY}
+      # Sessions renew their token in the background; a taken token is of use only briefly.
+      GOTRUE_SECURITY_REFRESH_TOKEN_ROTATION_ENABLED: "true"
+      GOTRUE_SECURITY_REFRESH_TOKEN_REUSE_INTERVAL: "10"
+      GOTRUE_PASSWORD_MIN_LENGTH: "10"
+      # Limits count per visitor; Caddy tells who that is.
+      GOTRUE_RATE_LIMIT_HEADER: X-Real-IP
+      GOTRUE_RATE_LIMIT_TOKEN_REFRESH: "150"
+      GOTRUE_RATE_LIMIT_VERIFY: "30"
+      GOTRUE_RATE_LIMIT_OTP: "30"
+      GOTRUE_JWT_SECRET: ${JWT_SECRET}
+      GOTRUE_JWT_KEYS: ${JWT_KEYS}
+      GOTRUE_JWT_ISSUER: ${API_EXTERNAL_URL}
+      # Passkeys
+      GOTRUE_PASSKEY_ENABLED: "true"
+      GOTRUE_WEBAUTHN_RP_ID: ${DOMAIN}
+      GOTRUE_WEBAUTHN_RP_DISPLAY_NAME: Study Manager
+      GOTRUE_WEBAUTHN_RP_ORIGINS: ${SITE_URL}
+      # A second factor by authenticator app, required for admins.
+      GOTRUE_MFA_TOTP_ENROLL_ENABLED: "true"
+      GOTRUE_MFA_TOTP_VERIFY_ENABLED: "true"
+      # Claude and other MCP clients sign in through OAuth 2.1.
+      GOTRUE_OAUTH_SERVER_ENABLED: "true"
+      GOTRUE_OAUTH_SERVER_ALLOW_DYNAMIC_REGISTRATION: "true"
+      GOTRUE_OAUTH_SERVER_AUTHORIZATION_PATH: /oauth/consent
+      # Mail through Brevo, once SMTP_* are set in .env; without them the
+      # admin hands invitation and reset links on.
+      GOTRUE_SMTP_HOST: ${SMTP_HOST:-}
+      GOTRUE_SMTP_PORT: ${SMTP_PORT:-587}
+      GOTRUE_SMTP_USER: ${SMTP_USER:-}
+      GOTRUE_SMTP_PASS: ${SMTP_PASS:-}
+      GOTRUE_SMTP_ADMIN_EMAIL: noreply@${DOMAIN}
+      GOTRUE_SMTP_SENDER_NAME: Study Manager
+      GOTRUE_RATE_LIMIT_EMAIL_SENT: "30"
+      # A changed address counts once both the old and the new one confirmed it.
+      GOTRUE_MAILER_SECURE_EMAIL_CHANGE_ENABLED: "true"
+      GOTRUE_MAILER_URLPATHS_INVITE: /auth/v1/verify
+      GOTRUE_MAILER_URLPATHS_RECOVERY: /auth/v1/verify
+      GOTRUE_MAILER_URLPATHS_EMAIL_CHANGE: /auth/v1/verify
+      GOTRUE_MAILER_URLPATHS_CONFIRMATION: /auth/v1/verify
+      # The mails in German, served by the app inside the stack.
+      GOTRUE_MAILER_SUBJECTS_INVITE: Du bist zum Study Manager eingeladen
+      GOTRUE_MAILER_SUBJECTS_RECOVERY: Neues Passwort für den Study Manager
+      GOTRUE_MAILER_SUBJECTS_MAGIC_LINK: Dein Link zum Study Manager
+      GOTRUE_MAILER_SUBJECTS_EMAIL_CHANGE: Neue E-Mail-Adresse bestätigen
+      GOTRUE_MAILER_SUBJECTS_CONFIRMATION: E-Mail-Adresse bestätigen
+      GOTRUE_MAILER_SUBJECTS_REAUTHENTICATION: Dein Bestätigungscode
+      GOTRUE_MAILER_TEMPLATES_INVITE: http://server:3000/api/mail/invite
+      GOTRUE_MAILER_TEMPLATES_RECOVERY: http://server:3000/api/mail/recovery
+      GOTRUE_MAILER_TEMPLATES_MAGIC_LINK: http://server:3000/api/mail/magic_link
+      GOTRUE_MAILER_TEMPLATES_EMAIL_CHANGE: http://server:3000/api/mail/email_change
+      GOTRUE_MAILER_TEMPLATES_CONFIRMATION: http://server:3000/api/mail/confirmation
+      GOTRUE_MAILER_TEMPLATES_REAUTHENTICATION: http://server:3000/api/mail/reauthentication
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9999/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  server:
+    image: ${STUDY_IMAGE_PREFIX:-docker.io/erik1g}/study-manager-server:${STUDY_VERSION:-latest}
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      auth:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD}@db:${POSTGRES_PORT}/${POSTGRES_DB}
+      AUTH_URL: http://auth:9999
+      FILES_DIR: /data/files
+      BACKUP_DIR: /data/backups
+      NODE_ENV: production
+      LOG_LEVEL: ${LOG_LEVEL:-warn}
+    volumes:
+      - ${DATA_DIR:-study-data}:/data
+
+  # Caddy with the web app built in: the one address behind your reverse proxy.
+  web:
+    image: ${STUDY_IMAGE_PREFIX:-docker.io/erik1g}/study-manager-web:${STUDY_VERSION:-latest}
+    restart: unless-stopped
+    depends_on:
+      - server
+      - auth
+    environment:
+      TRUSTED_PROXIES: ${TRUSTED_PROXIES:-private_ranges}
+    ports:
+      - "${BIND_ADDRESS:-127.0.0.1}:${HTTP_PORT:-8080}:80"
+
+volumes:
+  db-config:
+  study-db:
+  study-data:

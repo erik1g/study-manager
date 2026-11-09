@@ -1,0 +1,61 @@
+---
+title: SearchField und SearchButton
+sidebar_position: 2
+description: Suchen – direkt im Feld oder über die Befehlspalette.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { DoDont, Do, Dont } from "@site/src/components/DoDont";
+import { SearchField, SearchButton } from "@study/ui";
+
+# SearchField und SearchButton
+
+`import { SearchField, SearchButton } from "@study/ui"`
+
+**SearchField** filtert beim Tippen, z. B. Dateien eines Fachs. **SearchButton** sieht genauso aus, öffnet aber eine Suche woanders – in der App die Befehlspalette (⌘K).
+
+```jsx live
+function Beispiel() {
+  const [q, setQ] = useState("");
+  const files = ["Skript Kapitel 4", "Übungsblatt 5", "Formelsammlung Laplace"];
+  return (
+    <div className="ui-stack" style={{ maxWidth: 420 }}>
+      <SearchButton label="Suchen oder anlegen" shortcut="⌘K" onOpen={() => toast("Hier öffnet sich die Befehlspalette")} />
+      <SearchField label="Dokumente durchsuchen" value={q} onChange={(e) => setQ(e.target.value)} onClear={() => setQ("")} />
+      <ul>{files.filter((f) => f.toLowerCase().includes(q.toLowerCase())).map((f) => <li key={f}>{f}</li>)}</ul>
+      <Toaster />
+    </div>
+  );
+}
+```
+
+## Varianten und Zustände
+
+<Preview column>
+  <SearchButton label="Suchen oder anlegen" shortcut="⌘K" onOpen={() => {}} />
+  <SearchField label="In allen Fächern suchen" />
+  <SearchField label="Groß" size="lg" />
+</Preview>
+
+## Wann benutzen
+
+<DoDont>
+  <Do caption="Eine Suche pro Bereich, oben, wo man sie erwartet.">
+    <SearchField label="Dokumente durchsuchen" />
+  </Do>
+  <Dont caption="Ein normales TextField mit Lupe – ohne Rolle, ohne Leeren-Knopf.">
+    <div style={{ width: "100%" }}><input placeholder="Suchen …" /></div>
+  </Dont>
+</DoDont>
+
+## Props
+
+<PropsTable of="SearchField" />
+<PropsTable of="SearchButton" />
+
+## Barrierefreiheit
+
+- Das Feld liegt in einem `role="search"`-Bereich und hat ein Label (für das Auge versteckt).
+- Der Leeren-Knopf heißt „Suche leeren“.
+- `SearchButton` gibt das Kürzel als `aria-keyshortcuts` an.
