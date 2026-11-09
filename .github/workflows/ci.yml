@@ -39,6 +39,9 @@ jobs:
           node-version: 24
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Datenbank vorbereiten
+        # Like the Supabase image: extensions live in their own schema, which the role finds by its search path.
+        run: psql "$DATABASE_URL" -c 'ALTER ROLE postgres SET search_path TO "$user", public, extensions'
       - name: UI-Prüfung (nur Bausteine aus @study/ui)
         run: node infra/scripts/ui-gate.mjs
       - name: Typprüfung
