@@ -35,7 +35,7 @@ docker compose logs server   # beim ersten Start steht hier der Link zum Einrich
 
 Du lädst nur das kleine **Betreiber-Paket** (Compose-Datei, `update.sh`, Datenbank-Skripte) und die fertigen Images, **keinen Quellcode**. Updates: `./update.sh 0.2.0`.
 
-Die App hört dann auf `127.0.0.1:8080`; dein Reverse Proxy leitet deine Domain dorthin. Die ganze Anleitung (Proxy-Beispiele, Backups, Updates, Mail) steht in der **[Admin-Dokumentation](https://erik1g.github.io/study-manager/admin/)**.
+Die App hört dann auf `127.0.0.1:8080`; dein Reverse Proxy leitet deine Domain dorthin. Die ganze Anleitung (Proxy-Beispiele, Backups, Updates, Mail) steht in der **[Admin-Dokumentation](https://erik1g.github.io/study-manager/admin)**.
 
 ## Dokumentation
 
@@ -43,9 +43,9 @@ Die App hört dann auf `127.0.0.1:8080`; dein Reverse Proxy leitet deine Domain 
 
 | Für wen | Was |
 |---|---|
-| [Nutzer](https://erik1g.github.io/study-manager/nutzer/) | Fächer, Deadlines, Planung, Notizen, Vorlesungsmodus, Claude verbinden |
-| [Admins](https://erik1g.github.io/study-manager/admin/) | Installieren, konfigurieren, Backups, Updates, Sicherheit |
-| [Entwickler](https://erik1g.github.io/study-manager/entwickler/) | Aufbau, lokal starten, Tests, Beitragen, Releases, Design-System |
+| [Nutzer](https://erik1g.github.io/study-manager/nutzer) | Fächer, Deadlines, Planung, Notizen, Vorlesungsmodus, Claude verbinden |
+| [Admins](https://erik1g.github.io/study-manager/admin) | Installieren, konfigurieren, Backups, Updates, Sicherheit |
+| [Entwickler](https://erik1g.github.io/study-manager/entwickler) | Aufbau, lokal starten, Tests, Beitragen, Releases, Design-System |
 
 ## Mitmachen
 
