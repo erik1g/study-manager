@@ -11,7 +11,7 @@
     "dev": "docker compose -f docker-compose.dev.yml up -d && docker compose -f docker-compose.dev.yml logs -f server web",
     "build": "pnpm -r build",
     "typecheck": "pnpm -r typecheck",
-    "test": "pnpm -r test",
+    "test": "pnpm -r --filter '!@study/e2e' test",
     "admin:link": "docker compose exec server node --import tsx src/cli/admin-link.ts",
     "e2e": "./infra/test/stack.sh e2e"
   },
