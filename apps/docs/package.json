@@ -8,7 +8,7 @@
     "start": "node scripts/props.mjs && docusaurus start --host 0.0.0.0 --port 3002",
     "build": "node scripts/props.mjs && docusaurus build --out-dir build",
     "serve": "docusaurus serve --dir build",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "node scripts/props.mjs && tsc --noEmit"
   },
   "dependencies": {
     "@docusaurus/core": "3.10.2",
