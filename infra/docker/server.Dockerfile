@@ -2,7 +2,7 @@
 # Build from the repository root:  docker build -f infra/docker/server.Dockerfile -t study-manager-server .
 # syntax=docker/dockerfile:1
 
-FROM node:24.22.2-bookworm-slim AS base
+FROM node:26.12.1-bookworm-slim AS base
 # pg_dump 17 for the nightly backups; the PostgreSQL 17 client comes from the PostgreSQL apt repository.
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates curl gnupg \
  && install -d /usr/share/postgresql-common/pgdg \
