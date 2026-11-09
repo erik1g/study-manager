@@ -22,6 +22,18 @@ Der Study Manager verwaltet Konten, Dokumente und Notizen. Diese Empfehlungen ha
 - **Admins** brauchen einen Passkey oder eine Authenticator-App (zweiter Faktor).
 - Die App begrenzt Anfragen pro Besucher (Rate Limits) und sperrt Anfragen an interne Adressen, wenn Nutzer Kalender-Links eintragen (Schutz vor Server-Side Request Forgery).
 
+## Die Images prüfen
+
+Jedes **Release-Image** wird bei der Veröffentlichung mit [cosign](https://docs.sigstore.dev/cosign/) signiert und bekommt eine Herkunftsbestätigung von GitHub (*Attestation*). So kannst du prüfen, dass ein Image wirklich aus dem Release-Workflow dieses Projekts stammt und niemand es nachträglich ausgetauscht hat:
+
+```sh
+cosign verify docker.io/erik1g/study-manager-server:0.1.0 \
+  --certificate-identity-regexp 'https://github.com/erik1g/study-manager/\.github/workflows/release\.yml@.*' \
+  --certificate-oidc-issuer https://token.actions.githubusercontent.com
+```
+
+Dasselbe gilt für `study-manager-web`. Ersetze `0.1.0` durch deine Version. Die Entwicklungsstände (`edge`, `sha-…`) sind **nicht signiert**; nutze für den Betrieb feste Versionen.
+
 ## Container
 
 - Der **Server-Container läuft nicht als root** (Benutzer `node`); `web` ist das unveränderte Caddy-Image.

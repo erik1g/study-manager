@@ -41,12 +41,26 @@ Solange die Version unter **1.0** liegt, erhöht ein Bruch die Minor-Version (`0
 
 Tags je Release: `X.Y.Z`, `X.Y`, `X` und `latest`. Auf `main` entstehen zusätzlich `edge` und `sha-<commit>` für Tests. Beide Images gibt es für `linux/amd64` und `linux/arm64` (zum Beispiel für einen Raspberry Pi).
 
+## Wer ein Release auslösen darf
+
+Ein Release soll **niemand außer den Maintainern** auslösen können. Dafür greifen mehrere Schichten ineinander:
+
+1. **`main` ist geschützt** (Ruleset): nur Pull Requests, die Prüfungen „Typen, Tests, Build“ und „Titel folgt Conventional Commits“ müssen grün sein, keine Force-Pushes, kein Löschen. Freigeben darf nur, wer in `CODEOWNERS` steht. Beiträge von außen kommen über Forks ohne Schreibrecht, und ihre Workflows laufen ohne Zugriff auf Geheimnisse.
+2. **Tags `v*` sind geschützt** (Tag-Ruleset): Nur Maintainer und der Release-Bot legen sie an oder ändern sie.
+3. **Das Veröffentlichen wartet auf eine Freigabe**: Der Job, der die Images bei Docker Hub veröffentlicht, läuft in der GitHub-Umgebung `release`. Sie hat Pflicht-Prüfer und ist auf `main` beschränkt. Auch wer den Release-PR mergt, veröffentlicht damit noch nichts, bis ein Maintainer in GitHub **Approve** klickt.
+4. **Die Workflows sind gehärtet**: alle fremden Actions sind auf Commit-Hashes festgelegt (Dependabot hält sie aktuell), jeder Job hat nur die nötigen Rechte, `zizmor` prüft die Workflows in der CI, und die Veröffentlichung läuft nur im Original-Repository, nie in einem Fork.
+5. **Die Images sind signiert** (cosign, ohne eigenen Schlüssel) und haben eine Herkunftsbestätigung; Betreiber prüfen sie mit [`cosign verify`](/admin/sicherheit).
+
 ## Einmalig einrichten (Maintainer)
 
-- **GitHub**: Repository-Einstellungen → *Actions → General*: Workflows dürfen Pull Requests anlegen (für den Release-PR).
-- **Docker Hub**: Zugriffstoken mit Schreibrecht erzeugen und im Repository unter *Settings → Secrets and variables → Actions* als `DOCKERHUB_USERNAME` und `DOCKERHUB_TOKEN` anlegen.
+- **Secrets** (*Settings → Secrets and variables → Actions*): `DOCKERHUB_USERNAME` und `DOCKERHUB_TOKEN` (ein Zugriffstoken mit Schreibrecht).
+- **Actions** (*Settings → Actions → General*): Workflows dürfen Pull Requests anlegen (für den Release-PR); Pull Requests von allen Externen brauchen eine Freigabe; Standard-Rechte nur lesen.
+- **Umgebung `release`** (*Settings → Environments*): Pflicht-Prüfer = die Maintainer; Zweige: nur `main`.
+- **Rulesets** (*Settings → Rules*): `main` (Pull Request, Prüfungen, Code-Owner-Freigabe, keine Force-Pushes) und die Tags `v*` (nur Maintainer und der Bot `github-actions`). Maintainer dürfen eine Ausnahme per Pull Request haben, sonst könnten sie ihre eigenen Pull Requests nicht freigeben.
 - **Pages**: *Settings → Pages → Source: GitHub Actions* (für diese Doku).
-- **Hauptzweig schützen**: nur Pull Requests, die Prüfungen „Typen, Tests, Build“ und „Titel folgt Conventional Commits“ müssen grün sein.
+- **Sicherheit**: private Sicherheitsmeldungen und Push-Schutz für Geheimnisse einschalten.
+
+Der Release-PR wird vom Bot angelegt; dessen Pull Requests lösen die Prüfungen nicht von selbst aus. Der Maintainer mergt ihn mit seiner Ausnahme für Maintainer.
 
 ## Eine Version zurückziehen
 
