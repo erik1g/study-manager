@@ -1,3 +1,9 @@
+---
+title: "0002: KI nur über das Claude der Nutzer"
+sidebar_position: 2
+description: "Warum der Server keine KI rechnet und jedes Nutzers eigenes Claude über MCP arbeitet."
+---
+
 # The AI work is done by each user's own Claude, through MCP
 
 The desktop app ran Claude Code itself: after a lecture was transcribed it evaluated it, and it outlined scripts and proposed flashcards on its own. A shared server would have to pay for that through the API, for every user. Instead the cloud runs no model at all (apart from a small embedding model for search). Every user connects their own Claude to its MCP server, which signs in through Supabase Auth's OAuth server and acts with the user's rights.
