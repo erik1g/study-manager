@@ -118,7 +118,9 @@ services:
       retries: 10
 
   server:
-    build: ./infra/dev
+    build:
+      context: ./infra/docker
+      dockerfile: dev.Dockerfile
     restart: unless-stopped
     working_dir: ${PWD}
     command: ["pnpm", "--filter", "@study/server", "dev"]
@@ -138,7 +140,9 @@ services:
       - ${DATA_DIR}:/data
 
   web:
-    build: ./infra/dev
+    build:
+      context: ./infra/docker
+      dockerfile: dev.Dockerfile
     restart: unless-stopped
     working_dir: ${PWD}
     command: ["pnpm", "--filter", "@study/web", "dev", "--host", "0.0.0.0"]
