@@ -6,24 +6,27 @@ description: "In wenigen Schritten vom leeren Server zum laufenden Study Manager
 
 # Installieren
 
-## 1. Dateien holen
+## 1. Das Betreiber-Paket holen
+
+Du brauchst **keinen Quellcode**. Jedes Release hängt ein kleines Paket an: die Compose-Datei (auf diese Version festgelegt), das Skript `update.sh`, die Datenbank-Skripte und die `.env.example`.
 
 ```sh
-git clone --depth 1 https://github.com/erik1g/study-manager.git
-cd study-manager
+mkdir study-manager && cd study-manager
+curl -fsSL https://github.com/erik1g/study-manager/releases/latest/download/study-manager.tar.gz | tar xz --strip-components=1
+cat VERSION
 ```
 
-Du brauchst daraus nur `docker-compose.yml` und den Ordner `infra/db`. Für ein bestimmtes Release nimm statt dessen den Tag: `git clone --depth 1 --branch v0.1.0 …`.
+Für eine bestimmte Version nimm statt `latest/download/study-manager.tar.gz` die Adresse `download/v0.1.0/study-manager-0.1.0.tar.gz`. Die Prüfsummen (`study-manager.sha256`) und eine Herkunftsbestätigung stehen am selben Release; wie du sie prüfst, steht unter [Sicherheit](/admin/sicherheit).
 
 ## 2. Die Einstellungen erzeugen
 
-Die Datei `.env` enthält die Geheimnisse deiner Installation. Ein Skript erzeugt sie mit frischen Schlüsseln, ohne dass du das Repository bauen musst:
+Die Datei `.env` enthält die Geheimnisse deiner Installation. Ein Skript im Image erzeugt sie mit frischen Schlüsseln:
 
 ```sh
 docker run --rm \
   -e ADMIN_EMAIL=du@example.org \
   -e DOMAIN=study.example.org \
-  docker.io/erik1g/study-manager-server \
+  docker.io/erik1g/study-manager-server:$(cat VERSION) \
   node /app/infra/scripts/setup.mjs --stdout > .env
 chmod 600 .env
 ```
@@ -31,12 +34,11 @@ chmod 600 .env
 - `ADMIN_EMAIL` ist **deine** Adresse: Der erste Einrichtungslink ist für sie.
 - `DOMAIN` ist die öffentliche Adresse ohne `https://`. Ändere sie später nur mit Bedacht: **Passkeys sind an die Domain gebunden** und gehen bei einem Wechsel verloren.
 
-Öffne `.env` und prüfe sie; alle Einstellungen sind in der [Konfiguration](/admin/konfiguration) erklärt. **Sichere die Datei** (besonders `BACKUP_PASSPHRASE`) an einem zweiten Ort: Ohne sie sind Backups nicht lesbar.
+Öffne `.env` und prüfe sie; alle Einstellungen sind in der [Konfiguration](/admin/konfiguration) erklärt. **Sichere die Datei** (besonders `BACKUP_PASSPHRASE`) an einem zweiten Ort, zum Beispiel in deinem Passwortmanager: Ohne sie sind Backups nicht lesbar.
 
 ## 3. Starten
 
 ```sh
-docker compose pull
 docker compose up -d
 docker compose logs server
 ```

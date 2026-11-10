@@ -19,17 +19,26 @@ Der erste Admin entsteht mit dem Link aus dem Server-Log (siehe [Installieren](/
 
 ## Aktualisieren
 
+Das Paket bringt ein Skript mit, das ein Update sicher macht:
+
 ```sh
-cd study-manager
-git pull                      # nur wenn du docker-compose.yml aus dem Repository nutzt
-docker compose pull
-docker compose up -d
+./update.sh --status        # welche Version läuft
+./update.sh 0.2.0           # auf Version 0.2.0 gehen (oder zurück auf eine ältere)
 ```
 
-- Der Server führt **Datenbank-Migrationen beim Start** selbst aus. Ein Update braucht keinen weiteren Schritt.
-- Lies vorher den [Changelog](https://github.com/erik1g/study-manager/releases): Ein Hinweis **BREAKING CHANGE** heißt, dass du etwas an deiner `.env` oder Compose-Datei tun musst.
-- **Mache vor Updates ein Backup** (Admin-Bereich → *Jetzt sichern*) und setze `STUDY_VERSION` auf eine feste Version, die du gezielt hochziehst.
-- Zurück auf eine ältere Version: `STUDY_VERSION` ändern und `docker compose up -d`. Hat die neuere Version die Datenbank migriert, spiele vorher das Backup ein.
+Es macht der Reihe nach und bricht beim ersten Problem ab:
+
+1. **Sicherung** von Datenbank und Dokumenten (verschlüsselt mit `BACKUP_PASSPHRASE`). Schlägt sie fehl, bleibt alles, wie es ist.
+2. **Images ziehen, bevor es etwas anhält.** Gibt es die Version nicht, ändert sich nichts.
+3. Die Version in `STUDY_VERSION` (`.env`) setzen und **neu starten**.
+4. **Warten, bis der Server antwortet.** Tut er das nicht, geht das Skript **automatisch auf die vorherige Version zurück** und zeigt die Logs.
+
+Hinweise:
+
+- Der Server führt **Datenbank-Migrationen beim Start** aus. Ein Zurückgehen auf eine ältere Version macht sie **nicht** rückgängig. Lies vor dem Update den [Changelog](https://github.com/erik1g/study-manager/releases): Ein Hinweis **BREAKING CHANGE** heißt, dass du etwas an deiner `.env` tun musst. Verlangt ein Release, dass du zurückgehst, spiele das Backup ein (siehe [Backups](/admin/backups)).
+- Vor 1.0 können auch Minor-Versionen (`0.1` → `0.2`) Änderungen für Betreiber bringen. Aktualisiere nicht blind, sondern lies die Hinweise.
+- `./update.sh 0.2.0 --no-backup` überspringt die Sicherung. Nutze das nur, wenn du selbst eine gemacht hast.
+- Das Paket selbst (die Compose-Datei und das Skript) ändert sich zwischen Versionen selten. Steht in den Release-Hinweisen, dass es sich ändert, lade das Paket der neuen Version und kopiere deine `.env` hinein.
 
 ## Logs und Gesundheit
 

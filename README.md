@@ -25,14 +25,15 @@ Heute ist die Oberfläche **deutsch**, die Semester heißen `WiSe`/`SoSe`, und d
 Du brauchst einen Server mit Docker, eine Domain und einen Reverse Proxy, der HTTPS übernimmt (zum Beispiel Nginx Proxy Manager, Traefik oder ein Cloudflare Tunnel).
 
 ```sh
-git clone --depth 1 https://github.com/erik1g/study-manager.git
-cd study-manager
+mkdir study-manager && cd study-manager
+curl -fsSL https://github.com/erik1g/study-manager/releases/latest/download/study-manager.tar.gz | tar xz --strip-components=1
 docker run --rm -e ADMIN_EMAIL=du@example.org -e DOMAIN=study.example.org \
-  docker.io/erik1g/study-manager-server node /app/infra/scripts/setup.mjs --stdout > .env
-docker compose pull
+  docker.io/erik1g/study-manager-server:$(cat VERSION) node /app/infra/scripts/setup.mjs --stdout > .env
 docker compose up -d
 docker compose logs server   # beim ersten Start steht hier der Link zum Einrichten des Admin-Accounts
 ```
+
+Du lädst nur das kleine **Betreiber-Paket** (Compose-Datei, `update.sh`, Datenbank-Skripte) und die fertigen Images, **keinen Quellcode**. Updates: `./update.sh 0.2.0`.
 
 Die App hört dann auf `127.0.0.1:8080`; dein Reverse Proxy leitet deine Domain dorthin. Die ganze Anleitung (Proxy-Beispiele, Backups, Updates, Mail) steht in der **[Admin-Dokumentation](https://erik1g.github.io/study-manager/admin/)**.
 

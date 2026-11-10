@@ -6,7 +6,7 @@
 #   docker compose up -d
 #   docker compose logs server    # the very first start prints a link to set up the admin account
 #
-# Update:  docker compose pull && docker compose up -d     (pin STUDY_VERSION in .env to stay on one version)
+# Update:  ./update.sh <Version>      (backs up, pulls first, restarts and goes back if the server does not answer)
 
 name: study-manager
 
