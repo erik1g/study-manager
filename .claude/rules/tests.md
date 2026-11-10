@@ -8,7 +8,7 @@ pnpm typecheck                   # TypeScript aller Pakete (die Doku erzeugt dab
 pnpm test                        # Unit-Tests; schließt das E2E-Paket aus
 ```
 
-- **Server-Tests** brauchen eine PostgreSQL-Datenbank: `DATABASE_URL` setzen oder im Dev-Container laufen lassen (`docker compose -f docker-compose.dev.yml exec server sh -c "cd apps/server && pnpm exec vitest run"`). Die Tests legen die Datenbank `study_test` selbst an. Der Suchpfad der Rolle muss das Schema `extensions` enthalten (so wie im Supabase-Image).
+- **Server-Tests** brauchen eine PostgreSQL-Datenbank: `DATABASE_URL` setzen oder im Dev-Container laufen lassen (`docker compose --project-directory . -f infra/compose/dev.yml exec server sh -c "cd apps/server && pnpm exec vitest run"`). Die Tests legen die Datenbank `study_test` selbst an. Der Suchpfad der Rolle muss das Schema `extensions` enthalten (so wie im Supabase-Image).
 - **Oberflächenänderungen** testest du zusätzlich im Browser auf Laptop **und** Handy-Breite und mit der Playwright-Suite.
 - **Ende zu Ende:** `./infra/test/stack.sh e2e` (siehe `e2e.md`). Das baut die Produktions-Images aus dem Checkout, startet den Test-Stack und lässt Playwright laufen. Einmal vorher `pnpm install`.
 - **Weitere Optionen:** `STACK_NO_BUILD=1` nutzt schon gebaute Images (`study-manager-server:test`, `study-manager-web:test`), `STACK_EXTRA=datei.yml` hängt eine eigene Compose-Datei an.

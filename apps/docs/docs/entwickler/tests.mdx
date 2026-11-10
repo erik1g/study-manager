@@ -20,7 +20,7 @@ Die CI führt Typen, Tests, UI-Prüfung und Build bei jedem Pull Request aus; di
 Sie laufen gegen eine **echte PostgreSQL-Datenbank**: Die Tests legen eine eigene Datenbank `study_test` an und leeren sie zwischen den Dateien. Setze `DATABASE_URL` auf einen Server, den du dafür nutzen darfst, oder starte sie im Dev-Container:
 
 ```sh
-docker compose -f docker-compose.dev.yml exec server sh -c "cd apps/server && pnpm exec vitest run"
+docker compose --project-directory . -f infra/compose/dev.yml exec server sh -c "cd apps/server && pnpm exec vitest run"
 ```
 
 Die Anmeldung wird in den Tests durch eine Attrappe ersetzt (`memoryAccounts`), die Termin-Feeds durch Dateien aus `test/fixtures/`.

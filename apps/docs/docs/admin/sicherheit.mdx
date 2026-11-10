@@ -45,7 +45,7 @@ gh attestation verify study-manager.tar.gz --repo erik1g/study-manager
 
 - Der **Server-Container läuft nicht als root** (Benutzer `node`); `web` ist das unveränderte Caddy-Image.
 - Wer das Netz sauber trennen will, kann die Container so beschränken, dass sie zwar ins Internet (Suchmodell, Kalender-Feeds), aber **nicht in dein Heimnetz** kommen. Das ist optional und hängt von deiner Firewall ab (z. B. Regeln in der `DOCKER-USER`-Kette von `iptables`).
-- Das Studio zur Datenbank gibt es nur in der Entwicklung (`docker-compose.dev.yml`); betreibe es nicht öffentlich.
+- Das Studio zur Datenbank gibt es nur in der Entwicklung (`infra/compose/dev.yml`); betreibe es nicht öffentlich.
 
 ## Wenn etwas passiert
 
