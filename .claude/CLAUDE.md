@@ -31,7 +31,7 @@ Die Regeln liegen in `.claude/rules/`. **Immer geladen:**
 
 ## Dateien, die bewusst im Wurzelordner bleiben
 
-GitHub und Werkzeuge erwarten sie dort: `README.md`, `LICENSE`, `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, `CONTEXT.md` (das Glossar), `.github/`. Ändere sie dort, nicht hier. Wenn sich eine Regel in `.claude/rules/` und in `CONTRIBUTING.md` oder der Doku-Seite überschneidet, **halte beide aktuell**.
+GitHub und Werkzeuge erwarten sie dort: `README.md`, `LICENSE`, `CHANGELOG.md`, `CONTEXT.md` (das Glossar), `.github/`. In `.github/` liegen auch `CONTRIBUTING.md`, `SECURITY.md` und `CODE_OF_CONDUCT.md`; GitHub findet sie dort. Ändere sie dort, nicht hier. Wenn sich eine Regel in `.claude/rules/` und in `CONTRIBUTING.md` oder der Doku-Seite überschneidet, **halte beide aktuell**.
 
 ## Persönliches
 
