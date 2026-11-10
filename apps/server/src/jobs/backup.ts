@@ -47,6 +47,8 @@ export async function runBackup(now = new Date()): Promise<BackupResult> {
     throw error;
   });
   const filesDir = process.env.FILES_DIR ?? "/data/files";
+  // A new installation has no folder yet; an empty archive is a good backup, a failing nightly job is not.
+  await mkdir(filesDir, { recursive: true });
   await run(`tar czf - --exclude=.tmp -C '${filesDir}' . | ${encrypt(archive)}`, env).catch(async (error) => {
     await rm(archive, { force: true });
     throw error;
