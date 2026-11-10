@@ -7,6 +7,7 @@ paths:
 # Ende-zu-Ende-Tests (`apps/e2e`, `infra/test`)
 
 - Aufruf: `./infra/test/stack.sh e2e` (alles), `… e2e --project=chromium` (ein Browser), `… e2e --reporter=line tests/datei.spec.ts` (eine Datei), `… e2e --update-snapshots tests/visual.spec.ts` (gewollte Änderungen im Aussehen; die geänderten Bilder unter `tests/__screenshots__/` gehören in den Commit und ins PR).
+- **Bilder für README und Doku:** `./infra/test/stack.sh screenshots` (Spec in `apps/e2e/screenshots/`, Ausgabe in `apps/docs/static/img/oberflaeche/`). Nach sichtbaren Änderungen neu aufnehmen und mit committen. Nur erfundene Daten, nie ein echtes Konto.
 - **Browser:** Chromium, WebKit und ein iPhone-Profil. Was es nur auf einer Breite gibt, überspringst du mit `test.skip(isPhone(page), "Grund")`.
 - **Reihenfolge:** zuerst die Bildvergleiche (Aussehen, Hell und Dunkel) auf den frischen Daten, dann die Tests, die Daten ändern, zuletzt das Löschen eines Kontos.
 - **Hilfen** in `tests/helpers.ts`: `signIn(page, "mira" | "jonas" | "sina")`, `openSubject(page, "Regelungstechnik")`, `isPhone(page)`. Die Uhr steht auf dem 3. November 2026, 10:00 Uhr Berlin.
