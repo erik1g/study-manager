@@ -17,3 +17,7 @@ build/
 .docusaurus/
 apps/e2e/test-results/
 apps/e2e/playwright-report/
+
+# Personal settings for Claude Code (shared instructions live in .claude/CLAUDE.md and .claude/rules/)
+CLAUDE.local.md
+.claude/settings.local.json
