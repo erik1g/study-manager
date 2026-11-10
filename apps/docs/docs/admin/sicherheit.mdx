@@ -32,7 +32,14 @@ cosign verify docker.io/erik1g/study-manager-server:0.1.0 \
   --certificate-oidc-issuer https://token.actions.githubusercontent.com
 ```
 
-Dasselbe gilt für `study-manager-web`. Ersetze `0.1.0` durch deine Version. Die Entwicklungsstände (`edge`, `sha-…`) sind **nicht signiert**; nutze für den Betrieb feste Versionen.
+Dasselbe gilt für `study-manager-web`. Ersetze `0.1.0` durch deine Version.
+
+**Das Betreiber-Paket** prüfst du mit der Prüfsumme und der Herkunftsbestätigung von GitHub:
+
+```sh
+sha256sum -c study-manager.sha256 --ignore-missing
+gh attestation verify study-manager.tar.gz --repo erik1g/study-manager
+``` Die Entwicklungsstände (`edge`, `sha-…`) sind **nicht signiert**; nutze für den Betrieb feste Versionen.
 
 ## Container
 
