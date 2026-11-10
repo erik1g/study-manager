@@ -1,0 +1,24 @@
+---
+paths:
+  - "infra/**"
+  - ".github/**"
+  - "docker-compose*.yml"
+---
+
+# Container, Proxy und CI
+
+## Container
+
+- **Zwei Images** (`infra/docker/`): `server.Dockerfile` (Node 24, `pg_dump`, Server-Code, Benutzer `node`) und `web.Dockerfile` (Caddy mit der gebauten Web-App und `infra/caddy/Caddyfile`). `pnpm` kommt per `npm install -g pnpm@12.16.1` ins Image (nicht über `corepack`).
+- **Compose-Dateien:** `docker-compose.yml` ist die für **Betreiber** (nur Images, `web` auf `127.0.0.1:8080`), `docker-compose.dev.yml` für Entwickler (Quellcode eingehängt, Hot Reload), `docker-compose.test.yml` legt sich über die erste und baut die Images aus dem Checkout für den Test-Stack.
+- **TLS endet am Reverse Proxy des Betreibers.** Caddy im `web`-Image spricht nur HTTP auf Port 80. Vertrauenswürdige Proxys kommen aus `TRUSTED_PROXIES`.
+- **Neue Einstellung** ⇒ `.env.example`, `apps/docs/docs/admin/konfiguration.mdx` und `setup.mjs` (falls sie erzeugt wird) ergänzen.
+- **Im Repository steht nichts vom Server des Maintainers:** keine Domains, IPs, Pfade, Firewall-Skripte.
+
+## GitHub Actions (`.github/workflows`)
+
+- **Alle Actions sind auf Commit-Hashes festgelegt** (`uses: owner/repo@<sha> # vX.Y.Z`), Dependabot hält sie aktuell. Neue Actions ebenso anlegen; Hash mit `gh api repos/OWNER/REPO/git/matching-refs/tags/vX` auflösen.
+- **Minimale Rechte:** `permissions: {}` oder `contents: read` auf Workflow-Ebene, Schreibrechte nur im Job, der sie braucht. `actions/checkout` mit `persist-credentials: false`.
+- **Veröffentlichen** nur im Original-Repo (`if: github.repository == 'erik1g/study-manager'`) und nur aus der Umgebung `release` (Release-Workflow). Siehe `releases-und-sicherheit.md`.
+- **Prüfen:** `zizmor` läuft in der CI; lokal `brew install zizmor && zizmor .github`. Es darf keine Findings geben. YAML-Syntax: `ruby -ryaml -e 'YAML.load_file(ARGV[0])' datei.yml`.
+- **CI** (`ci.yml`): UI-Prüfung, Typen, Unit-Tests (mit PostgreSQL-Dienst, `ALTER ROLE … search_path`), Doku- und Web-Build, Titel nach Conventional Commits, zizmor. **E2E** (`e2e.yml`): Playwright gegen die gebauten Images, auf `main` und bei Pull Requests mit dem Label `e2e`.
