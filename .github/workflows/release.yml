@@ -79,7 +79,7 @@ jobs:
           cache-from: type=gha,scope=${{ matrix.image }}
           cache-to: type=gha,mode=max,scope=${{ matrix.image }}
       # Anyone can check that an image comes from this workflow (see the admin documentation).
-      - uses: sigstore/cosign-installer@7e8b541eb2e61bf99390e1afd4be13a184e9ebc5 # v3.10.1
+      - uses: sigstore/cosign-installer@756fe2d284c7292c4e9b62c8a28f1e5629c59532 # v4.1.3
       - name: Sign the image
         env:
           IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/study-manager-${{ matrix.image }}
