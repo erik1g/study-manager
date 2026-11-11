@@ -15,7 +15,7 @@
     "admin:link": "docker compose exec server node --import tsx src/cli/admin-link.ts",
     "e2e": "./infra/test/stack.sh e2e"
   },
-  "version": "0.1.0",
+  "version": "0.1.1",
   "license": "GPL-3.0-only",
   "repository": {
     "type": "git",

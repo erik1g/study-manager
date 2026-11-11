@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/erik1g/study-manager/compare/v0.1.0...v0.1.1) (2026-11-11)
+
+
+### Dokumentation
+
+* add pictures of the app to the README and the user docs ([#18](https://github.com/erik1g/study-manager/issues/18)) ([a781b22](https://github.com/erik1g/study-manager/commit/a781b229950178d045fc71a6c94351edc364e101))
+
 ## 0.1.0 (2026-11-10)
 
 
