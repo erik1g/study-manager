@@ -14,7 +14,7 @@
 - die **Ausnahme für Admins** („Bypass“) benutzen, um deine eigenen Pull Requests zu mergen,
 - **Rulesets, Umgebungen, Secrets, Actions-Rechte oder Sichtbarkeit** des Repos ändern oder ein Ruleset abschwächen,
 - Workflows so ändern, dass Geheimnisse an Pull Requests von Forks gelangen, Rechte breiter werden oder Actions nicht mehr auf Commit-Hashes festgelegt sind,
-- Dependabot-Pull-Requests blind mergen: Sie ändern Versionen. Prüfe sie (besonders Major-Sprünge wie Node) und lass den Nutzer entscheiden.
+- Versionen von Actions, Images oder Node von dir aus anheben: Dependabot ist aus, Updates macht der Nutzer bewusst (besonders Major-Sprünge wie Node, `cosign` oder `release-please`).
 
 ## Geheimnisse
 

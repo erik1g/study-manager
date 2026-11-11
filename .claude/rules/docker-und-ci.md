@@ -17,7 +17,7 @@ paths:
 
 ## GitHub Actions (`.github/workflows`)
 
-- **Alle Actions sind auf Commit-Hashes festgelegt** (`uses: owner/repo@<sha> # vX.Y.Z`), Dependabot hält sie aktuell. Neue Actions ebenso anlegen; Hash mit `gh api repos/OWNER/REPO/git/matching-refs/tags/vX` auflösen.
+- **Alle Actions sind auf Commit-Hashes festgelegt** (`uses: owner/repo@<sha> # vX.Y.Z`), Dependabot ist aus: Versionen werden **von Hand** aktualisiert, vor einem Release geprüft und nicht nebenbei geändert. Neue Actions ebenso anlegen; Hash mit `gh api repos/OWNER/REPO/git/matching-refs/tags/vX` auflösen.
 - **Minimale Rechte:** `permissions: {}` oder `contents: read` auf Workflow-Ebene, Schreibrechte nur im Job, der sie braucht. `actions/checkout` mit `persist-credentials: false`.
 - **Veröffentlichen** nur im Original-Repo (`if: github.repository == 'erik1g/study-manager'`) und nur aus der Umgebung `release` (Release-Workflow). Siehe `releases-und-sicherheit.md`.
 - **Prüfen:** `zizmor` läuft in der CI; lokal `brew install zizmor && zizmor .github`. Es darf keine Findings geben. YAML-Syntax: `ruby -ryaml -e 'YAML.load_file(ARGV[0])' datei.yml`.
