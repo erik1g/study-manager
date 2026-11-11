@@ -36,7 +36,7 @@
     {
       "type": "docs",
       "section": "Dokumentation",
-      "hidden": false
+      "hidden": true
     },
     {
       "type": "refactor",
