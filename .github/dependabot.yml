@@ -1,4 +1,10 @@
 # Keeps the pinned GitHub Actions and the base images of the Dockerfiles up to date, with pull requests to review.
+#
+# - Minor and patch updates of the Actions come together in one pull request; a MAJOR version of an Action
+#   gets its own pull request, because it can change how releasing, signing and publishing behave and has to be
+#   reviewed on its own (those jobs are not run by the checks of a pull request).
+# - The Node.js base image stays on the LTS line that the project uses; major versions are ignored here and
+#   changed on purpose.
 version: 2
 updates:
   - package-ecosystem: github-actions
@@ -7,11 +13,13 @@ updates:
       interval: weekly
     cooldown:
       default-days: 7
+    open-pull-requests-limit: 5
     commit-message:
       prefix: "ci"
     groups:
-      actions:
+      actions-minor-and-patch:
         patterns: ["*"]
+        update-types: ["minor", "patch"]
   - package-ecosystem: docker
     directory: /infra/docker
     schedule:
@@ -20,3 +28,6 @@ updates:
       default-days: 7
     commit-message:
       prefix: "build"
+    ignore:
+      - dependency-name: node
+        update-types: ["version-update:semver-major"]
