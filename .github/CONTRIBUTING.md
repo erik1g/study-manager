@@ -20,6 +20,12 @@ docker compose --project-directory . -f infra/compose/dev.yml up -d
 
 Alle Schritte, Tests und Hinweise stehen in der Entwickler-Dokumentation.
 
+## Wohin dein Pull Request geht
+
+Releases werden geplant: Alles für die nächste Version sammelt sich in einem **Release-Branch** (`release/0.2`, `release/0.3` …; es gibt immer nur einen). Öffne deinen Pull Request **gegen diesen Branch**, nicht gegen `main`. Welcher gerade aktuell ist, siehst du unter [Branches](https://github.com/erik1g/study-manager/branches).
+
+Ausnahme: Ein `fix:` für die veröffentlichte Version oder ein Sicherheitsthema geht direkt gegen `main`.
+
 ## Commits und Pull Requests
 
 Wir nutzen [Conventional Commits](https://www.conventionalcommits.org/de/v1.0.0/); daraus entstehen Versionsnummern und Changelog automatisch (mit `release-please`):
@@ -28,7 +34,8 @@ Wir nutzen [Conventional Commits](https://www.conventionalcommits.org/de/v1.0.0/
 |---|---|---|
 | `feat:` | neue Funktion | Minor (`0.1.0` → `0.2.0`) |
 | `fix:` | Fehlerbehebung | Patch (`0.1.0` → `0.1.1`) |
-| `docs:`, `test:`, `chore:`, `refactor:`, `ci:`, `perf:`, `style:`, `build:` | alles andere | kein neues Release allein |
+| `perf:` | schneller | Patch |
+| `docs:`, `test:`, `chore:`, `refactor:`, `ci:`, `style:`, `build:` | alles andere | kein neues Release allein |
 | `feat!:` oder `BREAKING CHANGE:` im Text | Änderung, die bestehende Installationen bricht | Major (ab 1.0), davor Minor |
 
 Beispiel: `fix(planung): Wochenansicht auf dem Handy wischbar machen`
