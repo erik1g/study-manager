@@ -1,5 +1,7 @@
-# Checks for every pull request and every push to main: types, unit tests, UI check, build.
-# The end-to-end tests with the real container images run in e2e.yml.
+# Checks for every pull request (also those into a release branch like release/0.2) and every push to main:
+# types, unit tests, UI check, build. Not on pushes to release branches: everything comes there by a checked
+# pull request, and a push trigger on release/** would count as a release workflow for zizmor (cache poisoning). The end-to-end tests with the real container images run in e2e.yml, the check of the
+# pull request's title in pr-title.yml.
 name: CI
 
 on:
@@ -54,30 +56,6 @@ jobs:
         run: pnpm --filter @study/web build
       - name: Dokumentation bauen
         run: pnpm --filter @study/docs build
-
-  commit-title:
-    name: Titel folgt Conventional Commits
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    permissions:
-      pull-requests: read
-    steps:
-      - uses: amannn/action-semantic-pull-request@0723387faaf9b38adef4775cd42cfd5155ed6017 # v5.5.3
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          types: |
-            feat
-            fix
-            docs
-            style
-            refactor
-            perf
-            test
-            build
-            ci
-            chore
-            revert
 
   workflows:
     name: Workflows prüfen (zizmor)
