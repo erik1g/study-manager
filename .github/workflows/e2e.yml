@@ -1,13 +1,13 @@
 # The Playwright tests against the app as it is shipped: the server and web images are built from this
-# checkout and started with infra/compose/test.yml. Longer than CI, so only for main and on demand,
-# and for pull requests that carry the label "e2e".
+# checkout and started with infra/compose/test.yml. Longer than CI, so only for main and on demand, for pull requests
+# into or out of a release branch (release/0.2 …), and for other pull requests that carry the label "e2e".
 name: E2E
 
 on:
   push:
     branches: [main]
   pull_request:
-    types: [labeled, synchronize, reopened]
+    types: [opened, labeled, synchronize, reopened]
   workflow_dispatch:
 
 concurrency:
@@ -20,7 +20,11 @@ permissions:
 jobs:
   e2e:
     name: Playwright
-    if: github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'e2e')
+    if: >-
+      github.event_name != 'pull_request'
+      || startsWith(github.event.pull_request.base.ref, 'release/')
+      || (startsWith(github.event.pull_request.head.ref, 'release/') && github.event.pull_request.head.repo.full_name == github.repository)
+      || contains(github.event.pull_request.labels.*.name, 'e2e')
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:

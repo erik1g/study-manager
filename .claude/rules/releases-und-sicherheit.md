@@ -25,4 +25,6 @@
 
 ## Release-Ablauf (zum Verstehen, nicht zum Auslösen)
 
-Pull Request mit `feat:`/`fix:` → Merge in `main` → `release-please` hält den Release-PR (Version und `CHANGELOG.md`) aktuell → der Maintainer mergt ihn → Tag und GitHub-Release → die Images (`server`, `web`) werden gebaut, signiert (cosign) und mit Attestation bei Docker Hub veröffentlicht (Tags `X.Y.Z`, `X.Y`, `X`, `latest`; auf `main` zusätzlich `edge` und `sha-…`). Details: `apps/docs/docs/entwickler/releases.mdx`.
+**Wohin deine Pull Requests gehen:** in den aktuellen Release-Branch (`release/0.x`). Nur ein `fix:` für die veröffentlichte Version oder ein Sicherheitsthema geht direkt nach `main`. Den Release-Branch nach `main` zu mergen ist Sache des Maintainers.
+
+Pull Request (Squash) in den **einen** Release-Branch `release/0.x` (CI und E2E im Pull Request) → Testimages `release-0.x` → `main` per Pull Request (Merge-Commit) in den Release-Branch holen → Pull Request `release/0.x → main` als **Merge-Commit** (nie Squash) → `release-please` hält den Release-PR (Version und `CHANGELOG.md`) aktuell → der Maintainer mergt ihn → Tag und GitHub-Release → die Images (`server`, `web`) werden gebaut, signiert (cosign) und mit Attestation bei Docker Hub veröffentlicht (Tags `X.Y.Z`, `X.Y`, `X`, `latest`; auf `main` zusätzlich `edge` und `sha-…`). Details: `apps/docs/docs/entwickler/releases.mdx`.

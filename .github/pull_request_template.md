@@ -1,3 +1,5 @@
+<!-- Ziel dieses Pull Requests: der aktuelle Release-Branch (release/0.x). Nur ein fix: für die veröffentlichte Version oder ein Sicherheitsthema geht gegen main. -->
+
 ## Was ändert sich und warum?
 
 <!-- Ein oder zwei Sätze. Verweise auf ein Issue: "Closes #123". -->
