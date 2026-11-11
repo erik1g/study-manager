@@ -49,7 +49,7 @@ Die App hört dann auf `127.0.0.1:8080`; dein Reverse Proxy leitet deine Domain 
 
 ## Mitmachen
 
-Der Study Manager soll für **möglichst viele Studierende** funktionieren – dafür brauchen wir dich. Du kannst Fehler melden, Dokumentation verbessern, deine Hochschule anbinden (Stud.IP, HISinOne, ILIAS …), eine Sprache übersetzen oder ein Feature bauen. Einsteigerfreundliche Aufgaben tragen das Label [`good first issue`](https://github.com/erik1g/study-manager/labels/good%20first%20issue). Lies zuerst [CONTRIBUTING.md](CONTRIBUTING.md).
+Der Study Manager soll für **möglichst viele Studierende** funktionieren – dafür brauchen wir dich. Du kannst Fehler melden, Dokumentation verbessern, deine Hochschule anbinden (Stud.IP, HISinOne, ILIAS …), eine Sprache übersetzen oder ein Feature bauen. Einsteigerfreundliche Aufgaben tragen das Label [`good first issue`](https://github.com/erik1g/study-manager/labels/good%20first%20issue). Lies zuerst [CONTRIBUTING.md](.github/CONTRIBUTING.md).
 
 ## Aufbau
 

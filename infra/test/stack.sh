@@ -9,7 +9,7 @@
 set -e
 cd "$(dirname "$0")/../.."
 # STACK_EXTRA=file.yml adds a Compose file of your own (e.g. to build on the host's network).
-compose() { docker compose -p study-test --env-file .env.test -f docker-compose.yml -f docker-compose.test.yml ${STACK_EXTRA:+-f "$STACK_EXTRA"} "$@"; }
+compose() { docker compose -p study-test --env-file .env.test -f docker-compose.yml -f infra/compose/test.yml ${STACK_EXTRA:+-f "$STACK_EXTRA"} "$@"; }
 
 case "$1" in
   up)

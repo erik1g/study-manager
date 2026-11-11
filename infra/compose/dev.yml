@@ -2,8 +2,8 @@
 # from the mounted source with hot reload. `ADMIN_EMAIL=you@example.org DOMAIN=localhost
 # node infra/scripts/setup.mjs` writes .env first. (To run the app, not to work on it, use docker-compose.yml.)
 #
-#   docker compose -f docker-compose.dev.yml up -d                    everything
-#   docker compose -f docker-compose.dev.yml --profile studio up -d   plus Supabase Studio (database browser)
+#   docker compose --project-directory . -f infra/compose/dev.yml up -d                    everything
+#   docker compose --project-directory . -f infra/compose/dev.yml --profile studio up -d   plus Supabase Studio (database browser)
 #
 # The source is mounted at the same path as on the host, so that the
 # dependencies installed there (pnpm links by absolute path) work inside.
@@ -118,7 +118,9 @@ services:
       retries: 10
 
   server:
-    build: ./infra/dev
+    build:
+      context: ./infra/docker
+      dockerfile: dev.Dockerfile
     restart: unless-stopped
     working_dir: ${PWD}
     command: ["pnpm", "--filter", "@study/server", "dev"]
@@ -138,7 +140,9 @@ services:
       - ${DATA_DIR}:/data
 
   web:
-    build: ./infra/dev
+    build:
+      context: ./infra/docker
+      dockerfile: dev.Dockerfile
     restart: unless-stopped
     working_dir: ${PWD}
     command: ["pnpm", "--filter", "@study/web", "dev", "--host", "0.0.0.0"]

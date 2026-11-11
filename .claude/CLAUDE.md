@@ -4,8 +4,8 @@ Der Study Manager ist freie Software (GPL-3.0): eine selbst gehostete Web-App f�
 
 ## Zuerst lesen
 
-- Glossar (Begriffe wie Fach, Deadline, Aufgabe, Besitzer, Bearbeiter, Leser): @../CONTEXT.md
-- Architekturentscheidungen liegen in `docs/adr/` (lies sie bei Fragen zum „Warum“, vor allem `0002`: keine KI auf dem Server).
+- Glossar (Begriffe wie Fach, Deadline, Aufgabe, Besitzer, Bearbeiter, Leser): @../apps/docs/docs/entwickler/glossar.mdx
+- Architekturentscheidungen liegen in `apps/docs/docs/entwickler/entscheidungen/` (lies sie bei Fragen zum „Warum“, vor allem `0002`: keine KI auf dem Server).
 - Die Doku für Nutzer, Admins und Entwickler ist `apps/docs/docs/` (Seite: https://erik1g.github.io/study-manager).
 
 ## Was wo steht
@@ -31,7 +31,7 @@ Die Regeln liegen in `.claude/rules/`. **Immer geladen:**
 
 ## Dateien, die bewusst im Wurzelordner bleiben
 
-GitHub und Werkzeuge erwarten sie dort: `README.md`, `LICENSE`, `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, `CONTEXT.md` (das Glossar), `.github/`. Ändere sie dort, nicht hier. Wenn sich eine Regel in `.claude/rules/` und in `CONTRIBUTING.md` oder der Doku-Seite überschneidet, **halte beide aktuell**.
+GitHub und Werkzeuge erwarten sie dort: `README.md`, `LICENSE`, `CHANGELOG.md`, `.github/`. In `.github/` liegen auch `CONTRIBUTING.md`, `SECURITY.md` und `CODE_OF_CONDUCT.md`; GitHub findet sie dort. Ändere sie dort, nicht hier. Wenn sich eine Regel in `.claude/rules/` und in `CONTRIBUTING.md` oder der Doku-Seite überschneidet, **halte beide aktuell**.
 
 ## Persönliches
 

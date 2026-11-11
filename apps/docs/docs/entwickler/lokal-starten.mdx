@@ -18,11 +18,11 @@ git clone https://github.com/erik1g/study-manager.git
 cd study-manager
 pnpm install
 ADMIN_EMAIL=du@example.org DOMAIN=localhost node infra/scripts/setup.mjs   # schreibt .env
-docker compose -f docker-compose.dev.yml up -d
-docker compose -f docker-compose.dev.yml logs server   # der Link zum Einrichten des Admin-Kontos
+docker compose --project-directory . -f infra/compose/dev.yml up -d
+docker compose --project-directory . -f infra/compose/dev.yml logs server   # der Link zum Einrichten des Admin-Kontos
 ```
 
-Der Entwicklungsstack (`docker-compose.dev.yml`) hängt den Quellcode in die Container ein: **Server und Web-App laden bei Änderungen neu**. Die App erreichst du unter `http://localhost:8080`.
+Der Entwicklungsstack (`infra/compose/dev.yml`) hängt den Quellcode in die Container ein: **Server und Web-App laden bei Änderungen neu**. Die App erreichst du unter `http://localhost:8080`.
 
 Zum Anmelden mit einem Testkonto nimmst du statt dessen den **Test-Stack** (siehe [Tests](/entwickler/tests)): Er hat erfundene Daten und feste Konten.
 
@@ -40,7 +40,7 @@ pnpm --filter @study/docs start  # diese Doku lokal (Port 3002)
 Die Tests des Servers laufen gegen eine echte PostgreSQL-Datenbank:
 
 ```sh
-docker compose -f docker-compose.dev.yml exec server sh -c "cd apps/server && pnpm exec vitest run"
+docker compose --project-directory . -f infra/compose/dev.yml exec server sh -c "cd apps/server && pnpm exec vitest run"
 ```
 
 ## Probleme

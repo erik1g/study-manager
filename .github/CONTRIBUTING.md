@@ -15,7 +15,7 @@ Die ausführliche Anleitung steht in der Entwickler-Dokumentation: **https://eri
 ```sh
 pnpm install
 ADMIN_EMAIL=du@example.org DOMAIN=localhost node infra/scripts/setup.mjs
-docker compose -f docker-compose.dev.yml up -d
+docker compose --project-directory . -f infra/compose/dev.yml up -d
 ```
 
 Alle Schritte, Tests und Hinweise stehen in der Entwickler-Dokumentation.

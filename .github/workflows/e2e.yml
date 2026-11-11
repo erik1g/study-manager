@@ -1,5 +1,5 @@
 # The Playwright tests against the app as it is shipped: the server and web images are built from this
-# checkout and started with docker-compose.test.yml. Longer than CI, so only for main and on demand,
+# checkout and started with infra/compose/test.yml. Longer than CI, so only for main and on demand,
 # and for pull requests that carry the label "e2e".
 name: E2E
 
@@ -47,7 +47,7 @@ jobs:
           retention-days: 7
       - name: Logs des Stacks
         if: failure()
-        run: docker compose -p study-test --env-file .env.test -f docker-compose.yml -f docker-compose.test.yml logs --no-color --tail 200
+        run: docker compose -p study-test --env-file .env.test -f docker-compose.yml -f infra/compose/test.yml logs --no-color --tail 200
       - name: Aufräumen
         if: always()
         run: ./infra/test/stack.sh reset
