@@ -48,7 +48,7 @@ Ein Release soll **niemand außer den Maintainern** auslösen können. Dafür gr
 1. **`main` ist geschützt** (Ruleset): nur Pull Requests, die Prüfungen „Typen, Tests, Build“ und „Titel folgt Conventional Commits“ müssen grün sein, keine Force-Pushes, kein Löschen. Freigeben darf nur, wer in `CODEOWNERS` steht. Beiträge von außen kommen über Forks ohne Schreibrecht, und ihre Workflows laufen ohne Zugriff auf Geheimnisse.
 2. **Tags `v*` sind geschützt** (Tag-Ruleset): Nur Maintainer und der Release-Bot legen sie an oder ändern sie.
 3. **Das Veröffentlichen wartet auf eine Freigabe**: Der Job, der die Images bei Docker Hub veröffentlicht, läuft in der GitHub-Umgebung `release`. Sie hat Pflicht-Prüfer und ist auf `main` beschränkt. Auch wer den Release-PR mergt, veröffentlicht damit noch nichts, bis ein Maintainer in GitHub **Approve** klickt.
-4. **Die Workflows sind gehärtet**: alle fremden Actions sind auf Commit-Hashes festgelegt (Dependabot hält sie aktuell), jeder Job hat nur die nötigen Rechte, `zizmor` prüft die Workflows in der CI, und die Veröffentlichung läuft nur im Original-Repository, nie in einem Fork.
+4. **Die Workflows sind gehärtet**: alle fremden Actions sind auf Commit-Hashes festgelegt (Aktualisiert wird von Hand, vor einem Release), jeder Job hat nur die nötigen Rechte, `zizmor` prüft die Workflows in der CI, und die Veröffentlichung läuft nur im Original-Repository, nie in einem Fork.
 5. **Die Images sind signiert** (cosign, ohne eigenen Schlüssel) und haben eine Herkunftsbestätigung; Betreiber prüfen sie mit [`cosign verify`](/admin/sicherheit).
 
 ## Einmalig einrichten (Maintainer)
