@@ -35,6 +35,7 @@ pnpm install                                   # einmal, für Playwright
 ./infra/test/stack.sh seed    # füllt die Daten (SEED_DAY=2026-11-03 für den festen Tag)
 ./infra/test/stack.sh e2e     # zurücksetzen, füllen, alle Playwright-Tests
 ./infra/test/stack.sh e2e --reporter=line tests/course.spec.ts   # nur ein Teil
+./infra/test/stack.sh screenshots   # wie e2e, aber nimmt die Bilder für README und Doku auf
 ./infra/test/stack.sh down | reset
 ```
 
@@ -43,4 +44,5 @@ pnpm install                                   # einmal, für Playwright
 - Neue Tests gehören nach `apps/e2e/tests/` und nutzen `helpers.ts` (`signIn`, `openSubject`, `isPhone`). Die Tests laufen in Chromium, WebKit und einem iPhone-Profil; Dinge, die es nur auf breiten oder schmalen Bildschirmen gibt, überspringst du mit `test.skip(isPhone(page), "…")`.
 - Ändert ein Test geteilte Daten, ist er **robust gegen Wiederholung** und räumt auf oder legt eigene Daten an (Titel mit `info.project.name`).
 - Warte auf eine **sichtbare Bestätigung** (z. B. die Meldung „Deadline angelegt“), bevor du die Seite wechselst; sonst brichst du die Anfrage ab.
+- **Bilder für README und Doku** liegen in `apps/docs/static/img/oberflaeche/` (hell, dunkel, Laptop und Handy). Sie entstehen mit `./infra/test/stack.sh screenshots` aus den erfundenen Testdaten (`apps/e2e/screenshots/`); nimm sie nach größeren Änderungen am Aussehen neu auf und committe sie. Die Zeiten von Uploads und Änderungen sind darin ausgeblendet, weil die Uhr des Servers die echte ist.
 - Absichtliche Änderungen am Aussehen: `./infra/test/stack.sh e2e --update-snapshots tests/visual.spec.ts`, danach die geänderten Bilder in `apps/e2e/tests/__screenshots__` im Pull Request prüfen.

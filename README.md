@@ -6,6 +6,13 @@ Der Study Manager ist eine selbst gehostete Web-App für Studierende: Fächer mi
 
 Freie Software unter der [GPL-3.0](LICENSE). Gemacht von Studierenden für Studierende – und offen für alle, die mitmachen wollen.
 
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="apps/docs/static/img/oberflaeche/heute-dunkel.png">
+    <img src="apps/docs/static/img/oberflaeche/heute-hell.png" alt="Die Startseite „Heute“ des Study Managers mit Terminen, Aufgaben und Lernkarten des Tages" width="800">
+  </picture>
+</p>
+
 ## Was sie kann
 
 - **Fächer** mit Rollen (Besitzer, Bearbeiter, Leser): Dokumente, Deadlines, Mitglieder und ein Aktivitätsverlauf, gemeinsam mit der Lerngruppe.

@@ -5,6 +5,7 @@
 #   down   stops it, keeps the data
 #   reset  stops it and deletes its data, so that the next up starts empty
 #   e2e    resets, fills and runs the Playwright tests of apps/e2e against it (needs `pnpm install` once)
+#   screenshots  the same, but takes the pictures of the app for README and docs (apps/docs/static/img/oberflaeche/)
 # It listens only on http://127.0.0.1:8090 of this machine.
 set -e
 cd "$(dirname "$0")/../.."
@@ -27,7 +28,7 @@ case "$1" in
   down)
     compose down
     ;;
-  e2e)
+  e2e|screenshots)
     # A clean stack with the data of a fixed day, then the Playwright tests in their own container.
     "$0" reset
     "$0" up
@@ -37,15 +38,22 @@ case "$1" in
       sleep 2
     done
     SEED_DAY=2026-11-03 "$0" seed
+    mode=$1
     shift
-    docker run --rm --network host --ipc=host -v "$PWD:$PWD" -w "$PWD/apps/e2e" -e CI=1 \
+    as_me=
+    if [ "$mode" = screenshots ]; then
+      # The pictures land in the checkout, so they must belong to you and not to root.
+      set -- --config playwright.screenshots.config.ts "$@"
+      as_me="--user $(id -u):$(id -g) -e HOME=/tmp"
+    fi
+    docker run --rm --network host --ipc=host $as_me -v "$PWD:$PWD" -w "$PWD/apps/e2e" -e CI=1 \
       mcr.microsoft.com/playwright:v1.64.1-noble npx playwright test "$@"
     ;;
   reset)
     if [ -f .env.test ]; then compose down -v; fi
     ;;
   *)
-    echo "Aufruf: $0 up | seed | down | reset | e2e [Playwright-Argumente]" >&2
+    echo "Aufruf: $0 up | seed | down | reset | e2e | screenshots [Playwright-Argumente]" >&2
     exit 1
     ;;
 esac
