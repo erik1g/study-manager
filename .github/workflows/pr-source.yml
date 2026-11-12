@@ -1,0 +1,41 @@
+# main is always the released state. A pull request into main may only come from dev (the next release) or from
+# the release PR of release-please; everything else, fixes too, goes into dev. A required check on main.
+name: PR-Quelle
+
+on:
+  pull_request:
+    # "edited" also covers a changed base branch.
+    types: [opened, edited, synchronize, reopened]
+
+concurrency:
+  group: pr-source-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions: {}
+
+jobs:
+  source:
+    name: Quelle erlaubt
+    runs-on: ubuntu-latest
+    steps:
+      - name: Herkunft prüfen
+        env:
+          BASE: ${{ github.event.pull_request.base.ref }}
+          HEAD: ${{ github.event.pull_request.head.ref }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          REPO: ${{ github.repository }}
+        run: |
+          if [ "$BASE" != "main" ]; then
+            echo "Ziel ist ${BASE}, nicht main: nichts zu prüfen."
+            exit 0
+          fi
+          if [ "$HEAD_REPO" = "$REPO" ]; then
+            case "$HEAD" in
+              dev|release-please--*)
+                echo "Erlaubt: ${HEAD} → main."
+                exit 0
+                ;;
+            esac
+          fi
+          echo "::error::Pull Requests nach main kommen nur von dev oder vom Release-PR. Stelle das Ziel (base) auf dev um."
+          exit 1

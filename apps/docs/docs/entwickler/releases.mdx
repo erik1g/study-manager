@@ -1,7 +1,7 @@
 ---
 title: "Releases und Versionen"
 sidebar_position: 6
-description: "Wie ein Release geplant wird und wie aus Commits Versionen, Changelog und Docker-Images werden."
+description: "Die Branches dev und main, wie ein Release entsteht und wie aus Commits Versionen, Changelog und Docker-Images werden."
 ---
 
 # Releases und Versionen
@@ -10,53 +10,76 @@ Der Study Manager folgt **Semantic Versioning** (`MAJOR.MINOR.PATCH`). Versionen
 
 ## Der Ablauf
 
-Releases werden **geplant**: Alles, was in die nächste Version gehört, sammelt sich in einem **Release-Branch**. Erst wenn er getestet ist, kommt er nach `main` und wird veröffentlicht.
+Es gibt zwei feste Branches, ähnlich wie bei Home Assistant:
+
+- **`dev`** ist der Entwicklungsstand und der **Default-Branch**. Hier landet alles für die nächste Version, und er ist **immer releasefähig**.
+- **`main`** ist **immer der veröffentlichte Stand**. Er bekommt nur Pull Requests von `dev` und den Release-PR.
 
 ```
-Pull Request (Titel: feat: …)  ──squash──►  release/0.2      (CI und E2E im Pull Request)
-                                               │  Images "release-0.2" zum Ausprobieren
-                                               │  vorher: main in release/0.2 mergen
-                                               ▼
-                         Pull Request release/0.2 → main  (CI und E2E, Merge-Commit, kein Squash)
-                                               │
-                          release-please sammelt die Commits
-                                               ▼
-                       Release-PR "chore: release 0.2.0"  (Version + CHANGELOG.md)
-                                               │  du mergst ihn
-                                               ▼
-                  Git-Tag v0.2.0  +  GitHub-Release mit Changelog
-                                               │  Freigabe in der Umgebung release
-                                               ▼
-              Docker Hub: study-manager-server und study-manager-web
-              mit den Tags 0.2.0, 0.2, 0 und latest (amd64 und arm64)
+Fork / Branch von dev ──PR (Squash)──►  dev        (CI und E2E im Pull Request, Pflicht)
+                                         │  Images "edge" und "sha-…" zum Ausprobieren
+                                         ▼
+                   Pull Request dev → main  (Merge-Commit, kein Squash)
+                   nur, wenn sofort veröffentlicht wird
+                                         │
+                    release-please sammelt die Commits
+                                         ▼
+                 Release-PR "chore(main): release 0.2.0"  (Version + CHANGELOG.md)
+                                         │  du mergst ihn
+                                         ▼
+            Git-Tag v0.2.0  +  GitHub-Release mit Changelog
+                     │                               │
+                     │ Freigabe in der               │ automatisch
+                     │ Umgebung release              ▼
+                     ▼                     Pull Request main → dev
+     Docker Hub: study-manager-server      (Changelog und Version zurück,
+     und study-manager-web mit den Tags     Merge-Commit)
+     0.2.0, 0.2, 0 und latest
+     (amd64 und arm64)
 ```
 
 ### Regeln
 
-- Es gibt **immer nur einen** Release-Branch, benannt nach der geplanten Minor-Version: `release/0.2`. Er wird von `main` abgezweigt, wenn das vorige Release fertig ist.
-- **Features und alles andere** gehen per Pull Request (Squash) in den Release-Branch. Der **Titel** folgt Conventional Commits und wird zum Commit-Titel. Pull Requests in einen Release-Branch und aus ihm heraus durchlaufen **immer** die E2E-Tests (ohne Label); direkt auf den Branch wird nichts gepusht.
-- **Hotfixes** (`fix:` für die veröffentlichte Version) und Sicherheitsthemen gehen direkt per Pull Request nach `main` und geben einen Patch-Release (`0.1.1`). Danach wird `main` in den Release-Branch gemergt.
-- **Release-Branch → `main`** immer als **Merge-Commit**, nie als Squash: Nur so bleibt jedes `feat:` und `fix:` ein eigener Eintrag im Changelog, und die Version wird aus allen Commits berechnet.
-- Der Name des Branches ist ein Plan. Die Version berechnet release-please aus den Commits; soll sie anders lauten, steht `Release-As: 0.2.0` im Text eines Commits.
+- **Alles geht nach `dev`**: Features, Fehlerbehebungen, Doku, auch dringende Fixes. Es gibt keine Hotfixes direkt gegen `main`; ein dringender Fix wird über `dev` mit einem früheren Release veröffentlicht.
+- **`dev` ist immer releasefähig.** Gemergt wird nur, was fertig ist: getestet, dokumentiert, benutzbar. Größere Features bleiben in ihrem Branch (oder als Draft-PR offen), bis sie fertig sind, oder kommen in mehreren kleinen, jeweils fertigen Pull Requests.
+- **Pull Requests nach `dev`** werden gesquasht. Der **Titel** folgt Conventional Commits und wird zum Commit-Titel. Jeder Pull Request nach `dev` durchläuft CI **und** E2E; beides muss grün sein, für alle, auch für Maintainer.
+- **`dev` → `main`** immer als **Merge-Commit**, nie als Squash: Nur so bleibt jedes `feat:` und `fix:` ein eigener Eintrag im Changelog. Ein Pull Request nach `main` von einem anderen Branch wird von der Prüfung „Quelle erlaubt“ abgelehnt.
+- **Nach jedem Release** legt der Release-Workflow einen Pull Request `main → dev` an. Er bringt `CHANGELOG.md` und `.release-please-manifest.json` zurück; du mergst ihn als **Merge-Commit**.
+- **Wann released wird, entscheidest du nach Bedarf**: Fixes zeitnah, Features gesammelt, und `dev` nicht länger als etwa einen Monat liegen lassen, wenn sich etwas geändert hat. Die Version berechnet release-please aus den Commits; soll sie anders lauten, steht `Release-As: 0.2.0` im Text eines Commits.
 
 ### Ein Release, Schritt für Schritt (Maintainer)
 
 ```sh
-# 1. Anfangen (nach dem vorigen Release)
-git fetch origin && git switch -c release/0.2 origin/main && git push -u origin release/0.2
+# 1. Nach dev bringen und vorher den Stand ausprobieren, z. B. mit den Images
+#    study-manager-server:edge und study-manager-web:edge.
 
-# 2. Sammeln: Pull Requests gegen release/0.2 prüfen und mit Squash mergen.
-#    Ausprobieren mit den Images study-manager-server:release-0.2 und study-manager-web:release-0.2.
-
-# 3. Abschließen: erst main hereinholen (Hotfixes), dann nach main – beides als Merge-Commit,
-#    weil der Release-Branch geschützt ist und nur Pull Requests annimmt.
-gh pr create --base release/0.2 --head main --title "chore: merge main into release/0.2"
-gh pr merge <nummer> --merge
-gh pr create --base main --head release/0.2 --title "chore: merge release/0.2 into main"
+# 2. dev nach main – als Merge-Commit, nur wenn du jetzt veröffentlichst.
+gh pr create --base main --head dev --title "chore: release dev"
 gh pr merge <nummer> --merge          # nie --squash
 
-# 4. Veröffentlichen: den Release-PR von release-please mergen und in der Umgebung release freigeben.
+# 3. Den Release-PR von release-please mergen (sobald seine Prüfungen grün sind)
+#    und in der Umgebung release auf „Approve“ klicken.
+
+# 4. Den automatisch angelegten Pull Request main → dev mergen, als Merge-Commit.
+gh pr merge <nummer> --merge
 ```
+
+Zwischen Schritt 2 und 3 liegen nur Minuten: `main` soll nie länger unveröffentlichten Stand enthalten.
+
+Solange die Version unter **1.0** liegt, erhöht ein Bruch die Minor-Version (`0.2.0` → `0.3.0`). Ab 1.0 erhöht er die Major-Version.
+
+## Einen Pull Request in der Oberfläche ausprobieren
+
+Pull Requests, die die Oberfläche ändern, enthalten Screenshots oder ein kurzes Video. Größere Features kommen als **Draft-PR**; bevor du sie annimmst, startest du sie lokal:
+
+```sh
+gh pr checkout <nummer>     # funktioniert auch für Pull Requests aus Forks
+pnpm install
+pnpm dev                    # startet den Entwicklungs-Stack (infra/compose/dev.yml);
+                            # einmal vorher einrichten, siehe Mitmachen → Lokal starten
+```
+
+Danach im Browser auf Laptop- und Handy-Breite durchklicken. Nach dem Merge läuft derselbe Stand als Image `edge`, das du vor dem Release auf einem eigenen Server ansehen kannst.
 
 Solange die Version unter **1.0** liegt, erhöht ein Bruch die Minor-Version (`0.2.0` → `0.3.0`). Ab 1.0 erhöht er die Major-Version.
 
@@ -67,13 +90,13 @@ Solange die Version unter **1.0** liegt, erhöht ein Bruch die Minor-Version (`0
 | `docker.io/erik1g/study-manager-server` | API, MCP-Server und Jobs |
 | `docker.io/erik1g/study-manager-web` | Caddy mit der gebauten Web-App |
 
-Tags je Release: `X.Y.Z`, `X.Y`, `X` und `latest`. Auf `main` entstehen zusätzlich `edge`, auf einem Release-Branch `release-0.2` (für `release/0.2`), auf beiden `sha-<commit>`. Diese Testimages sind **nicht signiert** und nie `latest`. Beide Images gibt es für `linux/amd64` und `linux/arm64` (zum Beispiel für einen Raspberry Pi).
+Tags je Release: `X.Y.Z`, `X.Y`, `X` und `latest`. Jeder Commit auf `dev` gibt zusätzlich `edge` und `sha-<commit>`. Diese Testimages sind **nicht signiert** und nie `latest`. Beide Images gibt es für `linux/amd64` und `linux/arm64` (zum Beispiel für einen Raspberry Pi).
 
 ## Wer ein Release auslösen darf
 
 Ein Release soll **niemand außer den Maintainern** auslösen können. Dafür greifen mehrere Schichten ineinander:
 
-1. **`main` und die Release-Branches sind geschützt** (Rulesets): nur Pull Requests, die Prüfungen „Typen, Tests, Build“ und „Titel folgt Conventional Commits“ müssen grün sein, keine Force-Pushes, kein Löschen. Freigeben darf nur, wer in `CODEOWNERS` steht. Beiträge von außen kommen über Forks ohne Schreibrecht, und ihre Workflows laufen ohne Zugriff auf Geheimnisse.
+1. **`main` und `dev` sind geschützt** (Rulesets): nur Pull Requests; die Prüfungen „Typen, Tests, Build“, „Titel folgt Conventional Commits“ und „Playwright“ müssen grün sein, auf `main` zusätzlich „Quelle erlaubt“; keine Force-Pushes, kein Löschen, **keine Ausnahme**, auch nicht für Maintainer. Mergen kann nur, wer Schreibrecht hat. Beiträge von außen kommen über Forks ohne Schreibrecht, und ihre Workflows laufen ohne Zugriff auf Geheimnisse.
 2. **Tags `v*` sind geschützt** (Tag-Ruleset): Nur Maintainer und der Release-Bot legen sie an oder ändern sie.
 3. **Das Veröffentlichen wartet auf eine Freigabe**: Der Job, der die Images bei Docker Hub veröffentlicht, läuft in der GitHub-Umgebung `release`. Sie hat Pflicht-Prüfer und ist auf `main` beschränkt. Auch wer den Release-PR mergt, veröffentlicht damit noch nichts, bis ein Maintainer in GitHub **Approve** klickt.
 4. **Die Workflows sind gehärtet**: alle fremden Actions sind auf Commit-Hashes festgelegt (Aktualisiert wird von Hand, vor einem Release), jeder Job hat nur die nötigen Rechte, `zizmor` prüft die Workflows in der CI, und die Veröffentlichung läuft nur im Original-Repository, nie in einem Fork.
@@ -81,15 +104,31 @@ Ein Release soll **niemand außer den Maintainern** auslösen können. Dafür gr
 
 ## Einmalig einrichten (Maintainer)
 
-- **Secrets** (*Settings → Secrets and variables → Actions*): `DOCKERHUB_USERNAME` und `DOCKERHUB_TOKEN` (ein Zugriffstoken mit Schreibrecht).
-- **Actions** (*Settings → Actions → General*): Workflows dürfen Pull Requests anlegen (für den Release-PR); Pull Requests von allen Externen brauchen eine Freigabe; Standard-Rechte nur lesen.
+- **Branch `dev`** von `main` anlegen und unter *Settings → General → Default branch* zum Default machen.
+- **Secrets** (*Settings → Secrets and variables → Actions*): `DOCKERHUB_USERNAME` und `DOCKERHUB_TOKEN` (ein Zugriffstoken mit Schreibrecht) sowie `RELEASE_TOKEN` (siehe unten).
+- **Actions** (*Settings → Actions → General*): Pull Requests von allen Externen brauchen eine Freigabe; Standard-Rechte nur lesen.
 - **Umgebung `release`** (*Settings → Environments*): Pflicht-Prüfer = die Maintainer; Zweige: nur `main`.
-- **Umgebung `edge`** (*Settings → Environments*): Zweige `main` und `release/*` (für die Testimages).
-- **Rulesets** (*Settings → Rules*): `main` (Pull Request, Prüfungen, Code-Owner-Freigabe, keine Force-Pushes, Merge-Methoden **Squash und Merge-Commit**), `release/**` (Pull Request, Prüfungen, keine Force-Pushes, Merge-Methoden Squash und Merge-Commit; Löschen nur durch Maintainer, nach dem Release) und die Tags `v*` (nur Maintainer und der Bot `github-actions`). Maintainer dürfen eine Ausnahme per Pull Request haben, sonst könnten sie ihre eigenen Pull Requests nicht freigeben.
+- **Umgebung `edge`** (*Settings → Environments*): Zweig nur `dev` (für die Testimages).
+- **Rulesets** (*Settings → Rules*):
+  - `main`: Pull Request mit 0 Pflicht-Freigaben, Merge-Methode **nur Merge-Commit**, Prüfungen „Typen, Tests, Build“, „Titel folgt Conventional Commits“, „Playwright“ und „Quelle erlaubt“, keine Force-Pushes, kein Löschen, **keine Ausnahmen**.
+  - `dev`: Pull Request mit 0 Pflicht-Freigaben, Merge-Methoden **Squash und Merge-Commit**, Prüfungen „Typen, Tests, Build“, „Titel folgt Conventional Commits“ und „Playwright“, keine Force-Pushes, kein Löschen, **keine Ausnahmen**.
+  - Tags `v*`: nicht ändern, nicht löschen (nur Maintainer).
 - **Pages**: *Settings → Pages → Source: GitHub Actions* (für diese Doku).
 - **Sicherheit**: private Sicherheitsmeldungen und Push-Schutz für Geheimnisse einschalten.
 
-Der Release-PR wird vom Bot angelegt; dessen Pull Requests lösen die Prüfungen nicht von selbst aus. Der Maintainer mergt ihn mit seiner Ausnahme für Maintainer.
+Pflicht-Freigaben gibt es bewusst nicht: Den eigenen Pull Request kann man auf GitHub nicht freigeben, und mergen kann ohnehin nur, wer Schreibrecht hat. Die grünen Prüfungen sind die Hürde, für alle gleich. Ist die CI selbst kaputt (etwa bei einer Störung von GitHub), lockerst du das Ruleset kurz von Hand.
+
+### Das Token `RELEASE_TOKEN`
+
+Pull Requests, die ein Workflow mit dem normalen `GITHUB_TOKEN` anlegt, starten keine Workflows. Ihre Pflicht-Prüfungen liefen nie, und ohne Ausnahme ließen sie sich nie mergen. Darum legt der Release-Workflow den Release-PR und den Pull Request `main → dev` mit einem Token des Maintainers an:
+
+1. *GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token*.
+2. **Repository access:** *Only select repositories* → nur `study-manager`.
+3. **Permissions:** *Contents: Read and write* und *Pull requests: Read and write* (Metadata: Read kommt von selbst).
+4. **Expiration:** wählen und den Termin **in den Kalender eintragen**.
+5. Als Secret hinterlegen, ohne dass der Wert in einem Befehl steht: `pbpaste | gh secret set RELEASE_TOKEN --repo erik1g/study-manager` (Linux: `xclip -o -sel clip | …`).
+
+**Erneuern:** Vor dem Ablauf ein neues Token gleich anlegen, Secret überschreiben, altes Token löschen. Läuft es ab, scheitert der Job `release-please` mit einem Fehler zur Anmeldung, und der Release-PR wird nicht mehr aktualisiert.
 
 ## Eine Version zurückziehen
 

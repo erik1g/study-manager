@@ -13,7 +13,7 @@ description: "Unit-Tests, Typprüfung, UI-Prüfung und die End-to-End-Tests mit 
 | UI-Prüfung | `node infra/scripts/ui-gate.mjs` | prüft `apps/web`: nur Bausteine aus `@study/ui` |
 | Ende zu Ende | `./infra/test/stack.sh e2e` | `apps/e2e` (Playwright) |
 
-Die CI führt Typen, Tests, UI-Prüfung und Build bei jedem Pull Request aus; die Playwright-Tests laufen auf dem Hauptzweig und bei Pull Requests mit dem Label `e2e`.
+Die CI führt Typen, Tests, UI-Prüfung und Build bei jedem Pull Request aus; die Playwright-Tests laufen bei jedem Pull Request nach `dev` oder `main` (Pflicht zum Mergen) und bei anderen Pull Requests mit dem Label `e2e`.
 
 ## Unit-Tests des Servers
 
