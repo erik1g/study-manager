@@ -16,7 +16,7 @@ Die Regeln liegen in `.claude/rules/`. **Immer geladen:**
 |---|---|
 | `commits.md` | Conventional Commits, aus denen Versionen und Changelog entstehen |
 | `tests.md` | Prüfbefehle, die Testdaten und der Test-Stack |
-| `releases-und-sicherheit.md` | Wer veröffentlichen darf, Geheimnisse, geschützter `main`-Zweig |
+| `releases-und-sicherheit.md` | Wer veröffentlichen darf, Geheimnisse, die Branches `dev` und `main` |
 | `arbeitsweise.md` | Sprache, Testdaten, wie du mit dem Nutzer und mit Änderungen umgehst |
 
 **Nur geladen, wenn du an passenden Dateien arbeitest:**

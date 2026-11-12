@@ -46,7 +46,7 @@ Die Prüfung steckt im Build der App (`pnpm --filter @study/web build`) und läs
 
 ## Prüfungen vor dem Merge
 
-Die CI führt bei jedem Pull Request die UI-Prüfung, die Typprüfung, die Tests und den Build aus. Die Playwright-Tests (Chromium, WebKit und iPhone, Abläufe, Rollen, Barrierefreiheit mit axe und die Bildvergleiche in Hell und Dunkel, `apps/e2e`) laufen gegen den **Test-Stack mit den gebauten Images** – auf `main` und bei Pull Requests mit dem Label `e2e`. Mehr dazu unter [Tests](/entwickler/tests) und [Releases](/entwickler/releases).
+Die CI führt bei jedem Pull Request die UI-Prüfung, die Typprüfung, die Tests und den Build aus. Die Playwright-Tests (Chromium, WebKit und iPhone, Abläufe, Rollen, Barrierefreiheit mit axe und die Bildvergleiche in Hell und Dunkel, `apps/e2e`) laufen gegen den **Test-Stack mit den gebauten Images** – bei jedem Pull Request nach `dev` oder `main` (Pflicht) und bei anderen Pull Requests mit dem Label `e2e`. Mehr dazu unter [Tests](/entwickler/tests) und [Releases](/entwickler/releases).
 
 Gewollte Änderungen am Aussehen übernimmt `./infra/test/stack.sh e2e --update-snapshots`; die neuen Bilder unter `apps/e2e/tests/__screenshots__/` gehören mit in den Commit.
 

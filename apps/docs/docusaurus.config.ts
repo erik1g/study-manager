@@ -25,7 +25,7 @@ const config: Config = {
           routeBasePath: "/",
           sidebarPath: "./sidebars.ts",
           breadcrumbs: true,
-          editUrl: "https://github.com/erik1g/study-manager/edit/main/apps/docs/",
+          editUrl: "https://github.com/erik1g/study-manager/edit/dev/apps/docs/",
         },
         blog: false,
         pages: false,

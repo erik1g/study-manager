@@ -22,9 +22,9 @@ Alle Schritte, Tests und Hinweise stehen in der Entwickler-Dokumentation.
 
 ## Wohin dein Pull Request geht
 
-Releases werden geplant: Alles für die nächste Version sammelt sich in einem **Release-Branch** (`release/0.2`, `release/0.3` …; es gibt immer nur einen). Öffne deinen Pull Request **gegen diesen Branch**, nicht gegen `main`. Welcher gerade aktuell ist, siehst du unter [Branches](https://github.com/erik1g/study-manager/branches).
+Alles für die nächste Version sammelt sich in **`dev`**, dem Default-Branch. Forke das Repository, zweige deinen Branch von `dev` ab und öffne deinen Pull Request **gegen `dev`**, auch für Fehlerbehebungen. `main` ist immer der veröffentlichte Stand und bekommt nur Pull Requests von `dev`; ein Pull Request gegen `main` wird von der CI abgelehnt.
 
-Ausnahme: Ein `fix:` für die veröffentlichte Version oder ein Sicherheitsthema geht direkt gegen `main`.
+`dev` muss **immer releasefähig** sein. Öffne Unfertiges darum als **Draft-PR**; gemergt wird erst, wenn es fertig ist und alle Prüfungen grün sind.
 
 ## Commits und Pull Requests
 
@@ -41,7 +41,8 @@ Wir nutzen [Conventional Commits](https://www.conventionalcommits.org/de/v1.0.0/
 Beispiel: `fix(planung): Wochenansicht auf dem Handy wischbar machen`
 
 - Ein Pull Request = eine Sache. Der **Titel** folgt dem Format oben (er wird beim Mergen der Commit-Titel).
-- Die CI muss grün sein (Typprüfung, Tests, UI-Prüfung, Build; für größere Änderungen auch Playwright).
+- Die CI muss grün sein: Typprüfung, Tests, UI-Prüfung, Build und die Playwright-Tests.
+- Bei Änderungen an der Oberfläche gehören **Screenshots oder ein kurzes Video** in den Pull Request.
 - Schreibe Tests für neues Verhalten und aktualisiere die Dokumentation.
 - Mit deinem Beitrag stimmst du zu, dass er unter der **GPL-3.0** des Projekts steht. Eine weitere Vereinbarung ist nicht nötig.
 
