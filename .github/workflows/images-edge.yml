@@ -1,11 +1,10 @@
-# Images for trying out what is not released yet, of every commit on main (tag "edge") and on a release branch
-# (release/0.2 gives the tag "release-0.2"), plus "sha-<commit>" for both. Not signed and never "latest":
-# released versions come from release.yml only.
+# Images for trying out what is not released yet: every commit on dev gives the tags "edge" and "sha-<commit>".
+# Not signed and never "latest": released versions come from release.yml only (main is always the released state).
 name: Images (edge)
 
 on:
   push:
-    branches: [main, "release/**"]
+    branches: [dev]
 
 permissions:
   contents: read
@@ -16,7 +15,7 @@ jobs:
     # Only in the main repository, which has the Docker Hub secrets.
     if: github.repository == 'erik1g/study-manager'
     runs-on: ubuntu-latest
-    # The Docker Hub secrets live in this environment, which may be used from main and release/* only.
+    # The Docker Hub secrets live in this environment, which may be used from dev only.
     environment: edge
     strategy:
       matrix:
@@ -36,8 +35,7 @@ jobs:
         with:
           images: ${{ secrets.DOCKERHUB_USERNAME }}/study-manager-${{ matrix.image }}
           tags: |
-            type=edge,branch=main
-            type=ref,event=branch,enable=${{ startsWith(github.ref, 'refs/heads/release/') }}
+            type=edge,branch=dev
             type=sha,format=short
       - uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
         with:
