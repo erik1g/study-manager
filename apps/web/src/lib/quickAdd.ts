@@ -1,5 +1,7 @@
-// Understands a sentence in the quick search, such as "Deadline Laborbericht 3
-// am 19.11." or "Todo Blatt 5 rechnen morgen um 14 Uhr".
+// Understands a sentence in the quick search, such as "Deadline Lab report 3
+// on 19/11", "Todo Blatt 5 rechnen morgen um 14 Uhr" or "To-do read chapter 2
+// tomorrow at 2pm". English and German work alike, whatever the interface
+// language is, since people mix them.
 
 export interface QuickAdd {
   kind: "deadline" | "task";
@@ -11,23 +13,38 @@ export interface QuickAdd {
   courseId: string | null;
 }
 
-const WEEKDAYS = ["sonntag", "montag", "dienstag", "mittwoch", "donnerstag", "freitag", "samstag"];
+const WEEKDAYS = [
+  ["sonntag", "sunday"],
+  ["montag", "monday"],
+  ["dienstag", "tuesday"],
+  ["mittwoch", "wednesday"],
+  ["donnerstag", "thursday"],
+  ["freitag", "friday"],
+  ["samstag", "saturday"],
+];
+/** How many days from today each word means. */
+const RELATIVE: Record<string, number> = { heute: 0, today: 0, morgen: 1, tomorrow: 1, übermorgen: 2, "the day after tomorrow": 2, "day after tomorrow": 2 };
+/** The words that start a sentence, and what they make. */
+const HEADS: Record<string, "task" | "deadline"> = { todo: "task", "to-do": "task", aufgabe: "task", task: "task", deadline: "deadline", frist: "deadline", abgabe: "deadline", klausur: "deadline", exam: "deadline", submission: "deadline" };
+/** Heads that are also part of the name: "Klausur Thermo", "Exam Thermodynamics". */
+const NAMED = ["abgabe", "klausur", "exam", "submission"];
 const day = (date: Date) => date.toLocaleDateString("sv-SE");
 const pad = (n: number) => String(n).padStart(2, "0");
 
 function takeDate(text: string, now: Date): { rest: string; date: string | null } {
   const later = (days: number) => day(new Date(now.getFullYear(), now.getMonth(), now.getDate() + days));
-  const relative = text.match(/\s+(heute|morgen|übermorgen)\s*$/i);
-  if (relative) {
-    const word = relative[1]!.toLowerCase();
-    return { rest: text.slice(0, relative.index), date: later(word === "heute" ? 0 : word === "morgen" ? 1 : 2) };
-  }
-  const weekday = text.match(new RegExp(`\\s+(?:am\\s+)?(${WEEKDAYS.join("|")})\\s*$`, "i"));
+  // The longest words first, so that "übermorgen" is not read as "morgen".
+  const words = Object.keys(RELATIVE).sort((a, b) => b.length - a.length);
+  const relative = text.match(new RegExp(`\\s+(${words.join("|")})\\s*$`, "i"));
+  if (relative) return { rest: text.slice(0, relative.index), date: later(RELATIVE[relative[1]!.toLowerCase()]!) };
+  const weekday = text.match(new RegExp(`\\s+(?:am\\s+|on\\s+)?(${WEEKDAYS.flat().join("|")})\\s*$`, "i"));
   if (weekday) {
-    const wanted = WEEKDAYS.indexOf(weekday[1]!.toLowerCase());
+    const wanted = WEEKDAYS.findIndex((names) => names.includes(weekday[1]!.toLowerCase()));
     return { rest: text.slice(0, weekday.index), date: later((wanted - now.getDay() + 7) % 7 || 7) };
   }
-  const numeric = text.match(/\s+(?:am\s+)?(\d{1,2})\.(\d{1,2})\.?(\d{2,4})?\s*$/);
+  // Day first in both: "am 19.11." and "on 19/11".
+  const numeric =
+    text.match(/\s+(?:am\s+)?(\d{1,2})\.(\d{1,2})\.?(\d{2,4})?\s*$/) ?? text.match(/\s+(?:on\s+)?(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?\s*$/);
   if (numeric) {
     const [d, m] = [Number(numeric[1]), Number(numeric[2])];
     let year = numeric[3] ? Number(numeric[3].padStart(4, "20")) : now.getFullYear();
@@ -41,9 +58,17 @@ function takeDate(text: string, now: Date): { rest: string; date: string | null 
 }
 
 function takeTime(text: string): { rest: string; time: string | null } {
-  const match = text.match(/\s+um\s+(\d{1,2})(?:[:.](\d{2}))?(?:\s*uhr)?\s*$/i);
-  if (!match || Number(match[1]) > 23) return { rest: text, time: null };
-  return { rest: text.slice(0, match.index), time: `${pad(Number(match[1]))}:${match[2] ?? "00"}` };
+  // "um 14 Uhr", "um 9:30", "at 14:00", "at 2pm", "at 9.30 am"
+  const match = text.match(/\s+(?:um|at)\s+(\d{1,2})(?:[:.](\d{2}))?(?:\s*(uhr|am|pm))?\s*$/i);
+  if (!match) return { rest: text, time: null };
+  let hours = Number(match[1]);
+  const suffix = match[3]?.toLowerCase();
+  if (suffix === "am" || suffix === "pm") {
+    if (hours < 1 || hours > 12) return { rest: text, time: null };
+    hours = (hours % 12) + (suffix === "pm" ? 12 : 0);
+  }
+  if (hours > 23) return { rest: text, time: null };
+  return { rest: text.slice(0, match.index), time: `${pad(hours)}:${match[2] ?? "00"}` };
 }
 
 /** A subject is meant when its title, or its first word, stands in the text. */
@@ -62,13 +87,13 @@ function takeCourse(text: string, courses: { id: string; title: string }[]): { r
 }
 
 export function parseQuickAdd(input: string, courses: { id: string; title: string }[], currentCourse: string | null, now = new Date()): QuickAdd | null {
-  const head = input.trim().match(/^(deadline|frist|todo|aufgabe|abgabe|klausur)\s+(.+)$/i);
+  const head = input.trim().match(new RegExp(`^(${Object.keys(HEADS).join("|")})\\s+(.+)$`, "i"));
   if (!head) return null;
   const word = head[1]!.toLowerCase();
-  const kind = word === "todo" || word === "aufgabe" ? "task" : "deadline";
+  const kind = HEADS[word]!;
   let text = ` ${head[2]!}`;
-  // "Abgabe …" and "Klausur …" are deadlines whose name says so.
-  if (word === "abgabe" || word === "klausur") text = ` ${head[1]}${text}`;
+  // "Abgabe …", "Klausur …" and "Exam …" are deadlines whose name says so.
+  if (NAMED.includes(word)) text = ` ${head[1]}${text}`;
   const first = takeTime(text);
   const dated = takeDate(first.rest, now);
   const timed = first.time ? { rest: dated.rest, time: first.time } : takeTime(dated.rest);

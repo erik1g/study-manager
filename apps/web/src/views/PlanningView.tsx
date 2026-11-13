@@ -6,6 +6,7 @@ import { useNavigate } from "react-router";
 import FullCalendar from "@fullcalendar/react";
 import type { DatesSetArg, EventClickArg, EventDropArg, EventInput } from "@fullcalendar/core";
 import deLocale from "@fullcalendar/core/locales/de";
+import enGbLocale from "@fullcalendar/core/locales/en-gb";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin, { Draggable, type DropArg, type EventResizeDoneArg } from "@fullcalendar/interaction";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -15,16 +16,18 @@ import { DeadlineForm, slotLabel } from "../components/Agenda";
 import { Button, Card, Chip, LinkButton, Notice, SectionHeader, Select, TextField } from "@study/ui";
 import { Dialog } from "../components/Dialog";
 import { toneOf } from "../lib/tone";
-import { de, errorMessage, formatDuration, formatDate, formatTime } from "../i18n/de";
+import { t, errorMessage, formatDuration, formatDate, formatTime, intlLocale, locale } from "../i18n";
 import { api, type CalendarItem, type Deadline, type Task } from "../lib/api";
 import { emitChanged, useChanged } from "../lib/events";
 import { useSession } from "../lib/session";
 
 const localDay = (date: Date) => date.toLocaleDateString("sv-SE");
 /** What kind of session a timetable entry is, from the abbreviation in its name. */
-const sessionKind = (title: string) => ({ VO: "Vorlesung", UE: "Übung", VU: "Vorlesung mit Übung", SE: "Seminar", PR: "Praktikum" })[title.match(/\b(VO|UE|VU|SE|PR)\b/)?.[1] ?? ""];
+const sessionKind = (title: string) => t.planning.sessionKinds[title.match(/\b(VO|UE|VU|SE|PR)\b/)?.[1] ?? ""];
+/** FullCalendar's own texts and week layout, in the language of the page. */
+const calendarLocale = locale === "de" ? deLocale : enGbLocale;
 
-const localTime = (date: Date) => date.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
+const localTime = (date: Date) => date.toLocaleTimeString(intlLocale, { hour: "2-digit", minute: "2-digit" });
 
 function useNarrow() {
   const query = "(max-width: 760px)";
@@ -48,7 +51,7 @@ export function PlanningView() {
     () => (narrow ? { left: "prev,today,next", right: "timeGridDay,timeGridWeek,dayGridMonth" } : { left: "prev,today,next", center: "title", right: "timeGridWeek,dayGridMonth" }),
     [narrow],
   );
-  const buttonText = useMemo(() => ({ day: de.planning.day, prev: narrow ? "‹" : de.planning.previous, next: narrow ? "›" : de.planning.next, today: de.planning.today, week: de.planning.week, month: de.planning.month }), [narrow]);
+  const buttonText = useMemo(() => ({ day: t.planning.day, prev: narrow ? "‹" : t.planning.previous, next: narrow ? "›" : t.planning.next, today: t.planning.today, week: t.planning.week, month: t.planning.month }), [narrow]);
   const calendar = useRef<FullCalendar>(null);
   const inbox = useRef<HTMLUListElement>(null);
   const [range, setRange] = useState<{ start: Date; end: Date } | null>(null);
@@ -137,7 +140,7 @@ export function PlanningView() {
         const start = info.event.start!;
         const length = new Date(item.end).getTime() - new Date(item.start).getTime();
         const deadline = (await api.deadlines({ courseId: item.courseId ?? undefined })).find((d) => d.id === item.id);
-        if (!deadline) throw new Error(de.errors.unknown_deadline);
+        if (!deadline) throw new Error(t.errors.unknown_deadline);
         await api.updateDeadline(item.id, {
           courseId: deadline.courseId,
           title: deadline.title,
@@ -175,12 +178,12 @@ export function PlanningView() {
 
   return (
     <div className="page planning-page">
-      <SectionHeader level={1} size="xl" title={de.planning.title} description={plannedMinutes > 0 ? de.planning.load(plannedMinutes) : undefined} />
+      <SectionHeader level={1} size="xl" title={t.planning.title} description={plannedMinutes > 0 ? t.planning.load(formatDuration(plannedMinutes)) : undefined} />
       <div className="planning">
         <Card as="aside" className="planning-inbox" aria-labelledby="eingang">
-          <SectionHeader id="eingang" title={de.planning.inbox} description={de.planning.inboxHint} />
+          <SectionHeader id="eingang" title={t.planning.inbox} description={t.planning.inboxHint} />
           <ul ref={inbox} className="inbox-list">
-            {unplanned.length === 0 && <li className="quiet small">{de.planning.inboxEmpty}</li>}
+            {unplanned.length === 0 && <li className="quiet small">{t.planning.inboxEmpty}</li>}
             {unplanned.map((task) => (
               <li
                 key={task.id}
@@ -191,18 +194,18 @@ export function PlanningView() {
               >
                 <span className="inbox-task-title">{task.title}</span>
                 <span className="inbox-task-meta">
-                  {titleOf(task.courseId) ?? de.tasks.general} · {formatDuration(task.estimateMinutes ?? DEFAULT_SLOT_MINUTES)}
+                  {titleOf(task.courseId) ?? t.tasks.general} · {formatDuration(task.estimateMinutes ?? DEFAULT_SLOT_MINUTES)}
                 </span>
               </li>
             ))}
           </ul>
         </Card>
         <section className="planning-calendar">
-          {error && <Notice tone="danger" action={<Button size="sm" variant="ghost" onClick={() => setError(null)}>{de.common.close}</Button>}>{error}</Notice>}
+          {error && <Notice tone="danger" action={<Button size="sm" variant="ghost" onClick={() => setError(null)}>{t.common.close}</Button>}>{error}</Notice>}
           <FullCalendar
             ref={calendar}
             plugins={[timeGridPlugin, dayGridPlugin, interactionPlugin]}
-            locale={deLocale}
+            locale={calendarLocale}
             initialView={viewType}
             headerToolbar={toolbar}
             buttonIcons={false}
@@ -216,7 +219,7 @@ export function PlanningView() {
             nowIndicator
             height="100%"
             allDaySlot
-            allDayText="ganztägig"
+            allDayText={t.planning.allDay}
             events={events}
             editable
             droppable
@@ -299,7 +302,7 @@ function ItemDialog(props: { item: CalendarItem; subject: string | null; onClose
     try {
       const all = await api.deadlines({ courseId: item.courseId ?? undefined });
       const found = all.find((d) => d.id === item.id);
-      if (!found) throw new Error(de.errors.unknown_deadline);
+      if (!found) throw new Error(t.errors.unknown_deadline);
       setEditing(found);
     } catch (e) {
       setError(errorMessage(e));
@@ -317,11 +320,11 @@ function ItemDialog(props: { item: CalendarItem; subject: string | null; onClose
           {item.kind === "task" && (
             <>
               <Button variant="danger" icon="trash" onClick={() => run(api.deleteTask(item.id))}>
-                {de.common.delete}
+                {t.common.delete}
               </Button>
-              <Button onClick={() => run(api.updateTask(item.id, { plannedDate: null, startTime: null }))}>{de.planning.unplan}</Button>
+              <Button onClick={() => run(api.updateTask(item.id, { plannedDate: null, startTime: null }))}>{t.planning.unplan}</Button>
               <Button variant="primary" icon={item.done ? "restore" : "check"} onClick={() => run(api.updateTask(item.id, { done: !item.done }))}>
-                {item.done ? de.planning.reopen : de.planning.markDone}
+                {item.done ? t.planning.reopen : t.planning.markDone}
               </Button>
             </>
           )}
@@ -330,26 +333,26 @@ function ItemDialog(props: { item: CalendarItem; subject: string | null; onClose
               {item.editable && (
                 <>
                   <Button variant="danger" icon="trash" onClick={() => run(api.deleteDeadline(item.id))}>
-                    {de.common.delete}
+                    {t.common.delete}
                   </Button>
                   <Button icon="edit" onClick={() => void edit()}>
-                    {de.common.edit}
+                    {t.common.edit}
                   </Button>
                 </>
               )}
               <Button icon={item.done ? "restore" : "check"} onClick={() => run(api.setDeadlineDone(item.id, !item.done))}>
-                {item.done ? de.planning.reopen : de.planning.markDone}
+                {item.done ? t.planning.reopen : t.planning.markDone}
               </Button>
             </>
           )}
           {item.url && (
             <LinkButton href={item.url} target="_blank" rel="noreferrer" iconEnd="external">
-              {de.common.open}
+              {t.common.open}
             </LinkButton>
           )}
           {item.courseId && props.subject && (
             <Button iconEnd="arrow-right" variant={item.kind === "task" ? "secondary" : "primary"} onClick={() => props.onOpenCourse(item.courseId!)}>
-              {de.planning.openSubject}
+              {t.planning.openSubject}
             </Button>
           )}
         </>
@@ -357,8 +360,8 @@ function ItemDialog(props: { item: CalendarItem; subject: string | null; onClose
     >
       <div className="ui-stack">
         <div className="item-chips">
-          <Chip tone={item.kind === "deadline" ? "orange" : item.kind === "task" ? "gruen" : "blau"}>{de.planning.kinds[item.kind]}</Chip>
-          {item.cancelled && <Chip tone="rot">{de.planning.cancelled}</Chip>}
+          <Chip tone={item.kind === "deadline" ? "orange" : item.kind === "task" ? "gruen" : "blau"}>{t.planning.kinds[item.kind]}</Chip>
+          {item.cancelled && <Chip tone="rot">{t.planning.cancelled}</Chip>}
         </div>
         <p className="item-when">{when}</p>
         {props.subject && <p>{props.subject}</p>}
@@ -367,7 +370,7 @@ function ItemDialog(props: { item: CalendarItem; subject: string | null; onClose
         {editing && (
           <DeadlineForm
             initial={editing}
-            submitLabel={de.common.save}
+            submitLabel={t.common.save}
             onCancel={() => setEditing(null)}
             onSubmit={async (draft) => {
               await api.updateDeadline(editing.id, draft);
@@ -410,13 +413,13 @@ function QuickTaskDialog(props: { slot: { start: Date; end: Date; allDay: boolea
   };
   return (
     <Dialog
-      title={de.tasks.add}
+      title={t.tasks.add}
       onClose={props.onClose}
       footer={
         <>
-          <Button onClick={props.onClose}>{de.common.cancel}</Button>
+          <Button onClick={props.onClose}>{t.common.cancel}</Button>
           <Button variant="primary" loading={busy} disabled={!title.trim()} onClick={() => void create()}>
-            {de.common.add}
+            {t.common.add}
           </Button>
         </>
       }
@@ -429,9 +432,9 @@ function QuickTaskDialog(props: { slot: { start: Date; end: Date; allDay: boolea
         }}
       >
         <p className="item-when">{label}</p>
-        <TextField label={de.tasks.name} value={title} onChange={(e) => setTitle(e.target.value)} autoFocus required />
-        <Select label={de.tasks.subject} value={courseId} onChange={(e) => setCourseId(e.target.value)}>
-          <option value="">{de.tasks.general}</option>
+        <TextField label={t.tasks.name} value={title} onChange={(e) => setTitle(e.target.value)} autoFocus required />
+        <Select label={t.tasks.subject} value={courseId} onChange={(e) => setCourseId(e.target.value)}>
+          <option value="">{t.tasks.general}</option>
           {courses.map((c) => (
             <option key={c.id} value={c.id}>
               {c.title}

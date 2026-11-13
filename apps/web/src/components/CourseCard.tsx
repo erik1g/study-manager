@@ -3,7 +3,7 @@
 import { useState, type MouseEvent } from "react";
 import { Link } from "react-router";
 import { Card, Icon, IconButton, ProgressRing, TonePicker, type Tone } from "@study/ui";
-import { de, formatWeekTime, relativeDay } from "../i18n/de";
+import { t, formatWeekTime, relativeDay } from "../i18n";
 import type { Course, CourseProgress, Deadline } from "../lib/api";
 import { useGo } from "../lib/motion";
 import { courseIcon, toneOf } from "../lib/tone";
@@ -28,8 +28,8 @@ export function CourseCard({ course, progress, deadline, due = 0, onColor, onRem
   const close = () => setMenu(null);
   const tone = toneOf(course.color);
   const planned = !!progress && progress.total > 0;
-  const next = progress?.next ? formatWeekTime(progress.next.start) : de.overview.noSession;
-  const second = deadline ? `${deadline.title} ${relativeDay(deadlineDay(deadline)).toLowerCase()}` : due > 0 ? de.overview.cardsDue(due) : de.overview.noDeadline;
+  const next = progress?.next ? formatWeekTime(progress.next.start) : t.overview.noSession;
+  const second = deadline ? `${deadline.title} ${relativeDay(deadlineDay(deadline)).toLowerCase()}` : due > 0 ? t.overview.cardsDue(due) : t.overview.noDeadline;
 
   return (
     <div
@@ -65,7 +65,7 @@ export function CourseCard({ course, progress, deadline, due = 0, onColor, onRem
             <span>{second}</span>
           </span>
           {planned && (
-            <ProgressRing value={progress.done / progress.total} label={de.overview.sessionOf(progress.done, progress.total)} tone={tone} onTint size={46} animateKey={`card-${course.id}`}>
+            <ProgressRing value={progress.done / progress.total} label={t.overview.sessionOf(progress.done, progress.total)} tone={tone} onTint size={46} animateKey={`card-${course.id}`}>
               <span className="course-ring-text">{progress.done}</span>
             </ProgressRing>
           )}
@@ -73,7 +73,7 @@ export function CourseCard({ course, progress, deadline, due = 0, onColor, onRem
       </Card>
       <IconButton
         icon="more"
-        label={de.overview.menuFor(course.title)}
+        label={t.overview.menuFor(course.title)}
         className="course-card-more"
         aria-haspopup="menu"
         aria-expanded={menu !== null}
@@ -88,13 +88,13 @@ export function CourseCard({ course, progress, deadline, due = 0, onColor, onRem
               open();
             }}
           >
-            {de.common.open}
+            {t.common.open}
           </MenuItem>
           <MenuSeparator />
           <div className="menu-block">
-            <span className="menu-block-label">{de.overview.color}</span>
+            <span className="menu-block-label">{t.overview.color}</span>
             <TonePicker
-              label={de.overview.color}
+              label={t.overview.color}
               value={course.color ? toneOf(course.color) : null}
               allowNone
               onChange={(next) => {
@@ -112,7 +112,7 @@ export function CourseCard({ course, progress, deadline, due = 0, onColor, onRem
               onRemove();
             }}
           >
-            {course.role === "owner" ? de.overview.deleteSubject : de.overview.leave}
+            {course.role === "owner" ? t.overview.deleteSubject : t.overview.leave}
           </MenuItem>
         </ContextMenu>
       )}

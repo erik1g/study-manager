@@ -4,7 +4,7 @@ import { ActivityFeed } from "../components/ActivityFeed";
 import { Avatar } from "../components/Avatar";
 import { ContextMenu, MenuItem, MenuSeparator, menuPositionFrom, type MenuPosition } from "../components/ContextMenu";
 import { ConfirmDialog, CopyField, Dialog } from "../components/Dialog";
-import { de, errorMessage, formatDateTime, formatSize } from "../i18n/de";
+import { t, errorMessage, formatDateTime, formatSize } from "../i18n";
 import { ApiError, api, type ServerStatus, type UserView } from "../lib/api";
 import { useSession } from "../lib/session";
 
@@ -58,8 +58,8 @@ export function AdminView() {
   if (blocked) {
     return (
       <div className="page">
-        <EmptyState illustration="fehler" title={de.admin.title}>
-          {de.admin.needsFactor}
+        <EmptyState illustration="fehler" title={t.admin.title}>
+          {t.admin.needsFactor}
         </EmptyState>
       </div>
     );
@@ -67,26 +67,26 @@ export function AdminView() {
 
   return (
     <div className="page">
-      <SectionHeader level={1} size="xl" title={de.admin.title} />
+      <SectionHeader level={1} size="xl" title={t.admin.title} />
       {error && <Notice tone="danger">{error}</Notice>}
       {link && (
-        <Notice tone="info" title={link.title} action={<IconButton icon="close" size="sm" label={de.common.close} onClick={() => setLink(null)} />}>
+        <Notice tone="info" title={link.title} action={<IconButton icon="close" size="sm" label={t.common.close} onClick={() => setLink(null)} />}>
           <CopyField value={link.url} />
         </Notice>
       )}
 
       <Card as="section" aria-labelledby="nutzer">
-        <SectionHeader id="nutzer" title={de.admin.users} />
+        <SectionHeader id="nutzer" title={t.admin.users} />
         <Card variant="sunken" padding="sm" className="admin-invite">
           <InviteForm
             onInvited={async (result, email) => {
-              setLink(result.link ? { title: de.admin.inviteLink, url: result.link } : null);
+              setLink(result.link ? { title: t.admin.inviteLink, url: result.link } : null);
               setMailed(result.mailed ? email : null);
               await load();
             }}
           />
         </Card>
-        {mailed && <Notice tone="success">{de.admin.inviteMailed(mailed)}</Notice>}
+        {mailed && <Notice tone="success">{t.admin.inviteMailed(mailed)}</Notice>}
         <List className="card-list">
           {users.map((u) => (
             <ListRow
@@ -103,41 +103,41 @@ export function AdminView() {
                   )}{" "}
                   {u.disabled && (
                     <Chip size="sm" tone="rot">
-                      {de.admin.disabled}
+                      {t.admin.disabled}
                     </Chip>
                   )}
                 </>
               }
-              meta={`${u.email} · ${de.admin.lastSignIn(u.lastSignInAt && formatDateTime(u.lastSignInAt))} · ${de.admin.used(formatSize(u.usedBytes), u.quotaBytes ? formatSize(u.quotaBytes) : null)}`}
-              trailing={<IconButton icon="more" size="sm" label={de.common.actionsFor(u.displayName)} onClick={(e) => setMenu({ user: u, at: menuPositionFrom(e.currentTarget) })} />}
+              meta={`${u.email} · ${t.admin.lastSignIn(u.lastSignInAt && formatDateTime(u.lastSignInAt))} · ${t.admin.used(formatSize(u.usedBytes), u.quotaBytes ? formatSize(u.quotaBytes) : null)}`}
+              trailing={<IconButton icon="more" size="sm" label={t.common.actionsFor(u.displayName)} onClick={(e) => setMenu({ user: u, at: menuPositionFrom(e.currentTarget) })} />}
             />
           ))}
         </List>
       </Card>
 
       {menu && (
-        <ContextMenu at={menu.at} label={de.common.actionsFor(menu.user.displayName)} onClose={() => setMenu(null)}>
+        <ContextMenu at={menu.at} label={t.common.actionsFor(menu.user.displayName)} onClose={() => setMenu(null)}>
           <MenuItem icon="edit" onSelect={choose(setEmailOf)}>
-            {de.admin.changeEmail}
+            {t.admin.changeEmail}
           </MenuItem>
           <MenuItem icon="folder" onSelect={choose(setQuotaOf)}>
-            {de.admin.quota}
+            {t.admin.quota}
           </MenuItem>
-          <MenuItem icon="key" onSelect={choose(async (u) => setLink({ title: de.admin.resetLink, url: (await api.admin.resetLink(u.id)).link }))}>
-            {de.admin.resetLink}
+          <MenuItem icon="key" onSelect={choose(async (u) => setLink({ title: t.admin.resetLink, url: (await api.admin.resetLink(u.id)).link }))}>
+            {t.admin.resetLink}
           </MenuItem>
           {menu.user.id !== me?.id && (
             <>
               <MenuSeparator />
               <MenuItem icon="shield" onSelect={choose((u) => void run(api.admin.update(u.id, { isAdmin: !u.isAdmin })))}>
-                {menu.user.isAdmin ? de.admin.revokeAdmin : de.admin.makeAdminShort}
+                {menu.user.isAdmin ? t.admin.revokeAdmin : t.admin.makeAdminShort}
               </MenuItem>
               <MenuItem icon="lock" onSelect={choose((u) => void run(api.admin.update(u.id, { disabled: !u.disabled })))}>
-                {menu.user.disabled ? de.admin.enable : de.admin.disable}
+                {menu.user.disabled ? t.admin.enable : t.admin.disable}
               </MenuItem>
               <MenuSeparator />
               <MenuItem icon="trash" danger onSelect={choose(setRemoving)}>
-                {de.common.delete}
+                {t.common.delete}
               </MenuItem>
             </>
           )}
@@ -147,11 +147,11 @@ export function AdminView() {
       <Card as="section" aria-labelledby="aktivitaet">
         <SectionHeader
           id="aktivitaet"
-          title={de.admin.activity}
-          description={de.admin.activityText}
+          title={t.admin.activity}
+          description={t.admin.activityText}
           action={
-            <Select label={de.admin.activityWho} hideLabel size="sm" value={actor} onChange={(e) => setActor(e.target.value)}>
-              <option value="">{de.admin.activityAll}</option>
+            <Select label={t.admin.activityWho} hideLabel size="sm" value={actor} onChange={(e) => setActor(e.target.value)}>
+              <option value="">{t.admin.activityAll}</option>
               {users.map((u) => (
                 <option key={u.id} value={u.id}>
                   {u.displayName}
@@ -165,33 +165,33 @@ export function AdminView() {
 
       {status && (
         <Card as="section" aria-labelledby="server">
-          <SectionHeader id="server" title={de.admin.server} />
+          <SectionHeader id="server" title={t.admin.server} />
           <div className="stats">
             {status.disk && (
               <Card tone="blau" padding="sm">
-                <span className="stat-label">{de.admin.disk}</span>
+                <span className="stat-label">{t.admin.disk}</span>
                 <strong className="ui-display">{formatSize(status.disk.free)}</strong>
                 <span className="small">frei von {formatSize(status.disk.total)}</span>
               </Card>
             )}
             <Card tone="petrol" padding="sm">
-              <span className="stat-label">{de.admin.database}</span>
+              <span className="stat-label">{t.admin.database}</span>
               <strong className="ui-display">{formatSize(status.databaseBytes)}</strong>
             </Card>
             <Card tone="violett" padding="sm">
-              <span className="stat-label">{de.admin.files}</span>
+              <span className="stat-label">{t.admin.files}</span>
               <strong className="ui-display">{status.files}</strong>
               <span className="small">{formatSize(status.fileBytes)}</span>
             </Card>
             <Card tone="gelb" padding="sm">
-              <span className="stat-label">{de.admin.usersAndCourses}</span>
+              <span className="stat-label">{t.admin.usersAndCourses}</span>
               <strong className="ui-display">
                 {status.users} · {status.courses}
               </strong>
             </Card>
           </div>
           <div className="settings-sub">
-            <h3>{de.admin.backups}</h3>
+            <h3>{t.admin.backups}</h3>
           </div>
           <div className="toolbar-row">
             <Button
@@ -203,11 +203,11 @@ export function AdminView() {
                 setBackingUp(false);
               }}
             >
-              {de.admin.backupNow}
+              {t.admin.backupNow}
             </Button>
           </div>
           {status.backups.length === 0 ? (
-            <p className="quiet">{de.admin.noBackups}</p>
+            <p className="quiet">{t.admin.noBackups}</p>
           ) : (
             <List className="card-list">
               {status.backups.slice(0, 10).map((b) => (
@@ -218,7 +218,7 @@ export function AdminView() {
           {status.feedErrors.length > 0 && (
             <>
               <div className="settings-sub">
-                <h3>{de.admin.feedErrors}</h3>
+                <h3>{t.admin.feedErrors}</h3>
               </div>
               {status.feedErrors.map((f, i) => (
                 <Notice key={i} tone="warning" title={f.name}>
@@ -252,9 +252,9 @@ export function AdminView() {
       )}
       {removing && (
         <ConfirmDialog
-          title={de.common.delete}
-          text={de.admin.removeConfirm(removing.displayName)}
-          confirm={de.common.delete}
+          title={t.common.delete}
+          text={t.admin.removeConfirm(removing.displayName)}
+          confirm={t.common.delete}
           danger
           onClose={() => setRemoving(null)}
           onConfirm={async () => {
@@ -291,9 +291,9 @@ function InviteForm({ onInvited }: { onInvited: (result: { link: string | null; 
   }
   return (
     <form className="entry-form" onSubmit={submit}>
-      <TextField label={de.admin.email} type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-      <TextField label={de.admin.name} value={name} onChange={(e) => setName(e.target.value)} />
-      <Checkbox className="wide" label={de.admin.makeAdmin} checked={admin} onChange={(e) => setAdmin(e.target.checked)} />
+      <TextField label={t.admin.email} type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+      <TextField label={t.admin.name} value={name} onChange={(e) => setName(e.target.value)} />
+      <Checkbox className="wide" label={t.admin.makeAdmin} checked={admin} onChange={(e) => setAdmin(e.target.checked)} />
       {error && (
         <Notice tone="danger" className="wide">
           {error}
@@ -301,7 +301,7 @@ function InviteForm({ onInvited }: { onInvited: (result: { link: string | null; 
       )}
       <div className="form-actions wide">
         <Button type="submit" variant="primary" icon="plus" loading={busy}>
-          {de.admin.invite}
+          {t.admin.invite}
         </Button>
       </div>
     </form>
@@ -322,13 +322,13 @@ function QuotaDialog({ user, onClose, onSave }: { user: UserView; onClose: () =>
   };
   return (
     <Dialog
-      title={`${de.admin.quota}: ${user.displayName}`}
+      title={`${t.admin.quota}: ${user.displayName}`}
       onClose={onClose}
       footer={
         <>
-          <Button onClick={onClose}>{de.common.cancel}</Button>
+          <Button onClick={onClose}>{t.common.cancel}</Button>
           <Button variant="primary" onClick={() => void save()}>
-            {de.common.save}
+            {t.common.save}
           </Button>
         </>
       }
@@ -340,7 +340,7 @@ function QuotaDialog({ user, onClose, onSave }: { user: UserView; onClose: () =>
           void save();
         }}
       >
-        <TextField label={de.admin.quota} inputMode="decimal" trailing="GB" hint={de.admin.quotaHint} value={value} onChange={(e) => setValue(e.target.value)} autoFocus error={error ?? undefined} />
+        <TextField label={t.admin.quota} inputMode="decimal" trailing="GB" hint={t.admin.quotaHint} value={value} onChange={(e) => setValue(e.target.value)} autoFocus error={error ?? undefined} />
       </form>
     </Dialog>
   );
@@ -359,13 +359,13 @@ function EmailDialog({ user, onClose, onSave }: { user: UserView; onClose: () =>
   };
   return (
     <Dialog
-      title={`${de.admin.changeEmail}: ${user.displayName}`}
+      title={`${t.admin.changeEmail}: ${user.displayName}`}
       onClose={onClose}
       footer={
         <>
-          <Button onClick={onClose}>{de.common.cancel}</Button>
+          <Button onClick={onClose}>{t.common.cancel}</Button>
           <Button variant="primary" disabled={email.trim().toLowerCase() === user.email} onClick={() => void save()}>
-            {de.common.save}
+            {t.common.save}
           </Button>
         </>
       }
@@ -377,7 +377,7 @@ function EmailDialog({ user, onClose, onSave }: { user: UserView; onClose: () =>
           void save();
         }}
       >
-        <TextField label={de.admin.email} type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoFocus error={error ?? undefined} />
+        <TextField label={t.admin.email} type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoFocus error={error ?? undefined} />
       </form>
     </Dialog>
   );

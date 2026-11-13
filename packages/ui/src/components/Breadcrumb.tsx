@@ -1,5 +1,6 @@
 import { Fragment, type ElementType } from "react";
 import { cx } from "../cx";
+import { uiText } from "../text";
 
 export interface Crumb {
   label: string;
@@ -13,11 +14,11 @@ export interface BreadcrumbProps {
   className?: string;
 }
 
-/** Where a page sits, above its title: "Fächer › WiSe 26/27". */
+/** Where a page sits, above its title: "Courses › Winter semester 2026/27". */
 export function Breadcrumb({ items, linkAs, className }: BreadcrumbProps) {
   const Link: ElementType = linkAs ?? "a";
   return (
-    <nav aria-label="Pfad" className={cx("ui-breadcrumb", className)}>
+    <nav aria-label={uiText().breadcrumb} className={cx("ui-breadcrumb", className)}>
       {items.map((item, index) => (
         <Fragment key={`${item.label}-${index}`}>
           {index > 0 && (

@@ -125,7 +125,7 @@ export function notesOf(db: Db) {
     async applyOutline(userId: string, courseId: string, outline: ScriptOutline): Promise<NotesView> {
       await requireRole(db, userId, courseId, "editor");
       const order = await scriptOrder(courseId);
-      if (!order.some((s) => s.id === outline.script)) throw invalid("not_a_script", "Die Gliederung muss zu einem Skript dieses Fachs gehören.");
+      if (!order.some((s) => s.id === outline.script)) throw invalid("not_a_script", "The outline must belong to a script of this course.");
       if (outline.chapters.length === 0) throw invalid("empty_outline");
       return change(userId, courseId, (text) => mergeOutline(text, outline, order.map((s) => s.id)));
     },

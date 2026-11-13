@@ -12,7 +12,7 @@ interface ToastMessage {
   tone?: ToastTone;
 }
 
-/** Shows a short message at the bottom that goes away by itself, e.g. "Gespeichert". Needs a `Toaster` on the page. */
+/** Shows a short message at the bottom that goes away by itself, e.g. "Saved". Needs a `Toaster` on the page. */
 export function toast(text: string, tone?: ToastTone) {
   window.dispatchEvent(new CustomEvent<ToastMessage | string>(TOAST_EVENT, { detail: tone ? { text, tone } : text }));
 }

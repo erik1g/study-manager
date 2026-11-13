@@ -25,7 +25,7 @@ Free software under the [GPL-3.0](LICENSE). Made by students for students – an
 - **Programmes and module handbook**: upload the module handbook as a PDF, Claude reads in the modules, courses are created from modules.
 - **Your Claude** connects through MCP (Claude.ai, Claude Desktop, Claude Code) and works with your permissions.
 
-Today the interface is **German** (an English version is in the works), semesters are called `WiSe`/`SoSe`, and the calendar subscription understands iCal feeds in the style of CAMPUSonline. Adaptations for other universities and languages are welcome (see below).
+The interface speaks **English and German** (each user picks theirs), semesters follow the German scheme (`WiSe`/`SoSe`), and the calendar subscription understands iCal feeds in the style of CAMPUSonline. Adaptations for other universities and languages are welcome (see below).
 
 ## Run it yourself
 

@@ -188,12 +188,12 @@ describe("the admin area", () => {
 
 describe("invitations", () => {
   it("go out by mail when mail is set up, and as a link otherwise or when sent before", async () => {
-    const mailed = await w.services.users.invite("neu@example.org", "Neu", false, true);
+    const mailed = await w.services.users.invite("neu@example.org", "Neu", { byMail: true });
     expect(mailed).toMatchObject({ mailed: true, link: null });
-    const again = await w.services.users.invite("neu@example.org", "Neu", false, true);
+    const again = await w.services.users.invite("neu@example.org", "Neu", { byMail: true });
     expect(again.mailed).toBe(false);
     expect(again.link).toContain("token=");
-    expect((await w.services.users.invite("ohne-mail@example.org", "Ohne", false, false)).mailed).toBe(false);
+    expect((await w.services.users.invite("ohne-mail@example.org", "Ohne", { byMail: false })).mailed).toBe(false);
   });
 });
 

@@ -4,7 +4,7 @@ import type { ModuleData, ProgramDraft } from "@study/shared";
 import { Breadcrumb, Button, Card, Chip, EmptyState, List, ListRow, Notice, pickFiles, SearchField, SectionHeader, TextField } from "@study/ui";
 import { Dialog } from "../components/Dialog";
 import { NewCourseDialog } from "../components/NewCourseDialog";
-import { de, errorMessage } from "../i18n/de";
+import { t, errorMessage } from "../i18n";
 import { api, type Module, type Program } from "../lib/api";
 import { useSession } from "../lib/session";
 
@@ -33,18 +33,18 @@ function ProgramList() {
   return (
     <div className="ui-stack programs">
       <SectionHeader
-        title={de.programs.title}
+        title={t.programs.title}
         size="lg"
-        description={de.programs.subtitle}
+        description={t.programs.subtitle}
         action={
           <Button variant="primary" icon="plus" onClick={() => setCreating(true)}>
-            {de.programs.add}
+            {t.programs.add}
           </Button>
         }
       />
       {programs && programs.length === 0 && (
-        <EmptyState illustration="buecher" title={de.programs.emptyTitle} actions={<Button variant="primary" icon="plus" onClick={() => setCreating(true)}>{de.programs.add}</Button>}>
-          {de.programs.emptyText}
+        <EmptyState illustration="buecher" title={t.programs.emptyTitle} actions={<Button variant="primary" icon="plus" onClick={() => setCreating(true)}>{t.programs.add}</Button>}>
+          {t.programs.emptyText}
         </EmptyState>
       )}
       {sorted.length > 0 && (
@@ -56,8 +56,8 @@ function ProgramList() {
                 href={`${PROGRAMS}/${p.id}`}
                 linkAs={Link}
                 title={`${p.degree ? `${p.degree} ` : ""}${p.name}`}
-                meta={`${p.university}${p.regulation ? ` · ${p.regulation}` : ""} · ${de.programs.modules(p.moduleCount)} · ${de.programs.managedBy(p.managerName)}`}
-                trailing={p.enrolled && <Chip tone="gruen" icon="check">{de.programs.enrolled}</Chip>}
+                meta={`${p.university}${p.regulation ? ` · ${p.regulation}` : ""} · ${t.programs.modules(p.moduleCount)} · ${t.programs.managedBy(p.managerName)}`}
+                trailing={p.enrolled && <Chip tone="gruen" icon="check">{t.programs.enrolled}</Chip>}
               />
             ))}
           </List>
@@ -105,23 +105,23 @@ function ProgramDialog(props: { program?: Program; onClose: () => void; onSaved:
   }
   return (
     <Dialog
-      title={props.program ? de.common.edit : de.programs.add}
+      title={props.program ? t.common.edit : t.programs.add}
       onClose={props.onClose}
       footer={
         <>
-          <Button onClick={props.onClose}>{de.common.cancel}</Button>
+          <Button onClick={props.onClose}>{t.common.cancel}</Button>
           <Button variant="primary" loading={busy} disabled={!draft.university.trim() || !draft.name.trim()} onClick={() => void submit()}>
-            {de.common.save}
+            {t.common.save}
           </Button>
         </>
       }
     >
       <form className="ui-stack" onSubmit={submit}>
-        {field("university", de.programs.university, true)}
-        {field("name", de.programs.name, true)}
+        {field("university", t.programs.university, true)}
+        {field("name", t.programs.name, true)}
         <div className="form-grid">
-          {field("degree", de.programs.degree)}
-          {field("regulation", de.programs.regulation)}
+          {field("degree", t.programs.degree)}
+          {field("regulation", t.programs.regulation)}
         </div>
         {error && <Notice tone="danger">{error}</Notice>}
       </form>
@@ -129,7 +129,7 @@ function ProgramDialog(props: { program?: Program; onClose: () => void; onSaved:
   );
 }
 
-const DETAIL_FIELDS: (keyof typeof de.programs.fields)[] = [
+const DETAIL_FIELDS: (keyof typeof t.programs.fields)[] = [
   "language",
   "turnus",
   "duration",
@@ -174,20 +174,20 @@ function ProgramDetail() {
 
   return (
     <div className="ui-stack programs">
-      <Breadcrumb linkAs={Link} items={[{ label: de.programs.title, href: PROGRAMS }, { label: program.name }]} />
+      <Breadcrumb linkAs={Link} items={[{ label: t.programs.title, href: PROGRAMS }, { label: program.name }]} />
       <SectionHeader
         size="lg"
         title={`${program.degree ? `${program.degree} ` : ""}${program.name}`}
-        description={`${program.university}${program.regulation ? ` · ${program.regulation}` : ""} · ${de.programs.modules(program.moduleCount)} · ${de.programs.managedBy(program.managerName)}`}
+        description={`${program.university}${program.regulation ? ` · ${program.regulation}` : ""} · ${t.programs.modules(program.moduleCount)} · ${t.programs.managedBy(program.managerName)}`}
         action={
           <>
             {manages && (
               <Button icon="edit" onClick={() => setEditing(true)}>
-                {de.common.edit}
+                {t.common.edit}
               </Button>
             )}
             <Button variant={program.enrolled ? "secondary" : "primary"} icon={program.enrolled ? "close" : "check"} onClick={() => api.setEnrolled(program.id, !program.enrolled).then(load)}>
-              {program.enrolled ? de.programs.unenroll : de.programs.enroll}
+              {program.enrolled ? t.programs.unenroll : t.programs.enroll}
             </Button>
           </>
         }
@@ -196,8 +196,8 @@ function ProgramDetail() {
       {manages && (
         <Card tone="blau" className="handbook-card">
           <SectionHeader
-            title={de.programs.handbook}
-            description={de.programs.importHint}
+            title={t.programs.handbook}
+            description={t.programs.importHint}
             action={
               <Button
                 icon="upload"
@@ -210,20 +210,20 @@ function ProgramDetail() {
                   setUploading(false);
                 }}
               >
-                {program.hasHandbook ? de.programs.replaceHandbook : de.programs.uploadHandbook}
+                {program.hasHandbook ? t.programs.replaceHandbook : t.programs.uploadHandbook}
               </Button>
             }
           />
           {program.hasHandbook && (
             <Chip tone="gruen" icon="check" onTint>
-              {de.programs.handbookThere}
+              {t.programs.handbookThere}
             </Chip>
           )}
         </Card>
       )}
-      <SearchField label={de.programs.search} value={search} onChange={(e) => setSearch(e.target.value)} onClear={() => setSearch("")} />
+      <SearchField label={t.programs.search} value={search} onChange={(e) => setSearch(e.target.value)} onClear={() => setSearch("")} />
       {modules.length === 0 ? (
-        <EmptyState variant="plain" size="sm" illustration="suche" title={de.programs.noModules} />
+        <EmptyState variant="plain" size="sm" illustration="suche" title={t.programs.noModules} />
       ) : (
         <Card padding="sm">
           <List>
@@ -233,7 +233,7 @@ function ProgramDetail() {
                 onClick={() => setOpen(m.id)}
                 leading={<span className="mono quiet module-number">{m.number}</span>}
                 title={m.title}
-                trailing={de.programs.credits(m.credits ?? null)}
+                trailing={t.programs.credits(m.credits ?? null)}
               />
             ))}
           </List>
@@ -260,7 +260,7 @@ function ProgramDetail() {
                     )
                   }
                 >
-                  {de.programs.deleteModule}
+                  {t.programs.deleteModule}
                 </Button>
               )}
               <Button
@@ -271,16 +271,16 @@ function ProgramDetail() {
                   setMaking(current);
                 }}
               >
-                {de.programs.createSubject}
+                {t.programs.createSubject}
               </Button>
             </>
           }
         >
-          <p className="quiet">{`${current.number} · ${de.programs.credits(current.credits ?? null)}`}</p>
+          <p className="quiet">{`${current.number} · ${t.programs.credits(current.credits ?? null)}`}</p>
           <dl className="module-fields">
             {DETAIL_FIELDS.filter((key) => (current as ModuleData)[key]).map((key) => (
               <div key={key}>
-                <dt>{de.programs.fields[key]}</dt>
+                <dt>{t.programs.fields[key]}</dt>
                 <dd>{String((current as ModuleData)[key])}</dd>
               </div>
             ))}

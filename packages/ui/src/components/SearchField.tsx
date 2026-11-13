@@ -1,9 +1,10 @@
 import { useId, type InputHTMLAttributes, type Ref } from "react";
 import { cx } from "../cx";
 import { Icon } from "./Icon";
+import { uiText } from "../text";
 
 interface Common {
-  /** What is searched, e.g. "In allen Fächern suchen". Hidden from the eye; the placeholder shows it. */
+  /** What is searched, e.g. "Search all courses". Hidden from the eye; the placeholder shows it. */
   label: string;
   /** A keyboard shortcut shown at the end, e.g. "⌘K". */
   shortcut?: string;
@@ -29,7 +30,7 @@ export function SearchField({ label, shortcut, size = "md", className, onClear, 
       <Icon name="search" size={18} className="ui-control-icon" />
       <input id={inputId} type="search" className="ui-input" placeholder={placeholder ?? `${label} …`} value={value} {...rest} />
       {onClear && value ? (
-        <button type="button" className="ui-search-clear" aria-label="Suche leeren" onClick={onClear}>
+        <button type="button" className="ui-search-clear" aria-label={uiText().clearSearch} onClick={onClear}>
           <Icon name="close" size={16} />
         </button>
       ) : (

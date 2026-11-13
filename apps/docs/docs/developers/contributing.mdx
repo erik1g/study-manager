@@ -53,7 +53,7 @@ Add a `BREAKING CHANGE` note whenever operators must do something when updating:
 
 - **Only building blocks from `@study/ui`** in `apps/web`, no colours as hex values ([design system](/developers/design)).
 - **Permissions belong in `apps/server/src/domain`**, not in the routes.
-- **Interface texts** live in `apps/web/src/i18n/de.ts`.
+- **Interface texts** live in `apps/web/src/i18n/`: `en.ts` is the source, `de.ts` and every further language must have the same keys (TypeScript checks it). Import `t` and the formatters from `apps/web/src/i18n`, never a language file directly.
 - **Tests** for new behaviour; for interface changes, look at the result in the browser on laptop **and** phone.
 - **Invented data** in tests, examples and docs. No real people, universities or credentials.
 - Keep the **documentation** up to date: users, admins or developers, depending on whom your change affects.

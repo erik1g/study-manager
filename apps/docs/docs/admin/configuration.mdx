@@ -63,6 +63,8 @@ Without mail, the app shows the admin invitation and recovery links to pass on. 
 | `SMTP_HOST`, `SMTP_PORT` | Your mail server (default port 587) |
 | `SMTP_USER`, `SMTP_PASS` | Credentials |
 
+The mails go out in the recipient's language (English or German). The texts come from the app; their **subjects** are set in `docker-compose.yml` (`GOTRUE_MAILER_SUBJECTS_*`) and pick the language themselves. Leave these lines as they are; if you changed them, keep the `{{ if … }}` conditions.
+
 The sender is `noreply@<DOMAIN>`; your mail provider must allow the domain for that (set up SPF/DKIM).
 
 ## Images
