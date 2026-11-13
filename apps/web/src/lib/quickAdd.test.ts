@@ -30,6 +30,19 @@ describe("the quick add sentence", () => {
     expect(parse("Todo Eingebettete Übung wiederholen")).toMatchObject({ courseId: "b", title: "Eingebettete Übung wiederholen" });
     expect(parse("Todo Lesen", "b")).toMatchObject({ courseId: "b" });
   });
+  it("understands the same in English", () => {
+    expect(parse("Deadline Lab report 3 on 19/11")).toEqual({ kind: "deadline", title: "Lab report 3", date: "2026-11-19", time: null, courseId: null });
+    expect(parse("To-do Read chapter 2 tomorrow at 2pm")).toMatchObject({ kind: "task", title: "Read chapter 2", date: "2026-11-03", time: "14:00" });
+    expect(parse("Task Read on Friday at 9:30")).toMatchObject({ date: "2026-11-06", time: "09:30" });
+    expect(parse("Todo Read the day after tomorrow")).toMatchObject({ title: "Read", date: "2026-11-04" });
+    expect(parse("Exam Thermo on 10/2")).toMatchObject({ title: "Exam Thermo", date: "2027-02-10" });
+    expect(parse("Submission Report on 12/1/2027")).toMatchObject({ title: "Submission Report", date: "2027-01-12" });
+    expect(parse("Todo Read at 12am")).toMatchObject({ time: "00:00" });
+    expect(parse("Todo Read at 13pm")).toMatchObject({ title: "Read at 13pm", time: null });
+  });
+  it("reads übermorgen as two days, not as morgen", () => {
+    expect(parse("Todo Lesen übermorgen")).toMatchObject({ title: "Lesen", date: "2026-11-04" });
+  });
   it("leaves other text alone", () => {
     expect(parse("Regelungstechnik")).toBeNull();
     expect(parse("Deadline am 19.11.")).toBeNull();

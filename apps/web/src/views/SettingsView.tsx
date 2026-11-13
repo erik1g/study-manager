@@ -27,7 +27,7 @@ import { Avatar } from "../components/Avatar";
 import { CopyField, ConfirmDialog, Dialog } from "../components/Dialog";
 import { TranscriptionSettings } from "../components/TranscriptionSettings";
 import { ProgramsView } from "./ProgramsView";
-import { de, errorMessage, formatDate, formatDateTime, today } from "../i18n/de";
+import { LANGUAGE_NAMES, LOCALES, type Locale, locale, switchLocale, t, errorMessage, formatDate, formatDateTime, today } from "../i18n";
 import { api, type DeletionCheck, type Feed, type Series } from "../lib/api";
 import { auth, mailEnabled } from "../lib/auth";
 import { useSession } from "../lib/session";
@@ -35,13 +35,13 @@ import { saveTheme, storedTheme, type Theme } from "../lib/theme";
 import { toneOf } from "../lib/tone";
 
 const PAGES: { path: string; label: string; icon: IconName }[] = [
-  { path: "profil", label: de.settings.profile, icon: "person" },
-  { path: "darstellung", label: de.settings.appearance, icon: "palette" },
-  { path: "sicherheit", label: de.settings.security, icon: "lock" },
-  { path: "studiengang", label: de.settings.programs, icon: "book" },
-  { path: "kalender", label: de.settings.calendarPage, icon: "calendar" },
-  { path: "transkription", label: de.settings.transcription, icon: "mic" },
-  { path: "claude", label: de.settings.claude, icon: "claude" },
+  { path: "profil", label: t.settings.profile, icon: "person" },
+  { path: "darstellung", label: t.settings.appearance, icon: "palette" },
+  { path: "sicherheit", label: t.settings.security, icon: "lock" },
+  { path: "studiengang", label: t.settings.programs, icon: "book" },
+  { path: "kalender", label: t.settings.calendarPage, icon: "calendar" },
+  { path: "transkription", label: t.settings.transcription, icon: "mic" },
+  { path: "claude", label: t.settings.claude, icon: "claude" },
 ];
 
 /** Phones show the menu and a page one after the other. */
@@ -69,11 +69,11 @@ export function SettingsView() {
     <div className="page">
       {narrow && !atMenu && current ? (
         <div className="ui-stack">
-          <Breadcrumb linkAs={Link} items={[{ label: de.settings.title, href: "/einstellungen" }, { label: current.label }]} />
+          <Breadcrumb linkAs={Link} items={[{ label: t.settings.title, href: "/einstellungen" }, { label: current.label }]} />
           <SectionHeader level={1} size="xl" title={current.label} />
         </div>
       ) : (
-        <SectionHeader level={1} size="xl" title={de.settings.title} />
+        <SectionHeader level={1} size="xl" title={t.settings.title} />
       )}
       <div className="settings-layout">
         {narrow && atMenu && (
@@ -93,7 +93,7 @@ export function SettingsView() {
           </Card>
         )}
         {!narrow && (
-          <Card as="nav" padding="sm" className="settings-nav" aria-label={de.settings.title}>
+          <Card as="nav" padding="sm" className="settings-nav" aria-label={t.settings.title}>
             <NavSection>
               {PAGES.map((p) => (
                 <NavItem key={p.path} icon={p.icon} label={p.label} href={`/einstellungen/${p.path}`} linkAs={Link} active={current?.path === p.path} />
@@ -153,8 +153,38 @@ function ProfilePage() {
   return (
     <>
       <Profile />
+      <Language />
       <DeleteAccount />
     </>
+  );
+}
+
+/** The language of the interface and the mails, kept with the profile. */
+function Language() {
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  async function choose(next: Locale) {
+    setError(null);
+    setBusy(true);
+    try {
+      await api.updateProfile({ locale: next });
+      switchLocale(next);
+    } catch (e) {
+      setError(errorMessage(e));
+      setBusy(false);
+    }
+  }
+  return (
+    <Section title={t.settings.language} text={t.settings.languageText}>
+      <Select label={t.settings.language} hideLabel value={locale} disabled={busy} onChange={(e) => void choose(e.target.value as Locale)}>
+        {LOCALES.map((l) => (
+          <option key={l} value={l} lang={l}>
+            {LANGUAGE_NAMES[l]}
+          </option>
+        ))}
+      </Select>
+      {error && <Notice tone="danger">{error}</Notice>}
+    </Section>
   );
 }
 
@@ -191,11 +221,11 @@ function Profile() {
 
   if (!me) return null;
   return (
-    <Section title={de.settings.profile} text={de.settings.profileText}>
+    <Section title={t.settings.profile} text={t.settings.profileText}>
       <div className="profile-picture">
         <Avatar userId={me.id} name={me.displayName} size={88} version={me.avatarVersion} />
         <div className="ui-stack">
-          <strong>{de.settings.picture}</strong>
+          <strong>{t.settings.picture}</strong>
           <div className="toolbar-row">
             <Button
               size="sm"
@@ -205,11 +235,11 @@ function Profile() {
                 if (file) setPicture(URL.createObjectURL(file));
               }}
             >
-              {me.avatarVersion != null ? de.settings.pictureChange : de.settings.pictureChoose}
+              {me.avatarVersion != null ? t.settings.pictureChange : t.settings.pictureChoose}
             </Button>
             {me.avatarVersion != null && (
               <Button size="sm" variant="ghost" onClick={() => api.removeAvatar().then(refresh)}>
-                {de.settings.pictureRemove}
+                {t.settings.pictureRemove}
               </Button>
             )}
           </div>
@@ -230,14 +260,14 @@ function Profile() {
       )}
 
       <form className="entry-form" onSubmit={save}>
-        <TextField label={de.settings.name} value={name} maxLength={80} onChange={(e) => (setName(e.target.value), touched())} required />
-        <TextField label={de.settings.semester} type="number" min={1} max={30} value={semester} onChange={(e) => (setSemester(e.target.value), touched())} />
+        <TextField label={t.settings.name} value={name} maxLength={80} onChange={(e) => (setName(e.target.value), touched())} required />
+        <TextField label={t.settings.semester} type="number" min={1} max={30} value={semester} onChange={(e) => (setSemester(e.target.value), touched())} />
         <TextField
           className="wide"
-          label={de.settings.studies}
+          label={t.settings.studies}
           value={studies}
           maxLength={120}
-          placeholder={de.settings.studiesPlaceholder}
+          placeholder={t.settings.studiesPlaceholder}
           onChange={(e) => (setStudies(e.target.value), touched())}
         />
         <EmailField current={me.email} />
@@ -247,9 +277,9 @@ function Profile() {
           </Notice>
         )}
         <div className="form-actions wide">
-          {saved && <Chip tone="gruen" icon="check">{de.settings.profileSaved}</Chip>}
+          {saved && <Chip tone="gruen" icon="check">{t.settings.profileSaved}</Chip>}
           <Button type="submit" variant="primary" loading={busy}>
-            {de.common.save}
+            {t.common.save}
           </Button>
         </div>
       </form>
@@ -263,7 +293,7 @@ function EmailField({ current }: { current: string }) {
   const [state, setState] = useState<"idle" | "busy" | "sent">("idle");
   const [error, setError] = useState<string | null>(null);
   if (!mailEnabled) {
-    return <TextField className="wide" label={de.settings.email} value={current} disabled hint={de.settings.emailLocked} />;
+    return <TextField className="wide" label={t.settings.email} value={current} disabled hint={t.settings.emailLocked} />;
   }
   const change = async () => {
     setState("busy");
@@ -277,12 +307,12 @@ function EmailField({ current }: { current: string }) {
   return (
     <div className="wide ui-stack">
       <div className="field-with-button">
-        <TextField label={de.settings.email} type="email" value={email} onChange={(e) => (setEmail(e.target.value), setState("idle"))} error={error ?? undefined} />
+        <TextField label={t.settings.email} type="email" value={email} onChange={(e) => (setEmail(e.target.value), setState("idle"))} error={error ?? undefined} />
         <Button loading={state === "busy"} disabled={email.trim().toLowerCase() === current} onClick={change}>
-          {de.settings.emailChange}
+          {t.settings.emailChange}
         </Button>
       </div>
-      {state === "sent" && <Notice tone="success">{de.settings.emailSent(email.trim())}</Notice>}
+      {state === "sent" && <Notice tone="success">{t.settings.emailSent(email.trim())}</Notice>}
     </div>
   );
 }
@@ -302,7 +332,7 @@ function CropDialog({ src, onClose, onDone }: { src: string; onClose: () => void
   useEffect(() => {
     const img = new Image();
     img.onload = () => setImage(img);
-    img.onerror = () => setError(de.errors.avatar_type);
+    img.onerror = () => setError(t.errors.avatar_type);
     img.src = src;
   }, [src]);
 
@@ -352,23 +382,23 @@ function CropDialog({ src, onClose, onDone }: { src: string; onClose: () => void
 
   return (
     <Dialog
-      title={de.settings.pictureCrop}
+      title={t.settings.pictureCrop}
       onClose={onClose}
       footer={
         <>
-          <Button onClick={onClose}>{de.common.cancel}</Button>
+          <Button onClick={onClose}>{t.common.cancel}</Button>
           <Button variant="primary" loading={busy} disabled={!image} onClick={save}>
-            {de.settings.pictureSave}
+            {t.settings.pictureSave}
           </Button>
         </>
       }
     >
       <div className="ui-stack">
-        <p className="quiet small">{de.settings.pictureCropText}</p>
+        <p className="quiet small">{t.settings.pictureCropText}</p>
         <div className="crop-frame" style={{ width: CROP, height: CROP }} onPointerDown={down} onPointerMove={move} onPointerUp={() => (drag.current = null)}>
           {image && <img src={src} alt="" draggable={false} style={{ width, height, transform: `translate(${offset.x}px, ${offset.y}px)` }} />}
         </div>
-        <Slider label={de.settings.pictureZoom} min={1} max={4} step={0.01} value={zoom} onChange={setZoom} format={(v) => `${v.toFixed(1)} ×`} />
+        <Slider label={t.settings.pictureZoom} min={1} max={4} step={0.01} value={zoom} onChange={setZoom} format={(v) => `${v.toFixed(1)} ×`} />
         {error && <Notice tone="danger">{error}</Notice>}
       </div>
     </Dialog>
@@ -379,12 +409,12 @@ function DeleteAccount() {
   const [open, setOpen] = useState(false);
   return (
     <Section
-      title={de.settings.deleteAccount}
-      text={de.settings.deleteText}
+      title={t.settings.deleteAccount}
+      text={t.settings.deleteText}
       danger
       action={
         <Button variant="danger" icon="trash" onClick={() => setOpen(true)}>
-          {de.settings.deleteStart}
+          {t.settings.deleteStart}
         </Button>
       }
     >
@@ -421,11 +451,11 @@ function DeleteDialog({ onClose }: { onClose: () => void }) {
   const blocked = !check || check.lastAdmin || check.handOver.length > 0;
   return (
     <Dialog
-      title={de.settings.deleteAccount}
+      title={t.settings.deleteAccount}
       onClose={onClose}
       footer={
         <>
-          <Button onClick={onClose}>{de.common.cancel}</Button>
+          <Button onClick={onClose}>{t.common.cancel}</Button>
           <Button
             variant="danger"
             icon="trash"
@@ -443,17 +473,17 @@ function DeleteDialog({ onClose }: { onClose: () => void }) {
               }
             }}
           >
-            {de.settings.deleteFinal}
+            {t.settings.deleteFinal}
           </Button>
         </>
       }
     >
       <div className="ui-stack">
         {!check ? null : check.lastAdmin ? (
-          <Notice tone="danger">{de.settings.deleteLastAdmin}</Notice>
+          <Notice tone="danger">{t.settings.deleteLastAdmin}</Notice>
         ) : check.handOver.length > 0 ? (
           <>
-            <p>{de.settings.deleteHandOver}</p>
+            <p>{t.settings.deleteHandOver}</p>
             <List>
               {check.handOver.map((h) => (
                 <ListRow
@@ -462,7 +492,7 @@ function DeleteDialog({ onClose }: { onClose: () => void }) {
                   meta={h.semester}
                   trailing={
                     <Button size="sm" onClick={() => api.setRole(h.courseId, h.successor.userId, "owner").then(load, (e) => setError(errorMessage(e)))}>
-                      {de.settings.deleteHandOverTo(h.successor.displayName)}
+                      {t.settings.deleteHandOverTo(h.successor.displayName)}
                     </Button>
                   }
                 />
@@ -471,10 +501,10 @@ function DeleteDialog({ onClose }: { onClose: () => void }) {
           </>
         ) : (
           <>
-            {check.alone.length > 0 && <Notice tone="warning">{de.settings.deleteAlone(check.alone.map((a) => a.title).join(", "))}</Notice>}
+            {check.alone.length > 0 && <Notice tone="warning">{t.settings.deleteAlone(check.alone.map((a) => a.title).join(", "))}</Notice>}
             {!confirmed ? (
               <>
-                <p>{de.settings.deleteConfirmSignIn}</p>
+                <p>{t.settings.deleteConfirmSignIn}</p>
                 <form
                   className="field-with-button"
                   onSubmit={async (e) => {
@@ -483,21 +513,21 @@ function DeleteDialog({ onClose }: { onClose: () => void }) {
                     proved(error);
                   }}
                 >
-                  <TextField label={de.settings.currentPassword} type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                  <TextField label={t.settings.currentPassword} type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
                   <Button type="submit" disabled={!password}>
-                    {de.settings.deleteConfirmPassword}
+                    {t.settings.deleteConfirmPassword}
                   </Button>
                 </form>
                 <div>
                   <Button icon="key" onClick={async () => proved((await auth().auth.signInWithPasskey()).error)}>
-                    {de.settings.deleteConfirmPasskey}
+                    {t.settings.deleteConfirmPasskey}
                   </Button>
                 </div>
               </>
             ) : (
               <>
-                <Notice tone="success">{de.settings.deleteConfirmed}</Notice>
-                <TextField label={de.settings.deleteTypeEmail(me.email)} type="email" autoComplete="off" value={email} onChange={(e) => setEmail(e.target.value)} />
+                <Notice tone="success">{t.settings.deleteConfirmed}</Notice>
+                <TextField label={t.settings.deleteTypeEmail(me.email)} type="email" autoComplete="off" value={email} onChange={(e) => setEmail(e.target.value)} />
               </>
             )}
           </>
@@ -517,15 +547,15 @@ function Appearance() {
     setTheme(next);
   };
   return (
-    <Section title={de.settings.appearance} text={de.settings.appearanceText}>
+    <Section title={t.settings.appearance} text={t.settings.appearanceText}>
       <SegmentedControl
-        label={de.settings.appearance}
+        label={t.settings.appearance}
         value={theme}
         onChange={choose}
         options={[
-          { value: "light", label: de.settings.themes.light, icon: "sun" },
-          { value: "dark", label: de.settings.themes.dark, icon: "star" },
-          { value: "system", label: de.settings.themes.system, icon: "settings" },
+          { value: "light", label: t.settings.themes.light, icon: "sun" },
+          { value: "dark", label: t.settings.themes.dark, icon: "star" },
+          { value: "system", label: t.settings.themes.system, icon: "settings" },
         ]}
       />
       <div className="theme-previews" aria-hidden="true">
@@ -540,7 +570,7 @@ function Appearance() {
           <i className="ui-tone-orange" />
         </div>
       </div>
-      <p className="quiet small">{de.settings.motionHint}</p>
+      <p className="quiet small">{t.settings.motionHint}</p>
     </Section>
   );
 }
@@ -585,16 +615,16 @@ function Security() {
     if (error) return show(null, error);
     setEnrolling(null);
     setCode("");
-    show(de.settings.totpActive);
+    show(t.settings.totpActive);
     await load();
   }
 
   const verified = factors.some((f) => f.status === "verified");
   return (
-    <Section title={de.settings.security}>
+    <Section title={t.settings.security}>
       {message && <Notice tone="success">{message}</Notice>}
       {error && <Notice tone="danger">{error}</Notice>}
-      <Sub title={de.settings.passkeys} />
+      <Sub title={t.settings.passkeys} />
       {passkeys.length > 0 && (
         <List>
           {passkeys.map((p) => (
@@ -605,7 +635,7 @@ function Security() {
               meta={formatDateTime(p.created_at)}
               trailing={
                 <Button size="sm" variant="ghost" onClick={() => auth().auth.passkey.delete({ passkeyId: p.id }).then(load)}>
-                  {de.common.delete}
+                  {t.common.delete}
                 </Button>
               }
             />
@@ -617,53 +647,53 @@ function Security() {
           icon="plus"
           onClick={async () => {
             const { error } = await auth().auth.registerPasskey();
-            show(de.settings.passkeyAdded, error);
+            show(t.settings.passkeyAdded, error);
             await load();
           }}
         >
-          {de.settings.addPasskey}
+          {t.settings.addPasskey}
         </Button>
       </div>
 
-      <Sub title={de.settings.totp} text={de.settings.totpText} />
+      <Sub title={t.settings.totp} text={t.settings.totpText} />
       {verified ? (
         <div>
           <Chip tone="gruen" icon="check">
-            {de.settings.totpActive}
+            {t.settings.totpActive}
           </Chip>
         </div>
       ) : enrolling ? (
         <form className="ui-stack" onSubmit={verifyTotp}>
-          <img className="qr" src={enrolling.qr} alt="QR-Code für die Authenticator-App" width={180} height={180} />
+          <img className="qr" src={enrolling.qr} alt={t.settings.totpQr} width={180} height={180} />
           <code className="mono small">{enrolling.secret}</code>
           <div className="field-with-button">
-            <TextField label={de.settings.totpCode} inputMode="numeric" autoComplete="one-time-code" value={code} onChange={(e) => setCode(e.target.value)} />
+            <TextField label={t.settings.totpCode} inputMode="numeric" autoComplete="one-time-code" value={code} onChange={(e) => setCode(e.target.value)} />
             <Button type="submit" variant="primary">
-              {de.settings.totpVerify}
+              {t.settings.totpVerify}
             </Button>
           </div>
         </form>
       ) : (
         <div>
           <Button icon="shield" onClick={enrollTotp}>
-            {de.settings.totpSetup}
+            {t.settings.totpSetup}
           </Button>
         </div>
       )}
 
-      <Sub title={de.settings.password} />
+      <Sub title={t.settings.password} />
       <form
         className="field-with-button"
         onSubmit={async (e) => {
           e.preventDefault();
           const { error } = await auth().auth.updateUser({ password });
-          show(de.settings.passwordSaved, error);
+          show(t.settings.passwordSaved, error);
           if (!error) setPassword("");
         }}
       >
-        <TextField label={de.settings.newPassword} type="password" autoComplete="new-password" minLength={10} hint={de.settings.passwordHint} value={password} onChange={(e) => setPassword(e.target.value)} />
+        <TextField label={t.settings.newPassword} type="password" autoComplete="new-password" minLength={10} hint={t.settings.passwordHint} value={password} onChange={(e) => setPassword(e.target.value)} />
         <Button type="submit" disabled={password.length < 10}>
-          {de.common.save}
+          {t.common.save}
         </Button>
       </form>
     </Section>
@@ -674,7 +704,7 @@ function PhoneCalendar() {
   const { me, reloadMe } = useSession();
   const [busy, setBusy] = useState(false);
   return (
-    <Section title={de.settings.calendar} text={de.settings.calendarText}>
+    <Section title={t.settings.calendar} text={t.settings.calendarText}>
       {me && <CopyField value={me.icalUrl.replace(/^https:/, "webcal:")} />}
       <div className="toolbar-row">
         <Button
@@ -688,9 +718,9 @@ function PhoneCalendar() {
             setBusy(false);
           }}
         >
-          {de.settings.renewIcal}
+          {t.settings.renewIcal}
         </Button>
-        <span className="quiet small">{de.settings.renewHint}</span>
+        <span className="quiet small">{t.settings.renewHint}</span>
       </div>
     </Section>
   );
@@ -732,7 +762,7 @@ function Feeds() {
   }
 
   return (
-    <Section title={de.settings.feeds} text={de.settings.feedsText}>
+    <Section title={t.settings.feeds} text={t.settings.feedsText}>
       {error && <Notice tone="danger">{error}</Notice>}
       {feeds.length > 0 && (
         <List>
@@ -741,14 +771,14 @@ function Feeds() {
               key={f.id}
               leading={<span className={`time-dot ui-tone-${toneOf(f.color)}`} aria-hidden="true" />}
               title={f.name}
-              meta={f.error ? <span className="danger-text">{f.error}</span> : f.fetchedAt ? de.settings.feedFetched(formatDateTime(f.fetchedAt)) : undefined}
+              meta={f.error ? <span className="danger-text">{f.error}</span> : f.fetchedAt ? t.settings.feedFetched(formatDateTime(f.fetchedAt)) : undefined}
               trailing={
                 <>
                   <Button size="sm" icon="restore" onClick={() => api.refreshFeed(f.id).then(load, (e) => setError(errorMessage(e)))}>
-                    {de.settings.feedRefresh}
+                    {t.settings.feedRefresh}
                   </Button>
                   <Button size="sm" variant="ghost" onClick={() => api.removeFeed(f.id).then(load)}>
-                    {de.common.delete}
+                    {t.common.delete}
                   </Button>
                 </>
               }
@@ -758,15 +788,15 @@ function Feeds() {
       )}
       <Card variant="sunken" padding="sm">
         <form className="entry-form" onSubmit={add}>
-          <TextField label={de.settings.feedName} value={name} onChange={(e) => setName(e.target.value)} required />
-          <TextField className="wide" label={de.settings.feedUrl} value={url} onChange={(e) => setUrl(e.target.value)} required />
+          <TextField label={t.settings.feedName} value={name} onChange={(e) => setName(e.target.value)} required />
+          <TextField className="wide" label={t.settings.feedUrl} value={url} onChange={(e) => setUrl(e.target.value)} required />
           <div className="wide ui-stack">
-            <span className="ui-field-label">{de.settings.feedColor}</span>
-            <TonePicker label={de.settings.feedColor} value={color} onChange={setColor} />
+            <span className="ui-field-label">{t.settings.feedColor}</span>
+            <TonePicker label={t.settings.feedColor} value={color} onChange={setColor} />
           </div>
           <div className="form-actions wide">
             <Button type="submit" variant="primary" icon="plus" loading={busy}>
-              {de.settings.feedAdd}
+              {t.settings.feedAdd}
             </Button>
           </div>
         </form>
@@ -774,7 +804,7 @@ function Feeds() {
 
       {series.length > 0 && (
         <>
-          <Sub title={de.settings.series} text={de.settings.seriesText} />
+          <Sub title={t.settings.series} text={t.settings.seriesText} />
           <List>
             {series.map((s) => {
               const value = s.decided ? (s.courseId ?? "") : (s.suggestion ?? "");
@@ -787,11 +817,11 @@ function Feeds() {
                     <>
                       {!s.decided && s.suggestion && (
                         <Chip tone="gelb" size="sm">
-                          {de.settings.seriesSuggestion}
+                          {t.settings.seriesSuggestion}
                         </Chip>
                       )}
-                      <Select label={de.settings.seriesFor(s.title)} hideLabel size="sm" value={value} onChange={(e) => api.assignSeries(s.feedId, s.title, e.target.value || null).then(load)}>
-                        <option value="">{de.settings.seriesNone}</option>
+                      <Select label={t.settings.seriesFor(s.title)} hideLabel size="sm" value={value} onChange={(e) => api.assignSeries(s.feedId, s.title, e.target.value || null).then(load)}>
+                        <option value="">{t.settings.seriesNone}</option>
                         {courses.map((c) => (
                           <option key={c.id} value={c.id}>
                             {c.title}
@@ -800,7 +830,7 @@ function Feeds() {
                       </Select>
                       {!s.decided && s.suggestion && (
                         <Button size="sm" variant="primary" icon="check" onClick={() => api.assignSeries(s.feedId, s.title, s.suggestion).then(load)}>
-                          {de.settings.seriesAccept}
+                          {t.settings.seriesAccept}
                         </Button>
                       )}
                     </>
@@ -880,7 +910,7 @@ function Claude() {
 
   return (
     <>
-      <Section title={de.settings.connectNew} text={de.settings.claudeText}>
+      <Section title={t.settings.connectNew} text={t.settings.claudeText}>
         <div className="connect-ways">
           {(["claude", "code", "other"] as const).map((value) => (
             <Card
@@ -896,34 +926,34 @@ function Claude() {
               onClick={() => choose(value)}
             >
               <Icon name={WAY_ICON[value]} size={24} />
-              <strong>{de.settings.ways[value].title}</strong>
-              <span className="small">{de.settings.ways[value].text}</span>
+              <strong>{t.settings.ways[value].title}</strong>
+              <span className="small">{t.settings.ways[value].text}</span>
             </Card>
           ))}
         </div>
 
         {way === "claude" && (
           <ol className="connect-steps">
-            <li>{de.settings.claudeStep1}</li>
+            <li>{t.settings.claudeStep1}</li>
             <li>
-              {de.settings.claudeStep2}
+              {t.settings.claudeStep2}
               <CopyField value={mcpUrl} />
             </li>
-            <li>{de.settings.claudeStep3}</li>
+            <li>{t.settings.claudeStep3}</li>
           </ol>
         )}
 
         {way === "code" &&
           (shown?.way === "code" ? (
-            <Notice tone="success" title={de.settings.codeShown}>
+            <Notice tone="success" title={t.settings.codeShown}>
               <CopyField value={shown.secret} />
             </Notice>
           ) : (
             <div className="ui-stack">
-              <p className="quiet small">{de.settings.codeText}</p>
+              <p className="quiet small">{t.settings.codeText}</p>
               <div>
                 <Button variant="primary" icon="key" onClick={() => makeKey("code", `Claude Code · ${formatDate(today())}`)}>
-                  {de.settings.codeMake}
+                  {t.settings.codeMake}
                 </Button>
               </div>
             </div>
@@ -931,10 +961,10 @@ function Claude() {
 
         {way === "other" &&
           (shown?.way === "other" ? (
-            <Notice tone="success" title={de.settings.otherShown}>
+            <Notice tone="success" title={t.settings.otherShown}>
               <div className="ui-stack">
-                <CopyField value={mcpUrl} label={de.settings.mcpUrl} />
-                <CopyField value={shown.secret} label={de.settings.otherKey} />
+                <CopyField value={mcpUrl} label={t.settings.mcpUrl} />
+                <CopyField value={shown.secret} label={t.settings.otherKey} />
               </div>
             </Notice>
           ) : (
@@ -945,20 +975,20 @@ function Claude() {
                 void makeKey("other", name.trim());
               }}
             >
-              <p className="quiet small">{de.settings.otherText}</p>
+              <p className="quiet small">{t.settings.otherText}</p>
               <div className="field-with-button">
-                <TextField label={de.settings.otherName} value={name} onChange={(e) => setName(e.target.value)} required />
+                <TextField label={t.settings.otherName} value={name} onChange={(e) => setName(e.target.value)} required />
                 <Button type="submit" variant="primary" icon="key" disabled={!name.trim()}>
-                  {de.settings.otherMake}
+                  {t.settings.otherMake}
                 </Button>
               </div>
             </form>
           ))}
       </Section>
 
-      <Section title={de.settings.connections} text={de.settings.connectionsText}>
+      <Section title={t.settings.connections} text={t.settings.connectionsText}>
         {error && <Notice tone="danger">{error}</Notice>}
-        {connections && connections.length === 0 && <p className="quiet">{de.settings.connectionsEmpty}</p>}
+        {connections && connections.length === 0 && <p className="quiet">{t.settings.connectionsEmpty}</p>}
         {connections && connections.length > 0 && (
           <List>
             {connections.map((c) => (
@@ -968,12 +998,12 @@ function Claude() {
                 leading={<Icon name={c.kind === "app" ? "claude" : "key"} size={22} />}
                 title={
                   <>
-                    {c.name} <Chip size="sm">{c.kind === "app" ? de.settings.byLogin : de.settings.byKey}</Chip>
+                    {c.name} <Chip size="sm">{c.kind === "app" ? t.settings.byLogin : t.settings.byKey}</Chip>
                     {c.id === newest && (
                       <>
                         {" "}
                         <Chip size="sm" tone="gruen">
-                          {de.settings.keyNew}
+                          {t.settings.keyNew}
                         </Chip>
                       </>
                     )}
@@ -981,20 +1011,20 @@ function Claude() {
                 }
                 meta={
                   <>
-                    {c.lastUsedAt ? de.settings.lastActive(formatDateTime(c.lastUsedAt)) : de.settings.neverActive}
+                    {c.lastUsedAt ? t.settings.lastActive(formatDateTime(c.lastUsedAt)) : t.settings.neverActive}
                     {c.kind === "app" && c.detail && ` · ${c.detail}`}
-                    {c.kind === "key" && ` · ${de.settings.keyExpires(formatDate(c.expiresAt), daysLeft(c.expiresAt))}`}
+                    {c.kind === "key" && ` · ${t.settings.keyExpires(formatDate(c.expiresAt), daysLeft(c.expiresAt))}`}
                   </>
                 }
                 trailing={
                   <>
                     {c.kind === "key" && (
                       <Button size="sm" onClick={() => api.extendKey(c.id).then(load)}>
-                        {de.settings.keyExtend}
+                        {t.settings.keyExtend}
                       </Button>
                     )}
                     <Button size="sm" variant="danger" onClick={() => setEnding(c)}>
-                      {de.settings.disconnect}
+                      {t.settings.disconnect}
                     </Button>
                   </>
                 }
@@ -1004,9 +1034,9 @@ function Claude() {
         )}
         {ending && (
           <ConfirmDialog
-            title={de.settings.disconnect}
-            text={de.settings.disconnectConfirm(ending.name)}
-            confirm={de.settings.disconnect}
+            title={t.settings.disconnect}
+            text={t.settings.disconnectConfirm(ending.name)}
+            confirm={t.settings.disconnect}
             danger
             onClose={() => setEnding(null)}
             onConfirm={() => (ending.kind === "app" ? api.disconnectApp(ending.id) : api.revokeKey(ending.id)).then(load)}

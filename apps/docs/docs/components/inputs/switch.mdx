@@ -1,0 +1,53 @@
+---
+title: Switch
+sidebar_position: 5
+description: A setting on or off, effective at once.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { DoDont, Do, Dont } from "@site/src/components/DoDont";
+import { Switch, Checkbox } from "@study/ui";
+
+# Switch
+
+`import { Switch } from "@study/ui"`
+
+```jsx live
+function Example() {
+  const [on, setOn] = useState(true);
+  return (
+    <div style={{ maxWidth: 420 }}>
+      <Switch label="Reminders by email" description="One day before every deadline." checked={on} onChange={(e) => setOn(e.target.checked)} />
+    </div>
+  );
+}
+```
+
+## Variants and states
+
+<Preview column>
+  <Switch label="Off" />
+  <Switch label="On" defaultChecked />
+  <Switch label="Disabled" disabled />
+</Preview>
+
+## When to use
+
+<DoDont>
+  <Do caption="Takes effect at once, without saving.">
+    <Switch label="Transcription on this device" defaultChecked />
+  </Do>
+  <Dont caption="In a form with a save button – there it is a Checkbox.">
+    <Switch label="I agree" />
+  </Dont>
+</DoDont>
+
+## Props
+
+<PropsTable of="Switch" />
+
+## Accessibility
+
+- A checkbox with `role="switch"`: screen readers say "on" or "off".
+- Green means on – and the knob is on the right. Both together, not the colour alone.

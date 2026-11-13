@@ -13,14 +13,14 @@ const titles = (text: string) => text.split("\n").filter((l) => l.startsWith("##
 
 describe("the notes outline", () => {
   it("puts a new file's chapters between the exam list and the catch-all", () => {
-    const text = mergeOutline(newNotes("Real-time Systems"), outline("k1", [item("1 Introduction", 1, [["1.1 Definitions", 4], ["1.2 Examples", 9]])]), order);
+    const text = mergeOutline(newNotes("Real-time Systems", "de"), outline("k1", [item("1 Introduction", 1, [["1.1 Definitions", 4], ["1.2 Examples", 9]])]), order);
     expect(titles(text)).toEqual(["## Prüfungsrelevant", "## 1 Introduction", "### 1.1 Definitions", "### 1.2 Examples", "## Aus der Vorlesung, ohne Kapitelbezug"]);
     expect(text).toContain("## 1 Introduction\n<!-- id: k-1-introduction · skript: k1#1 -->");
     expect(text).toContain("<!-- id: k-1-1-definitions · skript: k1#4 -->");
   });
 
   it("adds only what is missing, where it belongs, when run again", () => {
-    let text = newNotes("RTS");
+    let text = newNotes("RTS", "de");
     text = mergeOutline(text, outline("k1", [item("1 Intro", 1, [["1.1 A", 2], ["1.3 C", 6]])]), order);
     text = mergeOutline(text, outline("k3", [item("3 Scheduling", 1)]), order);
     text = text
@@ -46,19 +46,19 @@ describe("the notes outline", () => {
   });
 });
 
-const session = (key: string, date: string): SessionInfo => ({ key, date, transcript: `/vorlesungen/${date} VO` });
+const session = (key: string, date: string): SessionInfo => ({ key, date, transcript: `/vorlesungen/${date.split("-").reverse().join(".")} VO` });
 const withOutline = () =>
-  mergeOutline(newNotes("RTS"), outline("k1", [item("1 Intro", 1, [["1.1 Hyperperiod", 2], ["1.2 Tables", 5]])]), order).replace(
+  mergeOutline(newNotes("RTS", "de"), outline("k1", [item("1 Intro", 1, [["1.1 Hyperperiod", 2], ["1.2 Tables", 5]])]), order).replace(
     "<!-- id: k-1-1-hyperperiod · skript: k1#2 -->\n",
     "<!-- id: k-1-1-hyperperiod · skript: k1#2 -->\nMeine eigene Notiz.\n",
   );
 
 describe("a lecture in the notes", () => {
   it("adds its points and exam hints and lists the hints at the top", () => {
-    const text = addSession(withOutline(), session("s-1019", "19.10.2026"), [
+    const text = addSession(withOutline(), session("s-1019", "2026-10-19"), [
       { id: "k-1-1-hyperperiod", points: ["Hyperperiode = kgV aller Perioden"], examHints: [{ quote: "Das müssen Sie in der Klausur können.", time: "00:43:05" }] },
       { id: "gibt-es-nicht", points: ["Übungsgruppen ab nächster Woche"] },
-    ]);
+    ], "de");
     const section = text.split("### 1.1 Hyperperiod")[1]!.split("### 1.2")[0]!;
     expect(section).toContain("Meine eigene Notiz.\n\n<!-- session: s-1019 -->");
     expect(section).toContain("> **Vorlesung 19.10.2026** · [Transkript](/vorlesungen/19.10.2026%20VO)");
@@ -70,10 +70,10 @@ describe("a lecture in the notes", () => {
   });
 
   it("replaces only its own blocks when evaluated again", () => {
-    let text = addSession(withOutline(), session("s-1019", "19.10.2026"), [{ id: "k-1-1-hyperperiod", points: ["alt"], examHints: [{ quote: "Alt" }] }]);
-    text = addSession(text, session("s-1026", "26.10.2026"), [{ id: "k-1-2-tables", points: ["andere Sitzung"] }]);
+    let text = addSession(withOutline(), session("s-1019", "2026-10-19"), [{ id: "k-1-1-hyperperiod", points: ["alt"], examHints: [{ quote: "Alt" }] }], "de");
+    text = addSession(text, session("s-1026", "2026-10-26"), [{ id: "k-1-2-tables", points: ["andere Sitzung"] }], "de");
     text = text.replace("Meine eigene Notiz.", "Meine eigene Notiz, ergänzt.");
-    text = addSession(text, session("s-1019", "19.10.2026"), [{ id: "k-1-1-hyperperiod", points: ["neu"] }]);
+    text = addSession(text, session("s-1019", "2026-10-19"), [{ id: "k-1-1-hyperperiod", points: ["neu"] }], "de");
 
     expect(text).toContain("> - neu");
     expect(text).not.toContain("> - alt");
@@ -82,6 +82,22 @@ describe("a lecture in the notes", () => {
     expect(text).toContain("Meine eigene Notiz, ergänzt.");
     expect(text.split("<!-- session: s-1019 -->").length - 1).toBe(1);
     expect(text).not.toContain("\n\n\n");
+  });
+
+  it("speaks the course's language", () => {
+    const text = addSession(
+      mergeOutline(newNotes("RTS", "en"), outline("k1", [item("1 Intro", 1)]), order),
+      session("s-1019", "2026-10-19"),
+      [{ id: "k-1-intro", points: ["Hyperperiod = lcm of all periods"], examHints: [{ quote: "You must know this for the exam.", time: "00:43:05" }] }],
+      "en",
+    );
+    expect(titles(text)).toEqual(["## Exam-relevant", "## 1 Intro", "## From the lecture, without a chapter"]);
+    expect(text).toContain("# Notes · RTS");
+    expect(text).toContain("> **Lecture 19/10/2026** · [Transcript](");
+    expect(text).toContain("> ⚠️ **Exam-relevant:** “You must know this for the exam.” [00:43:05]");
+    expect(text).toContain("- ⚠️ “You must know this for the exam.” → 1 Intro · Lecture 19/10/2026 [00:43:05]");
+    // The markers stay the same in every language.
+    expect(text).toContain("<!-- id: ohne-kapitel -->");
   });
 
   it("offers the headings by id and current title", () => {

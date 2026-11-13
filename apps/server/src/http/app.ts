@@ -102,7 +102,7 @@ export async function buildApp(services: Services, extras: AppExtras = {}) {
       return reply.status(429).send({ code: "rate_limited", message: "Zu viele Anfragen – bitte kurz warten." });
     }
     if ((error as { code?: string }).code === "FST_REQ_FILE_TOO_LARGE") {
-      return reply.status(413).send({ code: "file_too_large", message: "Die Datei ist größer als 95 MB." });
+      return reply.status(413).send({ code: "file_too_large", message: "The file is larger than 95 MB." });
     }
     if (error instanceof AppError) {
       return reply.status(error.status).send({ code: error.code, message: error.message });

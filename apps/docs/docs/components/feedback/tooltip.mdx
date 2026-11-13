@@ -1,0 +1,40 @@
+---
+title: Tooltip
+sidebar_position: 5
+description: A hint on hover and focus.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { DoDont, Do, Dont } from "@site/src/components/DoDont";
+import { Tooltip, Button } from "@study/ui";
+
+# Tooltip
+
+`import { Tooltip } from "@study/ui"`
+
+```jsx live
+<div style={{ paddingTop: 48, display: "flex", gap: 16 }}>
+  <Tooltip content="Shares the invitation link">
+    <Button icon="link">Invite</Button>
+  </Tooltip>
+  <Tooltip content="Below instead of above" side="bottom">
+    <Button>Below</Button>
+  </Tooltip>
+</div>
+```
+
+## When to use
+
+- For extras that people do not need to use the app.
+- `IconButton` already shows its name itself – no tooltip there.
+- Do not rely on it on phones: there is no hover there.
+
+## Props
+
+<PropsTable of="Tooltip" />
+
+## Accessibility
+
+- Also appears on keyboard focus; connected through `aria-describedby`.
+- Only after 300 ms, so that it does not flicker when the pointer passes over.

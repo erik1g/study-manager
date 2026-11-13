@@ -1,5 +1,6 @@
 // The data of the Study Manager. Accounts themselves live in Supabase Auth
 // (`auth.users`); a profile here carries what the app knows about them.
+import type { Locale } from "@study/shared";
 import { sql } from "drizzle-orm";
 import {
   bigint,
@@ -49,6 +50,8 @@ export const profiles = pgTable("profiles", {
   /** Free text, such as "KIT · Maschinenbau B.Sc.". */
   studies: text("studies"),
   semester: smallint("semester"),
+  /** The language of the interface and the mails (`en`, `de`). */
+  locale: text("locale").$type<Locale>().notNull().default("en"),
   createdAt: createdAt(),
 });
 
@@ -103,6 +106,11 @@ export const courses = pgTable("courses", {
   semester: text("semester").notNull(),
   moduleId: uuid("module_id").references(() => modules.id, { onDelete: "set null" }),
   createdBy: uuid("created_by").references(() => profiles.id, { onDelete: "set null" }),
+  /**
+   * The language of what is written into the course (the notes' headings,
+   * Claude's blocks, transcripts): its creator's at the time it was made.
+   */
+  locale: text("locale").$type<Locale>().notNull().default("en"),
   createdAt: createdAt(),
   deletedAt: at("deleted_at"),
 });

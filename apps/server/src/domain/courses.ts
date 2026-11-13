@@ -1,7 +1,7 @@
 // Subjects and who is in them.
 import { randomBytes } from "node:crypto";
 import { and, eq, gt, inArray, isNull, sql } from "drizzle-orm";
-import { COLORS, courseDraftSchema, type CourseDraft, type CourseRole } from "@study/shared";
+import { COLORS, courseDraftSchema, type CourseDraft, type CourseRole, type Locale } from "@study/shared";
 import type { Db } from "../db/client.ts";
 import { courseInvites, courseMembers, courses, modules, profiles } from "../db/schema.ts";
 import { requireRole } from "./access.ts";
@@ -18,6 +18,8 @@ export interface CourseView {
   role: CourseRole;
   color: string | null;
   memberCount: number;
+  /** The language of what is written into the course. */
+  locale: Locale;
 }
 
 export interface MemberView {
@@ -41,6 +43,7 @@ export function coursesOf(db: Db) {
         credits: courses.credits,
         semester: courses.semester,
         moduleId: courses.moduleId,
+        locale: courses.locale,
         role: courseMembers.role,
         color: courseMembers.color,
         memberCount: sql<number>`(select count(*)::int from ${courseMembers} m where m.course_id = ${courses.id})`,
@@ -87,9 +90,19 @@ export function coursesOf(db: Db) {
         number = module.number;
         credits = module.credits;
       }
+      // The course speaks its creator's language, also when Claude creates it.
+      const creator = await db.query.profiles.findFirst({ where: eq(profiles.id, userId) });
       const [course] = await db
         .insert(courses)
-        .values({ title, number: number ?? null, credits: credits ?? null, semester: data.semester, moduleId: data.moduleId ?? null, createdBy: userId })
+        .values({
+          title,
+          number: number ?? null,
+          credits: credits ?? null,
+          semester: data.semester,
+          moduleId: data.moduleId ?? null,
+          createdBy: userId,
+          locale: creator?.locale ?? "en",
+        })
         .returning();
       await db.insert(courseMembers).values({ courseId: course!.id, userId, role: "owner" });
       await record(db, { courseId: course!.id, actorId: userId, action: "course.created", subjectId: course!.id, subject: title, details: { semester: data.semester } });

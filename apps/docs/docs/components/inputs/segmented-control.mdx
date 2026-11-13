@@ -1,0 +1,62 @@
+---
+title: SegmentedControl
+sidebar_position: 6
+description: Two to four options side by side.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { DoDont, Do, Dont } from "@site/src/components/DoDont";
+import { SegmentedControl, Select } from "@study/ui";
+
+# SegmentedControl
+
+`import { SegmentedControl } from "@study/ui"`
+
+```jsx live
+function Example() {
+  const [theme, setTheme] = useState("system");
+  return (
+    <SegmentedControl
+      label="Appearance"
+      value={theme}
+      onChange={setTheme}
+      options={[
+        { value: "light", label: "Light", icon: "sun" },
+        { value: "dark", label: "Dark", icon: "star" },
+        { value: "system", label: "System", icon: "settings" },
+      ]}
+    />
+  );
+}
+```
+
+## Variants and states
+
+<Preview column>
+  <SegmentedControl label="View" value="week" onChange={() => {}} options={[{ value: "day", label: "Day" }, { value: "week", label: "Week" }, { value: "month", label: "Month" }]} />
+  <SegmentedControl label="View" size="sm" value="list" onChange={() => {}} options={[{ value: "list", label: "List", icon: "list" }, { value: "grid", label: "Grid", icon: "grid" }]} />
+  <SegmentedControl label="View" iconsOnly value="list" onChange={() => {}} options={[{ value: "list", label: "List", icon: "list" }, { value: "grid", label: "Grid", icon: "grid" }]} />
+</Preview>
+
+## When to use
+
+<DoDont>
+  <Do caption="Few options, all visible, one applies.">
+    <SegmentedControl label="View" value="week" onChange={() => {}} options={[{ value: "day", label: "Day" }, { value: "week", label: "Week" }]} />
+  </Do>
+  <Dont caption="More than four – then a Select.">
+    <SegmentedControl label="Course" size="sm" value="a" onChange={() => {}} options={["CE", "EM", "MS", "M3", "TD", "CL"].map((x) => ({ value: x.toLowerCase(), label: x }))} />
+  </Dont>
+</DoDont>
+
+For switching between areas of a page there are [Tabs](../navigation/tabs).
+
+## Props
+
+<PropsTable of="SegmentedControl" />
+
+## Accessibility
+
+- Real radio buttons in a `radiogroup`: arrow keys switch, Tab jumps in and out.
+- With `iconsOnly`, the names remain for screen readers and as a tooltip.

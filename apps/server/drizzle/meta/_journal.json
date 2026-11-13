@@ -43,6 +43,20 @@
       "when": 1793878682479,
       "tag": "0005_invitations_notifications",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1794605007696,
+      "tag": "0006_profile_locale",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1794606465043,
+      "tag": "0007_course_locale",
+      "breakpoints": true
     }
   ]
 }

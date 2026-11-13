@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { atLeast } from "@study/shared";
 import { Button, Card, Chip, EmptyState, IconButton, List, ListRow, Notice, SectionHeader, SegmentedControl, TextArea, TextField } from "@study/ui";
-import { de, errorMessage, formatShortDate } from "../i18n/de";
+import { t, errorMessage, formatShortDate } from "../i18n";
 import { api, type Card as FlashCard, type Course, type Deck, type Proposal } from "../lib/api";
 import { ContextMenu, MenuItem, MenuSeparator, menuPositionFrom, type MenuPosition } from "./ContextMenu";
 import { Rich } from "./Rich";
@@ -50,9 +50,9 @@ export function FlashcardsTab({ course }: { course: Course }) {
 
   const newDeck = (
     <form className="new-deck" onSubmit={create}>
-      <TextField label={de.cards.newDeck} hideLabel placeholder={de.cards.deckName} value={name} onChange={(e) => setName(e.target.value)} autoFocus={creating} required />
+      <TextField label={t.cards.newDeck} hideLabel placeholder={t.cards.deckName} value={name} onChange={(e) => setName(e.target.value)} autoFocus={creating} required />
       <Button type="submit" variant="primary" icon="plus" disabled={!name.trim()}>
-        {de.cards.create}
+        {t.cards.create}
       </Button>
     </form>
   );
@@ -63,32 +63,32 @@ export function FlashcardsTab({ course }: { course: Course }) {
         {error && <Notice tone="danger">{error}</Notice>}
         <EmptyState
           illustration="karten"
-          title={de.cards.emptyTitle}
+          title={t.cards.emptyTitle}
           actions={
             canEdit &&
             (creating ? (
               newDeck
             ) : (
               <Button variant="primary" icon="plus" onClick={() => setCreating(true)}>
-                {de.cards.createDeck}
+                {t.cards.createDeck}
               </Button>
             ))
           }
         >
-          {de.cards.emptyText}
+          {t.cards.emptyText}
         </EmptyState>
         <div className="steps">
           <Card tone="petrol" padding="sm" className="step">
             <span className="step-number ui-display">1</span>
-            {de.cards.step1}
+            {t.cards.step1}
           </Card>
           <Card tone="blau" padding="sm" className="step">
             <span className="step-number ui-display">2</span>
-            {de.cards.step2}
+            {t.cards.step2}
           </Card>
           <Card tone="violett" padding="sm" className="step">
             <span className="step-number ui-display">3</span>
-            {de.cards.step3}
+            {t.cards.step3}
           </Card>
         </div>
       </div>
@@ -107,15 +107,15 @@ export function FlashcardsTab({ course }: { course: Course }) {
                 selected={d.id === selected}
                 onClick={() => setSelected(d.id)}
                 title={d.name}
-                meta={de.cards.counts(d.cards, d.new)}
+                meta={t.cards.counts(d.cards, d.new)}
                 trailing={d.due > 0 ? <Chip tone="violett" size="sm">{d.due}</Chip> : <Chip size="sm">0</Chip>}
               />
             ))}
           </List>
         </Card>
-        {decks.length === 0 && <p className="quiet small">{de.cards.noDecks}</p>}
+        {decks.length === 0 && <p className="quiet small">{t.cards.noDecks}</p>}
         {canEdit && newDeck}
-        <p className="quiet small">{de.cards.claudeHint}</p>
+        <p className="quiet small">{t.cards.claudeHint}</p>
       </aside>
       <section className="ui-stack">
         {proposals.length > 0 && <Proposals proposals={proposals} canEdit={canEdit} onChanged={load} />}
@@ -130,8 +130,8 @@ export function FlashcardsTab({ course }: { course: Course }) {
                   value={mode}
                   onChange={setMode}
                   options={[
-                    { value: "study", label: de.cards.study, icon: "cards" },
-                    { value: "cards", label: de.cards.cards(deck.cards), icon: "list" },
+                    { value: "study", label: t.cards.study, icon: "cards" },
+                    { value: "cards", label: t.cards.cards(deck.cards), icon: "list" },
                   ]}
                 />
               }
@@ -189,11 +189,11 @@ function Study({ deck, onDone }: { deck: Deck; onDone: () => void }) {
   if (!queue) return null;
   if (!card)
     return (
-      <EmptyState variant="plain" size="sm" illustration={done > 0 ? "stern" : "fertig"} title={done > 0 ? de.cards.doneFor(done) : de.cards.nothingDue} />
+      <EmptyState variant="plain" size="sm" illustration={done > 0 ? "stern" : "fertig"} title={done > 0 ? t.cards.doneFor(done) : t.cards.nothingDue} />
     );
   return (
     <div className="study ui-stack">
-      <p className="quiet small">{de.cards.left(queue.length)}</p>
+      <p className="quiet small">{t.cards.left(queue.length)}</p>
       <Card padding="lg" className="study-card">
         <div className="study-front">
           <Rich>{card.front}</Rich>
@@ -208,13 +208,13 @@ function Study({ deck, onDone }: { deck: Deck; onDone: () => void }) {
         <div className="ratings">
           {RATINGS.map((value) => (
             <Button key={value} variant="soft" tone={RATING_TONE[value]} onClick={() => answer(value)} aria-keyshortcuts={String(value)}>
-              {de.cards.ratings[value - 1]} <span className="quiet small">{value}</span>
+              {t.cards.ratings[value - 1]} <span className="quiet small">{value}</span>
             </Button>
           ))}
         </div>
       ) : (
         <Button variant="primary" size="lg" icon="eye" onClick={() => setShown(true)} aria-keyshortcuts="Space">
-          {de.cards.show}
+          {t.cards.show}
         </Button>
       )}
     </div>
@@ -235,7 +235,7 @@ function CardList({ deck, canEdit, onChanged }: { deck: Deck; canEdit: boolean; 
       {canEdit && (
         <Card variant="sunken" padding="sm">
           <CardForm
-            submitLabel={de.common.add}
+            submitLabel={t.common.add}
             onSubmit={async (card) => {
               await api.addCard(deck.id, card);
               await load();
@@ -251,7 +251,7 @@ function CardList({ deck, canEdit, onChanged }: { deck: Deck; canEdit: boolean; 
               <li key={card.id} className="row-editing">
                 <CardForm
                   initial={card}
-                  submitLabel={de.common.save}
+                  submitLabel={t.common.save}
                   onCancel={() => setEditing(null)}
                   onSubmit={async (draft) => {
                     await api.updateCard(card.id, draft);
@@ -268,9 +268,9 @@ function CardList({ deck, canEdit, onChanged }: { deck: Deck; canEdit: boolean; 
                 trailing={
                   <>
                     <Chip size="sm" tone={card.due ? "grau" : "violett"}>
-                      {card.due ? formatShortDate(card.due) : de.cards.unseen}
+                      {card.due ? formatShortDate(card.due) : t.cards.unseen}
                     </Chip>
-                    {canEdit && <IconButton icon="more" size="sm" label={de.common.actionsFor(card.front.slice(0, 40))} onClick={(e) => setMenu({ card, at: menuPositionFrom(e.currentTarget) })} />}
+                    {canEdit && <IconButton icon="more" size="sm" label={t.common.actionsFor(card.front.slice(0, 40))} onClick={(e) => setMenu({ card, at: menuPositionFrom(e.currentTarget) })} />}
                   </>
                 }
               />
@@ -279,7 +279,7 @@ function CardList({ deck, canEdit, onChanged }: { deck: Deck; canEdit: boolean; 
         </List>
       </Card>
       {menu && (
-        <ContextMenu at={menu.at} label={de.common.actionsFor(menu.card.front.slice(0, 40))} onClose={() => setMenu(null)}>
+        <ContextMenu at={menu.at} label={t.common.actionsFor(menu.card.front.slice(0, 40))} onClose={() => setMenu(null)}>
           <MenuItem
             icon="edit"
             onSelect={() => {
@@ -287,7 +287,7 @@ function CardList({ deck, canEdit, onChanged }: { deck: Deck; canEdit: boolean; 
               setMenu(null);
             }}
           >
-            {de.common.edit}
+            {t.common.edit}
           </MenuItem>
           <MenuSeparator />
           <MenuItem
@@ -299,7 +299,7 @@ function CardList({ deck, canEdit, onChanged }: { deck: Deck; canEdit: boolean; 
               void api.deleteCard(id).then(load).then(onChanged);
             }}
           >
-            {de.common.delete}
+            {t.common.delete}
           </MenuItem>
         </ContextMenu>
       )}
@@ -332,11 +332,11 @@ function CardForm(props: { initial?: { front: string; back: string }; submitLabe
         }
       }}
     >
-      <TextArea label={de.cards.front} rows={2} value={front} onChange={(e) => setFront(e.target.value)} required />
-      <TextArea label={de.cards.back} rows={2} value={back} onChange={(e) => setBack(e.target.value)} required />
+      <TextArea label={t.cards.front} rows={2} value={front} onChange={(e) => setFront(e.target.value)} required />
+      <TextArea label={t.cards.back} rows={2} value={back} onChange={(e) => setBack(e.target.value)} required />
       {error && <Notice tone="danger">{error}</Notice>}
       <div className="form-actions">
-        {props.onCancel && <Button onClick={props.onCancel}>{de.common.cancel}</Button>}
+        {props.onCancel && <Button onClick={props.onCancel}>{t.common.cancel}</Button>}
         <Button type="submit" variant="primary" loading={busy} disabled={!front.trim() || !back.trim()}>
           {props.submitLabel}
         </Button>
@@ -351,7 +351,7 @@ function Proposals({ proposals, canEdit, onChanged }: { proposals: Proposal[]; c
   const run = (operation: Promise<unknown>) => operation.then(onChanged, (e) => setError(errorMessage(e)));
   return (
     <Card as="section" tone="gelb" aria-labelledby="vorschlaege">
-      <SectionHeader id="vorschlaege" title={de.cards.proposals(proposals.length)} description={!canEdit ? de.cards.proposalsReadOnly : undefined} />
+      <SectionHeader id="vorschlaege" title={t.cards.proposals(proposals.length)} description={!canEdit ? t.cards.proposalsReadOnly : undefined} />
       {error && <Notice tone="danger">{error}</Notice>}
       <List variant="raised" className="card-list">
         {proposals.map((p) =>
@@ -359,7 +359,7 @@ function Proposals({ proposals, canEdit, onChanged }: { proposals: Proposal[]; c
             <li key={p.id} className="row-editing">
               <CardForm
                 initial={p}
-                submitLabel={de.cards.accept}
+                submitLabel={t.cards.accept}
                 onCancel={() => setEditing(null)}
                 onSubmit={async (card) => {
                   await api.acceptProposal(p.id, card);
@@ -379,12 +379,12 @@ function Proposals({ proposals, canEdit, onChanged }: { proposals: Proposal[]; c
                   {canEdit && (
                     <>
                       <Button size="sm" variant="primary" icon="check" onClick={() => run(api.acceptProposal(p.id))}>
-                        {de.cards.accept}
+                        {t.cards.accept}
                       </Button>
-                      <IconButton icon="edit" size="sm" label={de.common.edit} onClick={() => setEditing(p.id)} />
+                      <IconButton icon="edit" size="sm" label={t.common.edit} onClick={() => setEditing(p.id)} />
                     </>
                   )}
-                  <IconButton icon="close" size="sm" label={de.cards.reject} onClick={() => run(api.rejectProposal(p.id))} />
+                  <IconButton icon="close" size="sm" label={t.cards.reject} onClick={() => run(api.rejectProposal(p.id))} />
                 </>
               }
             />

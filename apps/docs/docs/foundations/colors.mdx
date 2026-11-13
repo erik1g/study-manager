@@ -1,0 +1,76 @@
+---
+title: Colours
+sidebar_position: 1
+description: The warm background, the text colours and the eight course colours with their four steps.
+---
+
+import { Neutrals, Tones } from "@site/src/components/Foundations";
+import { Card, Chip, ProgressRing } from "@study/ui";
+
+# Colours
+
+All colours are **tokens**: CSS variables with the prefix `--ui-`, for light and dark. The values are in one single place, `packages/ui/src/tokens.ts`; `tokens.css` is generated from it. A test checks that every text has a contrast of at least 4.5 : 1.
+
+## Background and text
+
+A warm, light background instead of white; white surfaces (`surface`) stand out from it gently.
+
+### Light
+
+<Neutrals theme="light" />
+
+### Dark
+
+<Neutrals theme="dark" />
+
+| Token | For |
+| --- | --- |
+| `--ui-bg` | page background |
+| `--ui-surface` | white cards, fields, menus |
+| `--ui-sunken` | sunken areas: tab bar, keyboard shortcuts, loading areas |
+| `--ui-ink` | text, primary button |
+| `--ui-muted` | second lines, hints, placeholders |
+| `--ui-line`, `--ui-line-soft` | borders and dividers |
+| `--ui-focus` | the focus ring |
+
+## Course colours
+
+Every course has one of eight colours. The names in code are the ones stored in the database; they are shown with the names below them.
+
+<Tones theme="light" />
+<Tones theme="dark" />
+
+Every colour has **four steps**:
+
+| Step | Token | For |
+| --- | --- | --- |
+| tint | `--ui-blau-tint` | surface of a card, a chip, a tile |
+| glow | `--ui-blau-glow` | lighter centre in the gradient of large cards |
+| ink | `--ui-blau-ink` | **text** and icons on the surface |
+| strong | `--ui-blau-strong` | dots, rings, filled icons – **never for text** |
+
+`strong` does not reach 3 : 1 on white everywhere (butter is light). So what it shows is always also next to it as text or in the `aria-label`.
+
+### One colour for an area
+
+`ui-tone-<colour>` sets `--ui-tone-tint`, `--ui-tone-glow`, `--ui-tone-ink` and `--ui-tone-strong` for everything inside. Components with a `tone` prop do this themselves:
+
+```jsx live
+<Card tone="petrol" style={{ display: "flex", gap: 16, alignItems: "center" }}>
+  <ProgressRing value={0.71} label="71 percent" tone="petrol" onTint size={56}>71</ProgressRing>
+  <div>
+    <strong>Materials Science</strong>
+    <div><Chip tone="petrol" onTint>MS</Chip></div>
+  </div>
+</Card>
+```
+
+## Meanings
+
+States use course colours: **info** blue, **success** sage, **warning** butter, **error** rosé (`STATUS` in `tokens.ts`). The text says what counts – never the colour alone.
+
+## Rules
+
+- No colour as a hex value in the app – always a token.
+- Pastel surfaces get no shadow; only white surfaces do.
+- One, at most two cards with gradient and grain (`glow`, `grain`) per page.

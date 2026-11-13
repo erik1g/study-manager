@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { Button, Illustration, Notice, SectionHeader } from "@study/ui";
 import { AuthLayout } from "../components/AuthLayout";
-import { de, errorMessage, semesterName } from "../i18n/de";
+import { t, errorMessage, semesterName } from "../i18n";
 import { api } from "../lib/api";
 import { useSession } from "../lib/session";
 
@@ -23,11 +23,11 @@ export function JoinView() {
     <AuthLayout inApp>
       <div className="ui-stack">
         <Illustration kind="buecher" className="auth-in-app-picture" />
-        <SectionHeader level={1} size="lg" title={de.join.title} />
+        <SectionHeader level={1} size="lg" title={t.join.title} />
         {error && <Notice tone="danger">{error}</Notice>}
         {invite && (
           <>
-            <p>{de.join.text(invite.title, semesterName(invite.semester), de.roles[invite.role])}</p>
+            <p>{t.join.text(invite.title, semesterName(invite.semester), t.roles[invite.role])}</p>
             <Button
               variant="primary"
               size="lg"
@@ -45,7 +45,7 @@ export function JoinView() {
                 }
               }}
             >
-              {de.join.accept}
+              {t.join.accept}
             </Button>
           </>
         )}

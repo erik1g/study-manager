@@ -1,0 +1,53 @@
+---
+title: Menu
+sidebar_position: 5
+description: A short list of actions on a button.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { DoDont, Do, Dont } from "@site/src/components/DoDont";
+import { Menu, MenuItem, MenuSeparator, IconButton } from "@study/ui";
+
+# Menu
+
+`import { Menu, MenuItem, MenuSeparator, menuPositionFrom } from "@study/ui"`
+
+```jsx live
+function Example() {
+  const [at, setAt] = useState(null);
+  return (
+    <>
+      <IconButton icon="more" label="Actions for Script.pdf" variant="secondary" onClick={(e) => setAt(menuPositionFrom(e.currentTarget))} />
+      {at && (
+        <Menu at={at} label="Actions for Script.pdf" onClose={() => setAt(null)}>
+          <MenuItem icon="edit" onSelect={() => setAt(null)}>Rename</MenuItem>
+          <MenuItem icon="folder" onSelect={() => setAt(null)}>Move</MenuItem>
+          <MenuItem icon="download" onSelect={() => setAt(null)}>Download</MenuItem>
+          <MenuSeparator />
+          <MenuItem icon="trash" danger onSelect={() => setAt(null)}>Move to trash</MenuItem>
+        </Menu>
+      )}
+    </>
+  );
+}
+```
+
+On right-click too: `setAt({ x: event.clientX, y: event.clientY })`.
+
+## When to use
+
+- For actions people rarely need: behind ⋯ on cards and rows, on right-click on files.
+- At most seven entries; dangerous ones last, after a separator, with `danger`.
+- Deleting from the menu asks first – with a [ConfirmDialog](../feedback/dialog) – or goes to the trash.
+
+## Props
+
+<PropsTable of="Menu" />
+<PropsTable of="MenuItem" />
+
+## Accessibility
+
+- `role="menu"` with `menuitem`s; the first one gets the focus.
+- Arrow keys, Home and End move; Escape closes and gives the focus back to the button.
+- The menu stays inside the window and grows from the corner where it was opened.

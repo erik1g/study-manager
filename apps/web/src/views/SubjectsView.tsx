@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Button, SectionHeader } from "@study/ui";
 import { deadlineOpen } from "../components/Agenda";
 import { NewCourseDialog } from "../components/NewCourseDialog";
-import { de, semesterName, semesterOf, today } from "../i18n/de";
+import { t, semesterName, semesterOf, today } from "../i18n";
 import { api, type Course, type CourseProgress, type Deadline } from "../lib/api";
 import { useGo } from "../lib/motion";
 import { useSession } from "../lib/session";
@@ -36,10 +36,10 @@ export function SubjectsView() {
       <SectionHeader
         level={1}
         size="xl"
-        title={de.nav.subjects}
+        title={t.nav.subjects}
         action={
           <Button variant="primary" icon="plus" onClick={() => setCreating(true)}>
-            {de.overview.newSubject}
+            {t.overview.newSubject}
           </Button>
         }
       />

@@ -1,5 +1,5 @@
 // The backend, as the web app calls it. Every call carries the session token.
-import type { CourseDraft, CourseRole, DeadlineDraft, FeedDraft, FileFolder, ModuleData, ProgramDraft, TaskDraft } from "@study/shared";
+import type { CourseDraft, CourseRole, DeadlineDraft, FeedDraft, FileFolder, Locale, ModuleData, ProgramDraft, TaskDraft } from "@study/shared";
 import { accessToken } from "./auth";
 
 export class ApiError extends Error {
@@ -47,6 +47,8 @@ export interface Me {
   displayName: string;
   studies: string | null;
   semester: number | null;
+  /** The language of the interface and the mails. */
+  locale: Locale;
   /** Null without a picture. */
   avatarVersion: number | null;
   isAdmin: boolean;
@@ -65,6 +67,8 @@ export interface Course {
   role: CourseRole;
   color: string | null;
   memberCount: number;
+  /** The language of what is written into the course (notes, transcripts). */
+  locale: Locale;
 }
 
 export interface Member {
@@ -236,7 +240,8 @@ export const MAX_UPLOAD_MB = 95;
 
 export class FileTooLargeError extends Error {
   constructor(readonly file: string) {
-    super(`„${file}“ ist größer als ${MAX_UPLOAD_MB} MB. Teile die Datei oder lade eine kleinere Fassung hoch.`);
+    // The text comes from the messages (`errorMessage`).
+    super(`${file} > ${MAX_UPLOAD_MB} MB`);
   }
 }
 
@@ -395,7 +400,7 @@ export class NotesConflictError extends ApiError {
 
 export const api = {
   me: () => get<Me>("/api/me"),
-  updateProfile: (change: { displayName?: string; studies?: string | null; semester?: number | null }) => patch("/api/me", change),
+  updateProfile: (change: { displayName?: string; studies?: string | null; semester?: number | null; locale?: Locale }) => patch("/api/me", change),
   uploadAvatar: (picture: Blob) => {
     const form = new FormData();
     form.append("file", picture, `avatar.${picture.type.split("/")[1] ?? "png"}`);

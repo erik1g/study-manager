@@ -1,13 +1,14 @@
 import { createReadStream } from "node:fs";
 import { rm } from "node:fs/promises";
 import type { FastifyPluginAsync } from "fastify";
+import { LOCALES } from "@study/shared";
 import { z } from "zod";
 import { recentlyAuthenticated, strongEnoughForAdmin } from "../../auth/identity.ts";
 import { AppError } from "../../domain/errors.ts";
 import type { Services } from "../../services.ts";
 import { who } from "../app.ts";
 import { receiveUploads } from "../uploads.ts";
-import { MAILS, mailPage } from "../mails.ts";
+import { MAIL_KINDS, type MailKind, mailPage } from "../mails.ts";
 
 export const meRoutes =
   (services: Services): FastifyPluginAsync =>
@@ -16,13 +17,13 @@ export const meRoutes =
     app.get("/api/config", async () => ({ anonKey: services.anonKey, mail: services.mailEnabled }));
 
     /**
-     * The mails the sign-in service sends, in German. It fetches them from
-     * here inside the stack and fills in the links ({{ .ConfirmationURL }}).
+     * The mails the sign-in service sends, in every language. It fetches them
+     * from here inside the stack and fills in the links ({{ .ConfirmationURL }}).
      */
     app.get<{ Params: { kind: string } }>("/api/mail/:kind", async (request, reply) => {
-      const mail = MAILS[request.params.kind];
-      if (!mail) throw new AppError(404, "unknown_mail");
-      return reply.type("text/html; charset=utf-8").send(mailPage(mail));
+      const kind = request.params.kind as MailKind;
+      if (!MAIL_KINDS.includes(kind)) throw new AppError(404, "unknown_mail");
+      return reply.type("text/html; charset=utf-8").send(mailPage(kind));
     });
 
     app.get("/api/me", async (request) => {
@@ -39,6 +40,7 @@ export const meRoutes =
         displayName: profile.displayName,
         studies: profile.studies,
         semester: profile.semester,
+        locale: profile.locale,
         avatarVersion: profile.avatarPath ? profile.avatarVersion : null,
         isAdmin: profile.isAdmin,
         /** Whether this session may use the admin area. */
@@ -54,6 +56,7 @@ export const meRoutes =
           displayName: z.string().max(80).optional(),
           studies: z.string().max(120).nullable().optional(),
           semester: z.number().int().nullable().optional(),
+          locale: z.enum(LOCALES).optional(),
         })
         .parse(request.body);
       await services.users.updateProfile(who(request).userId, change);

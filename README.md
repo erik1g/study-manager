@@ -1,77 +1,77 @@
 # Study Manager
 
-**Dein Studium, gemütlich sortiert – und gemeinsam mit deinen Kommilitoninnen und Kommilitonen.**
+**Your studies, comfortably sorted – together with your fellow students.**
 
-Der Study Manager ist eine selbst gehostete Web-App für Studierende: Fächer mit Skripten, Übungen und Altklausuren, geteilte Deadlines, private Aufgaben mit Zeitplanung, Stundenplan-Abos, gemeinsame Notizen neben dem Skript, Vorlesungsmitschriften, Lernkarten und eine Suche. Dazu gibt es einen MCP-Server, über den **dein eigenes Claude** mit allem arbeiten kann. Die App selbst rechnet keine KI: Was Claude erledigen soll, steht in einem Arbeitseingang, den es sich per MCP holt.
+Study Manager is a self-hosted web app for students: courses with lecture notes, exercises and past exams, shared deadlines, private tasks with scheduling, timetable subscriptions, shared notes next to the script, lecture transcripts, flashcards and a search. On top of that there is an MCP server through which **your own Claude** can work with all of it. The app itself runs no AI: what Claude should do is listed in a work inbox, which Claude fetches through MCP.
 
-Freie Software unter der [GPL-3.0](LICENSE). Gemacht von Studierenden für Studierende – und offen für alle, die mitmachen wollen.
+Free software under the [GPL-3.0](LICENSE). Made by students for students – and open to everyone who wants to contribute.
 
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="apps/docs/static/img/oberflaeche/heute-dunkel.png">
-    <img src="apps/docs/static/img/oberflaeche/heute-hell.png" alt="Die Startseite „Heute“ des Study Managers mit Terminen, Aufgaben und Lernkarten des Tages" width="800">
+    <img src="apps/docs/static/img/oberflaeche/heute-hell.png" alt="The start page “Today” of Study Manager with the day's dates, tasks and flashcards" width="800">
   </picture>
 </p>
 
-## Was sie kann
+## What it does
 
-- **Fächer** mit Rollen (Besitzer, Bearbeiter, Leser): Dokumente, Deadlines, Mitglieder und ein Aktivitätsverlauf, gemeinsam mit der Lerngruppe.
-- **Deadlines und Aufgaben**: geteilte Fristen im Fach, jeder hakt für sich ab; private Aufgaben mit Tag, Uhrzeit und Dauer als Zeitblock im Kalender.
-- **Planung**: Wochen-, Tages- und Monatsansicht, Aufgaben per Ziehen einplanen, Kalender-Abo (iCal) für Stundenplan und Handy.
-- **Vorlesungsmodus**: Skripte und Notizen im ganzen Fenster, als Tabs, nebeneinander, mit Zoom.
-- **Notizen** neben dem Skript, die der Skriptseite folgen; gemeinsam oder privat.
-- **Vorlesungen** mitschreiben lassen (Whisper im Browser oder mit eigenem Schlüssel) und mit Claude auswerten.
-- **Lernkarten** mit Wiederholungsplan, **Suche** in allen Dokumenten (nach Bedeutung und Wortlaut).
-- **Studiengänge und Modulhandbuch**: das Modulhandbuch als PDF hochladen, Claude liest die Module ein, Fächer entstehen aus Modulen.
-- **Dein Claude** verbindet sich per MCP (Claude.ai, Claude Desktop, Claude Code) und arbeitet mit deinen Rechten.
+- **Courses** with roles (owner, editor, reader): documents, deadlines, members and an activity history, shared with your study group.
+- **Deadlines and tasks**: shared deadlines in a course, everyone ticks them off for themselves; private tasks with day, time and duration as a time block in the calendar.
+- **Planning**: week, day and month view, schedule tasks by dragging, calendar subscription (iCal) for your timetable and your phone.
+- **Lecture mode**: scripts and notes in the whole window, as tabs, side by side, with zoom.
+- **Notes** next to the script that follow the script page; shared or private.
+- **Lectures** transcribed (Whisper in the browser or with your own key) and evaluated with Claude.
+- **Flashcards** with spaced repetition, **search** in all documents (by meaning and wording).
+- **Programmes and module handbook**: upload the module handbook as a PDF, Claude reads in the modules, courses are created from modules.
+- **Your Claude** connects through MCP (Claude.ai, Claude Desktop, Claude Code) and works with your permissions.
 
-Heute ist die Oberfläche **deutsch**, die Semester heißen `WiSe`/`SoSe`, und das Kalender-Abo versteht iCal-Feeds im Stil von CAMPUSonline. Anpassungen für andere Hochschulen und Sprachen sind willkommen (siehe unten).
+The interface speaks **English and German** (each user picks theirs), semesters follow the German scheme (`WiSe`/`SoSe`), and the calendar subscription understands iCal feeds in the style of CAMPUSonline. Adaptations for other universities and languages are welcome (see below).
 
-## Selbst betreiben
+## Run it yourself
 
-Du brauchst einen Server mit Docker, eine Domain und einen Reverse Proxy, der HTTPS übernimmt (zum Beispiel Nginx Proxy Manager, Traefik oder ein Cloudflare Tunnel).
+You need a server with Docker, a domain and a reverse proxy that handles HTTPS (for example Nginx Proxy Manager, Traefik or a Cloudflare Tunnel).
 
 ```sh
 mkdir study-manager && cd study-manager
 curl -fsSL https://github.com/erik1g/study-manager/releases/latest/download/study-manager.tar.gz | tar xz --strip-components=1
-docker run --rm -e ADMIN_EMAIL=du@example.org -e DOMAIN=study.example.org \
+docker run --rm -e ADMIN_EMAIL=you@example.org -e DOMAIN=study.example.org \
   docker.io/erik1g/study-manager-server:$(cat VERSION) node /app/infra/scripts/setup.mjs --stdout > .env
 docker compose up -d
-docker compose logs server   # beim ersten Start steht hier der Link zum Einrichten des Admin-Accounts
+docker compose logs server   # on the first start, the link to set up the admin account is here
 ```
 
-Du lädst nur das kleine **Betreiber-Paket** (Compose-Datei, `update.sh`, Datenbank-Skripte) und die fertigen Images, **keinen Quellcode**. Updates: `./update.sh 0.2.0`.
+You only download the small **operator package** (compose file, `update.sh`, database scripts) and the built images, **no source code**. Updates: `./update.sh 0.2.0`.
 
-Die App hört dann auf `127.0.0.1:8080`; dein Reverse Proxy leitet deine Domain dorthin. Die ganze Anleitung (Proxy-Beispiele, Backups, Updates, Mail) steht in der **[Admin-Dokumentation](https://erik1g.github.io/study-manager/admin)**.
+The app then listens on `127.0.0.1:8080`; your reverse proxy forwards your domain there. The full guide (proxy examples, backups, updates, mail) is in the **[admin documentation](https://erik1g.github.io/study-manager/admin)**.
 
-## Dokumentation
+## Documentation
 
 **https://erik1g.github.io/study-manager/**
 
-| Für wen | Was |
+| For whom | What |
 |---|---|
-| [Nutzer](https://erik1g.github.io/study-manager/nutzer) | Fächer, Deadlines, Planung, Notizen, Vorlesungsmodus, Claude verbinden |
-| [Admins](https://erik1g.github.io/study-manager/admin) | Installieren, konfigurieren, Backups, Updates, Sicherheit |
-| [Entwickler](https://erik1g.github.io/study-manager/entwickler) | Aufbau, lokal starten, Tests, Beitragen, Releases, Design-System |
+| [Users](https://erik1g.github.io/study-manager/users) | Courses, deadlines, planning, notes, lecture mode, connecting Claude |
+| [Admins](https://erik1g.github.io/study-manager/admin) | Install, configure, backups, updates, security |
+| [Developers](https://erik1g.github.io/study-manager/developers) | Architecture, running locally, tests, contributing, releases, design system |
 
-## Mitmachen
+## Contributing
 
-Der Study Manager soll für **möglichst viele Studierende** funktionieren – dafür brauchen wir dich. Du kannst Fehler melden, Dokumentation verbessern, deine Hochschule anbinden (Stud.IP, HISinOne, ILIAS …), eine Sprache übersetzen oder ein Feature bauen. Einsteigerfreundliche Aufgaben tragen das Label [`good first issue`](https://github.com/erik1g/study-manager/labels/good%20first%20issue). Lies zuerst [CONTRIBUTING.md](.github/CONTRIBUTING.md).
+Study Manager should work for **as many students as possible** – and for that we need you. You can report bugs, improve the documentation, connect your university (Stud.IP, HISinOne, ILIAS …), translate a language or build a feature. Beginner-friendly tasks carry the label [`good first issue`](https://github.com/erik1g/study-manager/labels/good%20first%20issue). Read [CONTRIBUTING.md](.github/CONTRIBUTING.md) first. The project language is English.
 
-## Aufbau
+## Structure
 
-| Teil | Wo |
+| Part | Where |
 |---|---|
-| Web-App (React, Vite) | `apps/web` |
-| Server und MCP-Server (Node.js 24, TypeScript, Fastify, Drizzle, pg-boss) | `apps/server` |
-| Bausteine und Design („Snug Simple“) | `packages/ui` |
-| Gemeinsame Typen | `packages/shared` |
-| End-to-End-Tests (Playwright) | `apps/e2e` |
-| Dokumentation (Docusaurus) | `apps/docs` |
-| Container, Proxy, Testdaten | `infra` |
+| Web app (React, Vite) | `apps/web` |
+| Server and MCP server (Node.js 24, TypeScript, Fastify, Drizzle, pg-boss) | `apps/server` |
+| Building blocks and design ("Snug Simple") | `packages/ui` |
+| Shared types | `packages/shared` |
+| End-to-end tests (Playwright) | `apps/e2e` |
+| Documentation (Docusaurus) | `apps/docs` |
+| Containers, proxy, test data | `infra` |
 
-Anmeldung, Passkeys und OAuth für MCP-Clients kommen von [Supabase Auth](https://github.com/supabase/auth) (GoTrue) auf einer eigenen PostgreSQL-Datenbank; beides läuft in deinem Docker-Compose-Projekt, nicht bei Supabase.
+Sign-in, passkeys and OAuth for MCP clients come from [Supabase Auth](https://github.com/supabase/auth) (GoTrue) on a PostgreSQL database of its own; both run in your Docker Compose project, not at Supabase.
 
-## Lizenz
+## License
 
-[GPL-3.0](LICENSE) – du darfst den Study Manager nutzen, ändern und weitergeben. Geänderte Versionen, die du weitergibst, müssen ebenfalls unter der GPL stehen.
+[GPL-3.0](LICENSE) – you may use, change and pass on Study Manager. Changed versions that you pass on must also be under the GPL.

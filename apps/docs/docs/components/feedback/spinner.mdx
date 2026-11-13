@@ -1,0 +1,38 @@
+---
+title: Spinner
+sidebar_position: 4
+description: Something is on its way.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { DoDont, Do, Dont } from "@site/src/components/DoDont";
+import { Spinner, Button } from "@study/ui";
+
+# Spinner
+
+`import { Spinner } from "@study/ui"`
+
+```jsx live
+<div style={{ display: "flex", gap: 16, alignItems: "center" }}>
+  <Spinner />
+  <Spinner size={32} />
+  <span style={{ display: "inline-flex", gap: 8, alignItems: "center", color: "var(--ui-muted)" }}>
+    <Spinner size={16} label="" /> Transcribing …
+  </span>
+</div>
+```
+
+## When to use
+
+- For waits of unknown length that last longer than a moment.
+- Do not build it into buttons yourself – `loading` on the [Button](../actions/button).
+- Whole pages: `PageSkeleton`. Known progress: [ProgressRing](../display/progress-ring).
+
+## Props
+
+<PropsTable of="Spinner" />
+
+## Accessibility
+
+- With a `label` it is a `status` ("Lädt" by default); if the text stands next to it, use `label=""`.

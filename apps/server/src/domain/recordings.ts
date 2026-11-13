@@ -38,11 +38,6 @@ export interface RecordingView {
   length: number;
 }
 
-const germanDate = (iso: string) => {
-  const [y, m, d] = iso.split("-");
-  return `${d}.${m}.${y}`;
-};
-
 export function recordingsOf(db: Db, notes: ReturnType<typeof notesOf>) {
   const find = async (recordingId: string) => {
     const row = await db.query.recordings.findFirst({ where: eq(recordings.id, recordingId) });
@@ -136,7 +131,7 @@ export function recordingsOf(db: Db, notes: ReturnType<typeof notesOf>) {
       await notes.applyLecture(
         userId,
         row.courseId,
-        { key: row.id, date: germanDate(row.date), transcript: `/fach/${row.courseId}?tab=vorlesungen&aufnahme=${row.id}` },
+        { key: row.id, date: row.date, transcript: `/fach/${row.courseId}?tab=vorlesungen&aufnahme=${row.id}` },
         sections,
       );
       await db.update(recordings).set({ analysedAt: new Date(), analysedBy: userId }).where(eq(recordings.id, recordingId));

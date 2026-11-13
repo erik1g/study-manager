@@ -42,7 +42,7 @@ export interface CardDraft {
 const clean = (draft: CardDraft) => {
   const front = draft.front?.trim();
   const back = draft.back?.trim();
-  if (!front || !back) throw invalid("card_incomplete", "Eine Karte braucht Vorder- und Rückseite.");
+  if (!front || !back) throw invalid("card_incomplete", "A card needs a front and a back.");
   return { front, back, source: draft.source?.trim() || null };
 };
 
@@ -239,7 +239,7 @@ export function flashcardsOf(db: Db) {
     async propose(userId: string, courseId: string, deckName: string, drafts: CardDraft[]) {
       await requireRole(db, userId, courseId, "viewer");
       if (!deckName.trim()) throw invalid("missing_name");
-      if (drafts.length === 0 || drafts.length > 50) throw invalid("card_count", "1 bis 50 Karten je Aufruf.");
+      if (drafts.length === 0 || drafts.length > 50) throw invalid("card_count", "1 to 50 cards per call.");
       const rows = drafts.map((d) => ({ courseId, userId, deckName: deckName.trim(), ...clean(d) }));
       await db.insert(cardProposals).values(rows);
       return rows.length;

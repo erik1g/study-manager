@@ -1,0 +1,60 @@
+---
+title: Select
+sidebar_position: 3
+description: Choose one from a list.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { DoDont, Do, Dont } from "@site/src/components/DoDont";
+import { Select, SegmentedControl } from "@study/ui";
+
+# Select
+
+`import { Select } from "@study/ui"`
+
+A choice with the system's picker – the wheel on phones, the list on computers.
+
+```jsx live
+<div style={{ maxWidth: 360 }}>
+  <Select label="Folder" defaultValue="scripts" hint="Where the file goes.">
+    <option value="scripts">Scripts</option>
+    <option value="exercises">Exercises</option>
+    <option value="exams">Past exams</option>
+    <option value="other">Other</option>
+  </Select>
+</div>
+```
+
+## Variants and states
+
+<Preview column>
+  <Select label="Semester" defaultValue="w"><option value="w">Winter 26/27</option><option value="s">Summer 26</option></Select>
+  <Select label="Small" size="sm"><option>Newest first</option></Select>
+  <Select label="With error" error="Please choose a course."><option value="">–</option></Select>
+  <Select label="Disabled" disabled><option>Control Engineering</option></Select>
+</Preview>
+
+## When to use
+
+<DoDont>
+  <Do caption="Many options, one of them applies.">
+    <Select label="Course"><option>Control Engineering</option><option>Maths III</option></Select>
+  </Do>
+  <Dont caption="Two to four options – they belong visibly side by side.">
+    <Select label="Appearance"><option>Light</option><option>Dark</option></Select>
+  </Dont>
+</DoDont>
+
+For two to four options: [SegmentedControl](./segmented-control).
+
+## Props
+
+Plus all attributes of a `<select>`. The options are `<option>` children.
+
+<PropsTable of="Select" />
+
+## Accessibility
+
+- A real `<select>`: keyboard, screen reader and picker from the system.
+- Label, hint and error as with [TextField](./text-field).

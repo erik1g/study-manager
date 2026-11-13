@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 import { Button, EmptyState } from "@study/ui";
-import { de } from "./i18n/de";
+import { t } from "./i18n";
 import { Navigate, Route, Routes, useLocation } from "react-router";
 import { CommandPalette } from "./components/CommandPalette";
 import { AppSidebar, AppTabBar, PhoneBar } from "./components/Sidebar";
@@ -56,17 +56,17 @@ function SessionProblem() {
     <div className="page">
       <EmptyState
         illustration="fehler"
-        title={de.session.problem}
+        title={t.session.problem}
         actions={
           <>
             <Button variant="primary" icon="restore" onClick={() => void reloadMe().catch(() => {})}>
-              {de.session.retry}
+              {t.session.retry}
             </Button>
-            <Button onClick={() => void signOut()}>{de.nav.signOut}</Button>
+            <Button onClick={() => void signOut()}>{t.nav.signOut}</Button>
           </>
         }
       >
-        {de.session.problemText}
+        {t.session.problemText}
       </EmptyState>
     </div>
   );

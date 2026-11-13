@@ -1,0 +1,57 @@
+---
+title: Contributing
+sidebar_position: 60
+description: Create or change a component – and what the check on deploy requires.
+---
+
+# Contributing
+
+## What is where
+
+```
+packages/ui/
+  src/tokens.ts          ← all colours, sizes, motions
+  src/styles/tokens.css  ← generated from it (pnpm --filter @study/ui tokens)
+  src/styles/*.css       ← the look of the components, everything prefixed with ui-
+  src/components/*.tsx   ← the components
+  test/                  ← tests (contrast, structure, accessibility)
+apps/docs/
+  docs/                  ← these pages (MDX)
+  src/components/        ← preview, ✓/✗, props table
+```
+
+## Creating a component
+
+1. **Does it exist already?** Often a variant or a prop on an existing one is enough.
+2. Component in `packages/ui/src/components/<Name>.tsx`. Every prop gets a comment – the props table is made from it.
+3. CSS in the matching file under `src/styles/`, classes with `ui-`, colours only through tokens.
+4. Export it in `src/index.ts`.
+5. A test in `test/`, above all for roles, names and states.
+6. A page in `apps/docs/docs/components/<group>/` with the sections **Example · Variants and states · When to use · Props · Accessibility**.
+7. `pnpm --filter @study/ui test` and `pnpm --filter @study/docs build`.
+
+## Changing a colour
+
+Only in `src/tokens.ts`, then `pnpm --filter @study/ui tokens`. The test then checks that `tokens.css` matches and that every text has a contrast of at least 4.5 : 1.
+
+## The UI check
+
+So that the app stays consistent, CI fails if in `apps/web`
+
+- a `<button>`, `<input>`, `<select>` or `<textarea>` appears directly,
+- a colour appears as a hex, `rgb()` or `hsl()` value (except in the tokens),
+- an old class such as `button`, `icon-button` or `popover` is used.
+
+The check is part of the app's build (`pnpm --filter @study/web build`) and can also be run alone: `pnpm --filter @study/web check:ui`. Exceptions only exist with `ui-allow: <reason>` in a comment on the line before – for example for the white of a PDF page, which is paper in both themes.
+
+## Checks before the merge
+
+CI runs the UI check, the type check, the tests and the build on every pull request. The Playwright tests (Chromium, WebKit and iPhone; flows, roles, accessibility with axe and the visual comparisons in light and dark, `apps/e2e`) run against the **test stack with the built images** – on every pull request to `dev` or `main` (required) and on other pull requests with the label `e2e`. More under [Tests](/developers/tests) and [Releases](/developers/releases).
+
+`./infra/test/stack.sh e2e --update-snapshots` takes over intended changes in appearance; the new images under `apps/e2e/tests/__screenshots__/` belong in the commit.
+
+## Viewing the docs locally
+
+```sh
+pnpm --filter @study/docs start   # http://localhost:3002
+```

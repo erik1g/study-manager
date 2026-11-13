@@ -3,6 +3,7 @@ import { randomBytes } from "node:crypto";
 import { mkdir, rename, rm } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { and, eq, inArray, isNull, ne, or, sql } from "drizzle-orm";
+import { LOCALES, type Locale } from "@study/shared";
 import type { Accounts } from "../auth/accounts.ts";
 import type { Db } from "../db/client.ts";
 import { courseMembers, courses, files, profiles } from "../db/schema.ts";
@@ -27,6 +28,7 @@ export interface ProfileChange {
   displayName?: string;
   studies?: string | null;
   semester?: number | null;
+  locale?: Locale;
 }
 
 /** A subject the user owns alone while others are in it, with whom to hand it to. */
@@ -85,19 +87,25 @@ export function users(db: Db, accounts: Accounts, filesDir: string) {
   };
 
   return {
-    /** Invites someone, or gives a fresh link to someone invited before. */
     /**
      * Invites someone: by mail when mail is set up, else with a link for the
-     * admin to pass on. Someone invited before gets a fresh link.
+     * admin to pass on. Someone invited before gets a fresh link. The new
+     * account starts in the inviter's language, so that the invitation mail
+     * is in it; the person sets their own when they set up the account.
      */
-    async invite(email: string, displayName: string, makeAdmin = false, byMail = false): Promise<{ userId: string; link: string | null; mailed: boolean }> {
+    async invite(
+      email: string,
+      displayName: string,
+      options: { makeAdmin?: boolean; byMail?: boolean; locale?: Locale } = {},
+    ): Promise<{ userId: string; link: string | null; mailed: boolean }> {
+      const { makeAdmin = false, byMail = false, locale = "en" } = options;
       const address = email.trim().toLowerCase();
       if (!validEmail(address)) throw invalid("invalid_email");
-      const sent = byMail ? await accounts.sendInvite(address) : null;
-      const { userId, link } = sent ? { userId: sent.userId, link: null } : await accounts.inviteLink(address);
+      const sent = byMail ? await accounts.sendInvite(address, locale) : null;
+      const { userId, link } = sent ? { userId: sent.userId, link: null } : await accounts.inviteLink(address, locale);
       await db
         .insert(profiles)
-        .values({ id: userId, email: address, displayName: displayName.trim() || address.split("@")[0]!, isAdmin: makeAdmin, icalToken: icalToken() })
+        .values({ id: userId, email: address, displayName: displayName.trim() || address.split("@")[0]!, isAdmin: makeAdmin, icalToken: icalToken(), locale })
         .onConflictDoUpdate({ target: profiles.id, set: makeAdmin ? { isAdmin: true } : { email: address } });
       return { userId, link, mailed: !!sent };
     },
@@ -212,12 +220,16 @@ export function users(db: Db, accounts: Accounts, filesDir: string) {
     async updateProfile(userId: string, change: ProfileChange) {
       if (change.displayName !== undefined && !change.displayName.trim()) throw invalid("missing_name");
       if (change.semester != null && (!Number.isInteger(change.semester) || change.semester < 1 || change.semester > 30)) throw invalid("invalid_study_semester");
+      if (change.locale !== undefined && !LOCALES.includes(change.locale)) throw invalid("invalid_locale");
+      // The mail templates read the language from the sign-in service, so it changes there first.
+      if (change.locale !== undefined) await accounts.setLocale(userId, change.locale);
       await db
         .update(profiles)
         .set({
           ...(change.displayName !== undefined && { displayName: change.displayName.trim() }),
           ...(change.studies !== undefined && { studies: change.studies?.trim() || null }),
           ...(change.semester !== undefined && { semester: change.semester }),
+          ...(change.locale !== undefined && { locale: change.locale }),
         })
         .where(eq(profiles.id, userId));
     },

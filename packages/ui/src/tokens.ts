@@ -8,14 +8,14 @@ export type Tone = (typeof TONES)[number];
 
 /** How each tone is called where people see it. */
 export const TONE_NAMES: Record<Tone, string> = {
-  blau: "Blau",
-  petrol: "Minze",
-  gruen: "Salbei",
+  blau: "Blue",
+  petrol: "Mint",
+  gruen: "Sage",
   gelb: "Butter",
-  orange: "Pfirsich",
-  rot: "Rosé",
-  violett: "Lavendel",
-  grau: "Stein",
+  orange: "Peach",
+  rot: "Rose",
+  violett: "Lavender",
+  grau: "Stone",
 };
 
 /**

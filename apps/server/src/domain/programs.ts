@@ -129,7 +129,7 @@ export function programsOf(db: Db, filesDir: string) {
      */
     async upsertModules(userId: string, programId: string, input: unknown[]) {
       const program = await mayManage(userId, programId);
-      if (input.length > MODULE_BATCH) throw invalid("too_many_modules", `Höchstens ${MODULE_BATCH} Module pro Aufruf.`);
+      if (input.length > MODULE_BATCH) throw invalid("too_many_modules", `At most ${MODULE_BATCH} modules per call.`);
       const saved: string[] = [];
       const rejected: { index: number; problem: string }[] = [];
       for (const [index, raw] of input.entries()) {

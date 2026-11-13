@@ -2,7 +2,7 @@
 // as tabs, one pane or two side by side. What is open is kept per subject on this device.
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Button, EmptyState, FileTile, fileKind, IconButton, List, ListRow, SearchField } from "@study/ui";
-import { de } from "../i18n/de";
+import { t } from "../i18n";
 import { api, type Course, type CourseFile } from "../lib/api";
 import { useMedia } from "../lib/media";
 import { clampZoom } from "../lib/pinch";
@@ -89,11 +89,11 @@ function prune(ws: Workspace, files: CourseFile[]): Workspace {
 function ZoomControls({ zoom, onZoom }: { zoom: number; onZoom: (zoom: number) => void }) {
   return (
     <span className="zoom-controls">
-      <IconButton icon="minus" size="sm" label={de.lecture.zoomOut} disabled={zoom <= 0.5} onClick={() => onZoom(clampZoom(zoom / 1.2))} />
-      <Button size="sm" variant="ghost" title={de.lecture.zoomFit} aria-label={de.lecture.zoomFit} onClick={() => onZoom(1)}>
-        {de.lecture.zoom(Math.round(zoom * 100))}
+      <IconButton icon="minus" size="sm" label={t.lecture.zoomOut} disabled={zoom <= 0.5} onClick={() => onZoom(clampZoom(zoom / 1.2))} />
+      <Button size="sm" variant="ghost" title={t.lecture.zoomFit} aria-label={t.lecture.zoomFit} onClick={() => onZoom(1)}>
+        {t.lecture.zoom(Math.round(zoom * 100))}
       </Button>
-      <IconButton icon="plus" size="sm" label={de.lecture.zoomIn} disabled={zoom >= 3} onClick={() => onZoom(clampZoom(zoom * 1.2))} />
+      <IconButton icon="plus" size="sm" label={t.lecture.zoomIn} disabled={zoom >= 3} onClick={() => onZoom(clampZoom(zoom * 1.2))} />
     </span>
   );
 }
@@ -218,7 +218,7 @@ export function LectureMode({ course, initialFile, withNotes, onEntered, onExit 
   };
 
   const fileById = (id: string) => files?.find((f) => f.id === id) ?? null;
-  const labelOf = (tab: TabId) => (tab === NOTES ? de.lecture.notes : (fileById(fileOf(tab)!)?.name ?? "…"));
+  const labelOf = (tab: TabId) => (tab === NOTES ? t.lecture.notes : (fileById(fileOf(tab)!)?.name ?? "…"));
 
   const choose = (tab: TabId) => {
     setWs((current) => show(current, tab, picker ?? "left"));
@@ -226,25 +226,25 @@ export function LectureMode({ course, initialFile, withNotes, onEntered, onExit 
   };
 
   return (
-    <div className="lecture" role="region" aria-label={de.lecture.region}>
+    <div className="lecture" role="region" aria-label={t.lecture.region}>
       <header className="lecture-bar">
-        <IconButton icon="close" label={de.lecture.exit} onClick={onExit} />
+        <IconButton icon="close" label={t.lecture.exit} onClick={onExit} />
         <span className="lecture-title">{course.title}</span>
         <span className="spacer" />
         {!narrow && (
           <Button size="sm" variant={ws.split ? "secondary" : "ghost"} icon="columns" aria-pressed={ws.split} onClick={() => setWs(toggleSplit)}>
-            {de.lecture.split}
+            {t.lecture.split}
           </Button>
         )}
         <Button size="sm" variant="ghost" onClick={() => setWs(EMPTY)} disabled={ws.left.length + ws.right.length === 0}>
-          {de.lecture.reset}
+          {t.lecture.reset}
         </Button>
       </header>
 
       <div className={split ? "lecture-panes split" : "lecture-panes"}>
         {panes.map((pane) => (
-          <section key={pane.side} className="lecture-pane" aria-label={pane.side === "left" ? de.lecture.tabs : undefined}>
-            <div className="lecture-tabs" role="tablist" aria-label={de.lecture.tabs}>
+          <section key={pane.side} className="lecture-pane" aria-label={pane.side === "left" ? t.lecture.tabs : undefined}>
+            <div className="lecture-tabs" role="tablist" aria-label={t.lecture.tabs}>
               {pane.tabs.map((tab) => (
                 <span key={tab} className={`lecture-tab ${tab === pane.active ? "active" : ""}`}>
                   <Button
@@ -262,16 +262,16 @@ export function LectureMode({ course, initialFile, withNotes, onEntered, onExit 
                   >
                     <span className="lecture-tab-name">{labelOf(tab)}</span>
                   </Button>
-                  <IconButton icon="close" size="sm" label={de.lecture.close(labelOf(tab))} onClick={() => setWs((current) => close(current, tab))} />
+                  <IconButton icon="close" size="sm" label={t.lecture.close(labelOf(tab))} onClick={() => setWs((current) => close(current, tab))} />
                 </span>
               ))}
-              <IconButton icon="plus" size="sm" label={de.lecture.open} onClick={() => setPicker(pane.side)} />
+              <IconButton icon="plus" size="sm" label={t.lecture.open} onClick={() => setPicker(pane.side)} />
               <span className="spacer" />
               {split && pane.active && (
                 <IconButton
                   icon={pane.side === "left" ? "arrow-right" : "arrow-left"}
                   size="sm"
-                  label={pane.side === "left" ? de.lecture.moveToRight : de.lecture.moveToLeft}
+                  label={pane.side === "left" ? t.lecture.moveToRight : t.lecture.moveToLeft}
                   onClick={() => setWs((current) => move(current, pane.active!))}
                 />
               )}
@@ -282,21 +282,21 @@ export function LectureMode({ course, initialFile, withNotes, onEntered, onExit 
                   variant="plain"
                   size="sm"
                   illustration="buecher"
-                  title={de.lecture.emptyTitle}
+                  title={t.lecture.emptyTitle}
                   actions={
                     <>
                       <Button variant="primary" icon="file" onClick={() => setPicker(pane.side)}>
-                        {de.lecture.open}
+                        {t.lecture.open}
                       </Button>
                       {!sideOf(ws, NOTES) && (
                         <Button icon="note" onClick={() => setWs((current) => show(current, NOTES, pane.side))}>
-                          {de.lecture.openNotes}
+                          {t.lecture.openNotes}
                         </Button>
                       )}
                     </>
                   }
                 >
-                  {de.lecture.emptyText}
+                  {t.lecture.emptyText}
                 </EmptyState>
               )}
               {pane.tabs
@@ -311,7 +311,7 @@ export function LectureMode({ course, initialFile, withNotes, onEntered, onExit 
                       ) : file ? (
                         <FileBody file={file} page={targets[file.id] ?? null} report={report} />
                       ) : files ? (
-                        <EmptyState variant="plain" size="sm" title={de.lecture.missing} />
+                        <EmptyState variant="plain" size="sm" title={t.lecture.missing} />
                       ) : null}
                     </div>
                   );
@@ -322,7 +322,7 @@ export function LectureMode({ course, initialFile, withNotes, onEntered, onExit 
       </div>
 
       {menu && (
-        <ContextMenu at={menu.at} label={de.lecture.tabActions(labelOf(menu.tab))} onClose={() => setMenu(null)}>
+        <ContextMenu at={menu.at} label={t.lecture.tabActions(labelOf(menu.tab))} onClose={() => setMenu(null)}>
           {split && (
             <MenuItem
               icon={sideOf(ws, menu.tab) === "left" ? "arrow-right" : "arrow-left"}
@@ -332,7 +332,7 @@ export function LectureMode({ course, initialFile, withNotes, onEntered, onExit 
                 setWs((current) => move(current, tab));
               }}
             >
-              {sideOf(ws, menu.tab) === "left" ? de.lecture.moveToRight : de.lecture.moveToLeft}
+              {sideOf(ws, menu.tab) === "left" ? t.lecture.moveToRight : t.lecture.moveToLeft}
             </MenuItem>
           )}
           <MenuItem
@@ -343,7 +343,7 @@ export function LectureMode({ course, initialFile, withNotes, onEntered, onExit 
               setWs((current) => close(current, tab));
             }}
           >
-            {de.lecture.close(labelOf(menu.tab))}
+            {t.lecture.close(labelOf(menu.tab))}
           </MenuItem>
         </ContextMenu>
       )}
@@ -357,16 +357,16 @@ function Picker({ files, notesOpen, onChoose, onClose }: { files: CourseFile[]; 
   const [query, setQuery] = useState("");
   const shown = files.filter((f) => f.name.toLowerCase().includes(query.trim().toLowerCase()));
   return (
-    <Dialog title={de.lecture.openTitle} onClose={onClose}>
+    <Dialog title={t.lecture.openTitle} onClose={onClose}>
       <div className="ui-stack">
-        <SearchField label={de.lecture.openSearch} value={query} onChange={(e) => setQuery(e.target.value)} onClear={() => setQuery("")} autoFocus />
+        <SearchField label={t.lecture.openSearch} value={query} onChange={(e) => setQuery(e.target.value)} onClear={() => setQuery("")} autoFocus />
         <List>
-          {!notesOpen && <ListRow leading={<FileTile kind="text" size={34} />} title={de.lecture.notes} onClick={() => onChoose(NOTES)} />}
+          {!notesOpen && <ListRow leading={<FileTile kind="text" size={34} />} title={t.lecture.notes} onClick={() => onChoose(NOTES)} />}
           {shown.map((file) => (
-            <ListRow key={file.id} leading={<FileTile kind={fileKind(file.name, file.mime)} size={34} />} title={file.name} meta={de.folders[file.folder]} onClick={() => onChoose(fileTab(file.id))} />
+            <ListRow key={file.id} leading={<FileTile kind={fileKind(file.name, file.mime)} size={34} />} title={file.name} meta={t.folders[file.folder]} onClick={() => onChoose(fileTab(file.id))} />
           ))}
         </List>
-        {shown.length === 0 && <p className="quiet">{de.lecture.openNone}</p>}
+        {shown.length === 0 && <p className="quiet">{t.lecture.openNone}</p>}
       </div>
     </Dialog>
   );

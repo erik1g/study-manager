@@ -7,7 +7,7 @@ export interface SectionHeaderProps {
   level?: 1 | 2 | 3;
   /** A sentence below the title. */
   description?: ReactNode;
-  /** At the right: a link such as "Alle anzeigen" or a small button. */
+  /** At the right: a link such as "Show all" or a small button. */
   action?: ReactNode;
   size?: "md" | "lg" | "xl";
   id?: string;
