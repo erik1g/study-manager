@@ -1,0 +1,58 @@
+---
+title: Sidebar and NavItem
+sidebar_position: 2
+description: The column on the left with the places of the app.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { DoDont, Do, Dont } from "@site/src/components/DoDont";
+import { Sidebar, NavSection, NavItem, Logo, Card, Avatar, ListRow, List } from "@study/ui";
+
+# Sidebar, NavSection and NavItem
+
+`import { Sidebar, NavSection, NavItem } from "@study/ui"`
+
+On the left on wide screens. On phones, the [TabBar](./tab-bar) takes over.
+
+```jsx live
+<div style={{ width: 260, height: 620, border: "1.5px solid var(--ui-line)", borderRadius: 24, overflow: "hidden" }}>
+  <Sidebar
+    brand={<Logo />}
+    footer={
+      <Card padding="sm" tone="gelb">
+        <strong>Claude is connected</strong>
+      </Card>
+    }
+  >
+    <NavSection>
+      <NavItem icon="sun" label="Today" href="#" active />
+      <NavItem icon="grid" label="Courses" href="#" />
+      <NavItem icon="calendar" label="Calendar" href="#" />
+      <NavItem icon="search" label="Search" shortcut="⌘K" onClick={() => {}} />
+    </NavSection>
+    <NavSection title="Your courses">
+      <NavItem dot="blau" label="Control Engineering" href="#" size="sm" />
+      <NavItem dot="orange" label="Engineering Mechanics" href="#" size="sm" />
+      <NavItem dot="violett" label="Maths III" href="#" size="sm" badge={11} />
+    </NavSection>
+  </Sidebar>
+</div>
+```
+
+## When to use
+
+- At the top the fixed places with an icon, below them the courses with their colour as a dot (`dot`).
+- A place is active when you are in it or below it (a course page belongs to "Courses" **and** to its course).
+- At the bottom the account and the settings.
+
+## Props
+
+<PropsTable of="Sidebar" />
+<PropsTable of="NavSection" />
+<PropsTable of="NavItem" />
+
+## Accessibility
+
+- A `nav` "Hauptnavigation" (main navigation) with lists; the active place is `aria-current="page"`.
+- With the router: `linkAs={NavLink}` or `Link` – `href` becomes `to`.

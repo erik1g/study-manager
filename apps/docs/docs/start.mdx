@@ -1,7 +1,7 @@
 ---
 title: "Study Manager"
 slug: /
-description: "Die selbst gehostete Web-App für Studierende – Fächer, Deadlines, Planung, Notizen und dein eigenes Claude."
+description: "The self-hosted web app for students – courses, deadlines, planning, notes and your own Claude."
 hide_table_of_contents: true
 ---
 
@@ -11,9 +11,9 @@ import { Card, Illustration } from "@study/ui";
 
 <Card tone="blau" glow grain padding="lg" style={{ display: "flex", flexWrap: "wrap", gap: 24, alignItems: "center", marginBottom: 32 }}>
   <div style={{ flex: "1 1 320px" }}>
-    <p className="ui-display" style={{ fontSize: 30, margin: 0 }}>Dein Studium, gemütlich sortiert.</p>
+    <p className="ui-display" style={{ fontSize: 30, margin: 0 }}>Your studies, comfortably sorted.</p>
     <p style={{ margin: "10px 0 0", fontWeight: 600 }}>
-      Fächer mit Skripten und Altklausuren, geteilte Deadlines, Planung, Notizen neben dem Skript, Lernkarten und ein MCP-Server für dein eigenes Claude – frei, selbst gehostet und von Studierenden für Studierende.
+      Courses with lecture notes and past exams, shared deadlines, planning, notes next to the script, flashcards and an MCP server for your own Claude – free, self-hosted and made by students for students.
     </p>
   </div>
   <div style={{ width: 220 }}>
@@ -21,24 +21,24 @@ import { Card, Illustration } from "@study/ui";
   </div>
 </Card>
 
-Der Study Manager ist freie Software unter der [GPL-3.0](https://github.com/erik1g/study-manager/blob/main/LICENSE). Du betreibst ihn selbst auf einem eigenen Server – deine Daten bleiben bei dir und deiner Lerngruppe.
+Study Manager is free software under the [GPL-3.0](https://github.com/erik1g/study-manager/blob/main/LICENSE). You run it yourself on your own server – your data stays with you and your study group.
 
-## Wo möchtest du anfangen?
+## Where would you like to start?
 
-### Ich möchte ihn benutzen → [Nutzer](/nutzer)
+### I want to use it → [Users](/users)
 
-Fächer, Dokumente, Deadlines, Planung, Notizen, Vorlesungsmodus, Lernkarten und Claude verbinden.
+Courses, documents, deadlines, planning, notes, lecture mode, flashcards and connecting Claude.
 
-### Ich betreibe einen Server → [Admin](/admin)
+### I run a server → [Admin](/admin)
 
-Installieren mit Docker, konfigurieren, hinter einen Reverse Proxy stellen, sichern, aktualisieren.
+Install with Docker, configure, put it behind a reverse proxy, back up, update.
 
-### Ich möchte mitentwickeln → [Entwickler](/entwickler)
+### I want to develop along → [Developers](/developers)
 
-Aufbau, lokal starten, Tests, Beiträge, Releases – und wie man eine neue Hochschule anbindet.
+Structure, running locally, tests, contributions, releases – and how to connect a new university.
 
-## Was heute unterstützt wird
+## What is supported today
 
-- Die Oberfläche ist **deutsch**; Semester heißen `WiSe`/`SoSe`.
-- Das **Kalender-Abo** versteht iCal-Feeds im Stil von CAMPUSonline (Stundenplan mit Serien und Sitzungen). Andere Systeme (Stud.IP, HISinOne, ILIAS) sind noch nicht angebunden – **dabei kannst du helfen**: siehe [Hochschulen anbinden](/entwickler/hochschulen-anbinden).
-- Alles andere ist hochschulunabhängig: Fächer, Dokumente, Deadlines, Aufgaben, Notizen, Lernkarten, Suche, Modulhandbuch (als PDF) und die Anbindung an Claude.
+- The interface is **German**; an English version is in the works. Semesters are called `WiSe`/`SoSe` (winter/summer term).
+- The **calendar subscription** understands iCal feeds in the style of CAMPUSonline (timetable with series and sessions). Other systems (Stud.IP, HISinOne, ILIAS) are not connected yet – **you can help with that**: see [Connecting universities](/developers/connecting-universities).
+- Everything else is independent of the university: courses, documents, deadlines, tasks, notes, flashcards, search, module handbook (as a PDF) and the connection to Claude.

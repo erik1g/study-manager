@@ -1,0 +1,34 @@
+---
+title: Shadows and motion
+sidebar_position: 4
+description: Soft shadows on white surfaces, short motions with a strong ease-out.
+---
+
+# Shadows and motion
+
+## Shadows
+
+| Token | For |
+| --- | --- |
+| `--ui-shadow-card` | white cards, active tabs and navigation items |
+| `--ui-shadow-pop` | what floats above the page: menus, dialogs, toasts, the bar at the bottom on phones |
+
+Pastel surfaces have no shadow – the colour already separates them.
+
+## Motion
+
+| Token | Value | For |
+| --- | --- | --- |
+| `--ui-ease-out` | `cubic-bezier(0.23, 1, 0.32, 1)` | everything that appears or reacts |
+| `--ui-ease-in-out` | `cubic-bezier(0.77, 0, 0.175, 1)` | what moves on the page |
+| `--ui-fast` | 140 ms | pressing, hover, ticks |
+| `--ui-base` | 200 ms | menus, dialogs, switches |
+| `--ui-slow` | 280 ms | toasts |
+
+### Rules
+
+- **Do not animate what people do often**: keyboard shortcuts, the command palette, switching tabs.
+- Pressed buttons get briefly smaller (`scale(0.97)`) – that is the feedback that the press arrived.
+- Nothing appears out of nowhere: menus and dialogs start at 96–97 % size, never at 0.
+- Hover motions (a card lifts) only with a mouse: `@media (hover: hover) and (pointer: fine)`.
+- Whoever has set reduced motion (`prefers-reduced-motion`) only sees cross-fades. The components do this themselves.

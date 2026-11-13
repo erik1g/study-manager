@@ -1,0 +1,63 @@
+---
+title: "Contributing"
+sidebar_position: 5
+description: "Branches, commits in the Conventional Commits format and pull requests."
+---
+
+# Contributing
+
+Great that you are helping! Everything that makes the app more useful for more students is welcome.
+
+**The project language is English:** you write issues, pull requests, commits, code, comments and docs in English.
+
+## The flow
+
+1. **Find or open an issue.** For bigger ideas, talk to us first so that your work fits. A comment like "I'll take this" is enough so that nobody works twice.
+2. **Fork the repository**, create a branch from **`dev`** (`fix/week-view-phone`, `feat/studip-feed`).
+3. **Change**, [test locally](/developers/tests).
+4. Open a **pull request against `dev`**, for bug fixes too (see [Releases](/developers/releases)). `main` is the published state and only accepts pull requests from `dev`. Open unfinished work as a **draft PR**, because `dev` must always be releasable. For interface changes, screenshots or a short video belong in the pull request. CI (with the Playwright tests) runs automatically; it must be green.
+5. We review, discuss changes and **merge** (squash). The **PR title** becomes the commit title – it must have the format below.
+
+By contributing you agree that your contribution is licensed under the project's **GPL-3.0**.
+
+## Commits: Conventional Commits
+
+Versions and the changelog are made **automatically** from the commit titles (see [Releases](/developers/releases)). For that:
+
+```
+<type>(<scope>): <short description in English>
+```
+
+| Type | For | Version |
+|---|---|---|
+| `feat` | a new feature | minor (`0.1.0` → `0.2.0`) |
+| `fix` | a bug fix | patch (`0.1.0` → `0.1.1`) |
+| `perf` | faster | patch |
+| `docs`, `test`, `refactor`, `style`, `build`, `ci`, `chore` | everything else | no release on its own |
+| `feat!`, `fix!` or `BREAKING CHANGE:` in the body | operators must do something when updating | minor before 1.0, major from 1.0 |
+
+Examples:
+
+```
+feat(lecture-mode): tabs and two halves side by side
+fix(deadlines): editing crashed
+docs(admin): add an example for Traefik
+feat(docker)!: data now lives in named volumes
+
+BREAKING CHANGE: If you use folders on the host, set DATA_DIR and DB_DIR in the .env.
+```
+
+Add a `BREAKING CHANGE` note whenever operators must do something when updating: a new or changed environment variable, a changed compose file, a step outside the automatic migration.
+
+## Rules for the code
+
+- **Only building blocks from `@study/ui`** in `apps/web`, no colours as hex values ([design system](/developers/design)).
+- **Permissions belong in `apps/server/src/domain`**, not in the routes.
+- **Interface texts** live in `apps/web/src/i18n/de.ts`.
+- **Tests** for new behaviour; for interface changes, look at the result in the browser on laptop **and** phone.
+- **Invented data** in tests, examples and docs. No real people, universities or credentials.
+- Keep the **documentation** up to date: users, admins or developers, depending on whom your change affects.
+
+## Working with an AI assistant
+
+All instructions for assistants and developers are in the folder **`.claude/`** (`CLAUDE.md` and `rules/`): commit format, check commands, rules for server, interface, tests, containers and docs, and what an assistant may not do without an explicit request (such as triggering a release). Claude Code loads them automatically; you can point other tools to them.

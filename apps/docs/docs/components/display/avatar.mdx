@@ -1,0 +1,56 @@
+---
+title: Avatar
+sidebar_position: 3
+description: A person – picture or initials.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { DoDont, Do, Dont } from "@site/src/components/DoDont";
+import { Avatar, AvatarGroup } from "@study/ui";
+
+# Avatar and AvatarGroup
+
+`import { Avatar, AvatarGroup } from "@study/ui"`
+
+Without a picture, the avatar shows the initials in the person's colour – the same everywhere, because it is calculated from the id (`colorKey`).
+
+```jsx live
+<div style={{ display: "flex", gap: 16, alignItems: "center" }}>
+  <Avatar name="Mira Hansen" size={48} />
+  <AvatarGroup label="4 members">
+    <Avatar name="Mira Hansen" colorKey="u1" decorative />
+    <Avatar name="Jonas Weber" colorKey="u2" decorative />
+    <Avatar name="Sina Ok" colorKey="u3" decorative />
+    <Avatar name="Tom Berg" colorKey="u4" decorative />
+  </AvatarGroup>
+</div>
+```
+
+## Variants and states
+
+<Preview>
+  <Avatar name="Mira Hansen" size={24} />
+  <Avatar name="Mira Hansen" size={32} />
+  <Avatar name="Jonas Weber" size={48} />
+  <Avatar name="Deleted" gone size={32} />
+  <AvatarGroup label="6 members" max={3}>
+    <Avatar name="A B" decorative /><Avatar name="C D" decorative /><Avatar name="E F" decorative /><Avatar name="G H" decorative /><Avatar name="I J" decorative /><Avatar name="K L" decorative />
+  </AvatarGroup>
+</Preview>
+
+## When to use
+
+- Next to a name: `decorative`, so that the name is not read out twice.
+- In the app, the picture `src` from `/api/avatars/<id>?v=<version>` is enough; if it is missing or does not load, the initials appear.
+- Deleted accounts: `gone` – grey with a line.
+
+## Props
+
+<PropsTable of="Avatar" />
+<PropsTable of="AvatarGroup" />
+
+## Accessibility
+
+- Standing alone, the avatar is an image with the name as its description.
+- A group has a name ("4 members"); "+2" is there as text.

@@ -1,0 +1,32 @@
+---
+title: Typography
+sidebar_position: 2
+description: Bricolage Grotesque for headings, Figtree for everything else.
+---
+
+import { TypeScale } from "@site/src/components/Foundations";
+
+# Typography
+
+Two typefaces, both included in the package (through `@fontsource-variable`, without Google servers):
+
+- **Bricolage Grotesque**, 800 – headings, large numbers, times on cards. Bold and a little playful.
+- **Figtree**, 400–700 – all text, buttons, fields.
+
+| Token | Value |
+| --- | --- |
+| `--ui-font-display` | Bricolage Grotesque |
+| `--ui-font-body` | Figtree |
+| `--ui-font-mono` | system font for code |
+
+## Sizes
+
+<TypeScale />
+
+## Rules
+
+- Page titles: `SectionHeader size="xl"` (46 px, smaller on phones). Card titles: `md` (22 px).
+- Running text 15 px, second lines 13 px in `--ui-muted`. Nothing below 12 px.
+- 16 px in fields – below that, Safari on the iPhone zooms in when tapping.
+- Bold (700) for what a line is about; not for whole paragraphs.
+- The class `ui-display` gives an element the heading typeface when it is not a component.

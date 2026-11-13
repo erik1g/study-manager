@@ -1,0 +1,100 @@
+---
+title: Button
+sidebar_position: 1
+description: A button – something happens here.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { DoDont, Do, Dont } from "@site/src/components/DoDont";
+import { Button } from "@study/ui";
+
+# Button
+
+`import { Button } from "@study/ui"`
+
+A button triggers something: save, create, upload. Its text says what happens, as a **verb**. If it only leads somewhere else, it is a [LinkButton](./link-button).
+
+```jsx live
+function Example() {
+  const [saving, setSaving] = useState(false);
+  return (
+    <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+      <Button variant="primary" icon="check" loading={saving} onClick={() => { setSaving(true); setTimeout(() => setSaving(false), 1500); }}>
+        Save
+      </Button>
+      <Button>Cancel</Button>
+    </div>
+  );
+}
+```
+
+## Variants and states
+
+<Preview column>
+  <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+    <Button variant="primary" icon="plus">New</Button>
+    <Button>Edit</Button>
+    <Button variant="soft" tone="gelb" icon="claude">With Claude</Button>
+    <Button variant="danger" icon="trash">Delete</Button>
+    <Button variant="ghost">Later</Button>
+  </div>
+  <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+    <Button size="sm">Small</Button>
+    <Button>Medium</Button>
+    <Button size="lg" variant="primary">Large</Button>
+  </div>
+  <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+    <Button variant="primary" loading>Save</Button>
+    <Button disabled>Not available</Button>
+    <Button iconEnd="arrow-right">Next</Button>
+  </div>
+</Preview>
+
+| Variant | For |
+| --- | --- |
+| `primary` | the **one** main action of a view |
+| `secondary` | everything else (default) |
+| `soft` | a friendly secondary action on a colour, e.g. "With Claude" (`tone`) |
+| `danger` | delete, leave, sign out |
+| `ghost` | quiet actions in bars and lists |
+
+## When to use
+
+<DoDont>
+  <Do caption="One main action, next to it the alternative. The main action is on the right.">
+    <Button>Cancel</Button>
+    <Button variant="primary">Create course</Button>
+  </Do>
+  <Dont caption="Several main actions next to each other – nobody knows what counts.">
+    <Button variant="primary">Save</Button>
+    <Button variant="primary">Share</Button>
+    <Button variant="primary">Export</Button>
+  </Dont>
+</DoDont>
+
+<DoDont>
+  <Do caption="The text says what happens.">
+    <Button variant="danger" icon="trash">Delete course</Button>
+  </Do>
+  <Dont caption="“OK” and “Yes” say nothing.">
+    <Button variant="primary">OK</Button>
+  </Dont>
+</DoDont>
+
+- Use `loading` instead of your own spinner – the button is then locked and tells screen readers that it is working.
+- `type="submit"` only in a form; otherwise a Button is always `type="button"`.
+- For elements that cannot be a `Button`, `buttonClass({ variant, size })` gives the classes.
+
+## Props
+
+Plus all attributes of a `<button>` (`onClick`, `type`, `disabled` …).
+
+<PropsTable of="Button" />
+
+## Accessibility
+
+- A real `<button>`: reachable with Tab, triggered with Enter and Space.
+- A clear focus ring (3 px, `--ui-focus`), only for keyboard use.
+- At least 44 px high in `md`; `sm` only where a mouse is likely.
+- `loading` sets `aria-busy` and blocks double clicks.

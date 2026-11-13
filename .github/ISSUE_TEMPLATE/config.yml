@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Sicherheitslücke melden
+  - name: Report a security vulnerability
     url: https://github.com/erik1g/study-manager/security/advisories/new
-    about: Bitte nicht öffentlich, sondern über die privaten Meldungen von GitHub.
-  - name: Dokumentation
+    about: Please not in public, but through GitHub's private reports.
+  - name: Documentation
     url: https://erik1g.github.io/study-manager/
-    about: Anleitungen für Nutzer, Admins und Entwickler.
+    about: Guides for users, admins and developers.

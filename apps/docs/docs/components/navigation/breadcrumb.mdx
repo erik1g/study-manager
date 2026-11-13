@@ -1,0 +1,36 @@
+---
+title: Breadcrumb
+sidebar_position: 4
+description: Where a page sits.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { DoDont, Do, Dont } from "@site/src/components/DoDont";
+import { Breadcrumb } from "@study/ui";
+
+# Breadcrumb
+
+`import { Breadcrumb } from "@study/ui"`
+
+```jsx live
+<Breadcrumb items={[{ label: "Courses", href: "#" }, { label: "Winter 26/27", href: "#" }, { label: "Control Engineering" }]} />
+```
+
+<Preview>
+  <Breadcrumb items={[{ label: "Courses", href: "#" }, { label: "Control Engineering" }]} />
+</Preview>
+
+## When to use
+
+- Above the title of deeper pages (course, file, Settings › Security).
+- Not on the main places – the navigation says enough there.
+
+## Props
+
+<PropsTable of="Breadcrumb" />
+
+## Accessibility
+
+- A `nav` "Pfad" (path); the last entry is the current page (`aria-current="page"`), not a link.
+- The separators › are hidden from screen readers.

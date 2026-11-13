@@ -1,0 +1,71 @@
+---
+title: List and ListRow
+sidebar_position: 7
+description: Rows of the same kind – files, dates, deadlines, members.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { DoDont, Do, Dont } from "@site/src/components/DoDont";
+import { List, ListRow, FileTile, Chip, Card, IconButton } from "@study/ui";
+
+# List and ListRow
+
+`import { List, ListRow } from "@study/ui"`
+
+A row has something at the front (`leading`), a title, a quiet second line (`meta`) and something at the end (`trailing`). With `href` or `onClick`, the **whole row** becomes a link or a button.
+
+```jsx live
+<Card style={{ maxWidth: 520 }}>
+  <List>
+    <ListRow href="#" leading={<FileTile kind="pdf" />} title="Script chapter 4 – frequency response" meta="Scripts · 3.2 MB · today" />
+    <ListRow href="#" leading={<FileTile kind="word" />} title="Laplace formula sheet" meta="Other · 88 KB · Mon · Sina" />
+    <ListRow leading={<FileTile kind="audio" />} title="Lecture 27 Oct" meta="84 min · transcribed" trailing={<IconButton icon="more" label="Actions for Lecture 27 Oct" size="sm" />} />
+  </List>
+</Card>
+```
+
+## Variants and states
+
+<Preview column>
+  <Card padding="sm">
+    <List>
+      <ListRow title="Divided" meta="on white cards" trailing="3.2 MB" />
+      <ListRow title="Second row" meta="with a divider" />
+    </List>
+  </Card>
+  <Card tone="blau" padding="sm">
+    <List variant="raised" ordered>
+      <ListRow leading={<strong>09:45</strong>} title="Control Engineering" meta="Lecture" trailing="HS 21" />
+      <ListRow leading={<strong>13:00</strong>} title="Materials Science" meta="Exercise" trailing={<Chip size="sm">104</Chip>} />
+    </List>
+  </Card>
+</Preview>
+
+## When to use
+
+<DoDont>
+  <Do caption="Either the whole row leads somewhere – or it is not a link and carries buttons.">
+    <List style={{ width: "100%" }}>
+      <ListRow href="#" title="Script.pdf" meta="Scripts" />
+      <ListRow title="Recording 27 Oct" meta="being transcribed" trailing={<IconButton icon="close" label="Cancel" size="sm" />} />
+    </List>
+  </Do>
+  <Dont caption="A button in a row that is itself a link: whoever hits it may end up somewhere else.">
+    <List style={{ width: "100%" }}><ListRow href="#" title="Script.pdf" meta="Scripts" trailing={<span className="ui-button ui-button-ghost ui-size-sm ui-icon-button" aria-hidden="true">×</span>} /></List>
+  </Dont>
+</DoDont>
+
+- `divided` on white cards, `raised` (white pills) on course colours.
+- `ordered` for sequences, e.g. dates by time.
+- With the router: `linkAs={Link}` – `href` is then passed as `to`.
+
+## Props
+
+<PropsTable of="List" />
+<PropsTable of="ListRow" />
+
+## Accessibility
+
+- Real `<ul>`/`<ol>` with `<li>`: screen readers say how many entries there are.
+- A row is either clickable itself or contains clickable things – never both.
