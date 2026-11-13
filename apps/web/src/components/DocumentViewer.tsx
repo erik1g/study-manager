@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import * as pdfjs from "pdfjs-dist/legacy/build/pdf.mjs";
 import pdfWorkerUrl from "pdfjs-dist/legacy/build/pdf.worker.min.mjs?url";
 import { Button, EmptyState, Notice } from "@study/ui";
-import { de, errorMessage } from "../i18n/de";
+import { t, errorMessage } from "../i18n";
 import { api, type CourseFile } from "../lib/api";
 import { usePinchZoom } from "../lib/pinch";
 import { Rich } from "./Rich";
@@ -68,14 +68,14 @@ export function DocumentViewer({ file, page, onPageChange, actions, zoom, onZoom
         <span className="viewer-actions">
           {actions}
           <Button size="sm" icon="download" onClick={() => api.download(file)}>
-            {de.common.download}
+            {t.common.download}
           </Button>
         </span>
       </div>
       <div className={zoom === undefined ? "viewer" : "viewer zoomable"} ref={viewer} style={zoom === undefined ? undefined : ({ "--viewer-zoom": zoom } as React.CSSProperties)}>
         {error && <Notice tone="danger">{error}</Notice>}
-        {kind === "other" && <EmptyState variant="plain" size="sm" illustration="buecher" title={de.course.noPreview} />}
-        {kind === "old-word" && <EmptyState variant="plain" size="sm" illustration="buecher" title={de.course.noPreview}>{de.course.oldWord}</EmptyState>}
+        {kind === "other" && <EmptyState variant="plain" size="sm" illustration="buecher" title={t.course.noPreview} />}
+        {kind === "old-word" && <EmptyState variant="plain" size="sm" illustration="buecher" title={t.course.noPreview}>{t.course.oldWord}</EmptyState>}
         {data && kind === "word" && <WordPreview data={data} />}
         {data && kind === "pdf" && <PdfPages data={data} page={page ?? null} onPageChange={onPageChange} zoom={zoom} />}
         {data && kind === "image" && <ImagePreview data={data} mime={file.mime} name={file.name} zoom={zoom} />}
@@ -115,7 +115,7 @@ function WordPreview({ data }: { data: ArrayBuffer }) {
       stale = true;
     };
   }, [data]);
-  if (failed) return <Notice tone="danger">{de.course.wordFailed}</Notice>;
+  if (failed) return <Notice tone="danger">{t.course.wordFailed}</Notice>;
   if (html === null) return null;
   return (
     <article
@@ -167,7 +167,7 @@ function PdfPages({ data, page, onPageChange, zoom }: { data: ArrayBuffer; page:
     };
   }, [data]);
 
-  if (failed) return <Notice tone="danger">Das PDF lässt sich nicht anzeigen.</Notice>;
+  if (failed) return <Notice tone="danger">{t.common.pdfFailed}</Notice>;
   if (!pdf) return null;
   return (
     <>
@@ -277,7 +277,7 @@ function PdfPage(props: {
       className="pdf-page"
       data-page={number}
       style={zoom === undefined ? { width: PAGE_WIDTH, maxWidth: "calc(100% - 32px)", aspectRatio: "1 / 1.414" } : { width: `calc((100% - 32px) * ${zoom})`, aspectRatio: "1 / 1.414" }}
-      aria-label={de.course.page(number, pdf.numPages)}
+      aria-label={t.course.page(number, pdf.numPages)}
     >
       <canvas ref={canvas} />
       <div ref={textLayer} className="textLayer" />

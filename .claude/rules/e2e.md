@@ -4,15 +4,15 @@ paths:
   - "infra/test/**"
 ---
 
-# Ende-zu-Ende-Tests (`apps/e2e`, `infra/test`)
+# End-to-end tests (`apps/e2e`, `infra/test`)
 
-- Aufruf: `./infra/test/stack.sh e2e` (alles), `… e2e --project=chromium` (ein Browser), `… e2e --reporter=line tests/datei.spec.ts` (eine Datei), `… e2e --update-snapshots tests/visual.spec.ts` (gewollte Änderungen im Aussehen; die geänderten Bilder unter `tests/__screenshots__/` gehören in den Commit und ins PR).
-- **Bilder für README und Doku:** `./infra/test/stack.sh screenshots` (Spec in `apps/e2e/screenshots/`, Ausgabe in `apps/docs/static/img/oberflaeche/`). Nach sichtbaren Änderungen neu aufnehmen und mit committen. Nur erfundene Daten, nie ein echtes Konto.
-- **Browser:** Chromium, WebKit und ein iPhone-Profil. Was es nur auf einer Breite gibt, überspringst du mit `test.skip(isPhone(page), "Grund")`.
-- **Reihenfolge:** zuerst die Bildvergleiche (Aussehen, Hell und Dunkel) auf den frischen Daten, dann die Tests, die Daten ändern, zuletzt das Löschen eines Kontos.
-- **Hilfen** in `tests/helpers.ts`: `signIn(page, "mira" | "jonas" | "sina")`, `openSubject(page, "Regelungstechnik")`, `isPhone(page)`. Die Uhr steht auf dem 3. November 2026, 10:00 Uhr Berlin.
-- **Wartest du auf eine sichtbare Bestätigung** (z. B. die Meldung „Deadline angelegt“), **bevor du die Seite wechselst**; sonst wird die laufende Anfrage abgebrochen und der Test ist instabil.
-- **Daten teilen sich alle Browser.** Lege eigene Daten mit eindeutigem Namen an (`info.project.name`) oder stelle den Zustand wieder her. Ändere nie die Testdaten, auf die andere Tests bauen.
-- **Test-Daten** liegen in `infra/test/seed.mjs`; sie sind **erfunden**. Wer dort etwas ergänzt, bedenkt die Bildvergleiche.
-- **Rollen im Test-Stack:** Mira (Admin und Besitzerin), Jonas (Bearbeiter in Regelungstechnik und Mathe III), Sina (Leserin in Regelungstechnik).
-- Der Playwright-Bericht landet in `apps/e2e/playwright-report/`; `test-results/` und der Bericht sind nicht im Repository.
+- Run: `./infra/test/stack.sh e2e` (everything), `… e2e --project=chromium` (one browser), `… e2e --reporter=line tests/file.spec.ts` (one file), `… e2e --update-snapshots tests/visual.spec.ts` (intended changes in appearance; the changed images under `tests/__screenshots__/` belong in the commit and the PR).
+- **Pictures for the README and docs:** `./infra/test/stack.sh screenshots` (spec in `apps/e2e/screenshots/`, output in `apps/docs/static/img/oberflaeche/`). Retake them after visible changes and commit them too. Invented data only, never a real account.
+- **Browsers:** Chromium, WebKit and an iPhone profile. What only exists at one width you skip with `test.skip(isPhone(page), "reason")`.
+- **Order:** first the visual comparisons (appearance, light and dark) on the fresh data, then the tests that change data, last the deletion of an account.
+- **Helpers** in `tests/helpers.ts`: `signIn(page, "mira" | "jonas" | "sina")`, `openSubject(page, "Regelungstechnik")`, `isPhone(page)`. The clock stands at 3 November 2026, 10:00 Berlin time.
+- **Wait for a visible confirmation** (e.g. the message "Deadline angelegt") **before you change the page**; otherwise the running request is cancelled and the test is flaky.
+- **All browsers share the data.** Create your own data with a unique name (`info.project.name`) or restore the state. Never change the test data other tests rely on.
+- **Test data** lives in `infra/test/seed.mjs`; it is **invented**. If you add something there, mind the visual comparisons.
+- **Roles in the test stack:** Mira (admin and owner), Jonas (editor in Regelungstechnik and Mathe III), Sina (reader in Regelungstechnik).
+- The Playwright report goes to `apps/e2e/playwright-report/`; `test-results/` and the report are not in the repository.

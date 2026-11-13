@@ -3,9 +3,9 @@ import { cx } from "../cx";
 import { Icon } from "./Icon";
 
 export interface FileDropProps {
-  /** What to do here, e.g. "Dateien hochladen". */
+  /** What to do here, e.g. "Upload files". */
   label: ReactNode;
-  /** Which files and how large, e.g. "PDF, Word, Bilder · bis 95 MB". */
+  /** Which files and how large, e.g. "PDF, Word, images · up to 95 MB". */
   hint?: ReactNode;
   /** As for `<input type=file>`, e.g. ".pdf,.docx,image/*". */
   accept?: string;

@@ -57,7 +57,7 @@ export function TypeScale() {
         .map(([name, px]) => (
           <div key={name} className="doc-scale-row">
             <span className="doc-scale-name">--ui-display-{name} · {px}px</span>
-            <span style={{ fontFamily: "var(--ui-font-display)", fontWeight: 800, fontSize: px, lineHeight: 1.1, letterSpacing: "-0.01em" }}>Deine Fächer</span>
+            <span style={{ fontFamily: "var(--ui-font-display)", fontWeight: 800, fontSize: px, lineHeight: 1.1, letterSpacing: "-0.01em" }}>Your courses</span>
           </div>
         ))}
       {Object.entries(scale.text)
@@ -65,7 +65,7 @@ export function TypeScale() {
         .map(([name, px]) => (
           <div key={name} className="doc-scale-row">
             <span className="doc-scale-name">--ui-text-{name} · {px}px</span>
-            <span style={{ fontSize: px }}>Übungsblatt 4 · Technische Mechanik</span>
+            <span style={{ fontSize: px }}>Exercise sheet 4 · Engineering Mechanics</span>
           </div>
         ))}
     </div>
@@ -107,17 +107,17 @@ export function IconGallery() {
   return (
     <>
       <Toaster />
-      <SearchField label="Icons durchsuchen" className="doc-icons-search" value={query} onChange={(e) => setQuery(e.target.value)} onClear={() => setQuery("")} />
+      <SearchField label="Search icons" className="doc-icons-search" value={query} onChange={(e) => setQuery(e.target.value)} onClear={() => setQuery("")} />
       <div className="doc-icons">
         {shown.map((name) => (
           <button
             key={name}
             type="button"
             className="doc-icon"
-            title={`<Icon name="${name}" /> kopieren`}
+            title={`Copy <Icon name="${name}" />`}
             onClick={async () => {
               await navigator.clipboard.writeText(`<Icon name="${name}" />`);
-              toast(`<Icon name="${name}" /> kopiert`, "success");
+              toast(`<Icon name="${name}" /> copied`, "success");
             }}
           >
             <span style={{ display: "flex", gap: 8 }}>

@@ -1,0 +1,68 @@
+---
+title: IconButton
+sidebar_position: 2
+description: A square button with only an icon.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { DoDont, Do, Dont } from "@site/src/components/DoDont";
+import { IconButton } from "@study/ui";
+
+# IconButton
+
+`import { IconButton } from "@study/ui"`
+
+For toolbars, the ⋯ of a card, close crosses. The `label` is **required**: it is the name for screen readers and appears as a tooltip.
+
+```jsx live
+function Example() {
+  const [pinned, setPinned] = useState(false);
+  return (
+    <div style={{ display: "flex", gap: 8 }}>
+      <IconButton icon="more" label="More actions" />
+      <IconButton icon="star" label="Pin" pressed={pinned} onClick={() => setPinned(!pinned)} />
+      <IconButton icon="close" label="Close" variant="secondary" />
+    </div>
+  );
+}
+```
+
+## Variants and states
+
+<Preview>
+  <IconButton icon="edit" label="Edit" />
+  <IconButton icon="edit" label="Edit" variant="secondary" />
+  <IconButton icon="plus" label="New" variant="primary" />
+  <IconButton icon="claude" label="With Claude" variant="soft" tone="gelb" />
+  <IconButton icon="star" label="Pinned" pressed />
+  <IconButton icon="more" label="More actions" size="sm" />
+  <IconButton icon="trash" label="Delete" disabled />
+  <IconButton icon="bell" label="Notifications" badge={3} />
+</Preview>
+
+## When to use
+
+<DoDont>
+  <Do caption="Well-known signs where there is little room: ⋯, ×, pencil.">
+    <IconButton icon="more" label="More actions" />
+    <IconButton icon="close" label="Close" />
+  </Do>
+  <Dont caption="An important action only as an icon – better a Button with text.">
+    <IconButton icon="upload" label="Upload" variant="primary" />
+  </Dont>
+</DoDont>
+
+- Never delete with a single IconButton without asking – better in the menu behind ⋯ with a [ConfirmDialog](../feedback/dialog).
+- `pressed` for toggles like "pin"; the state is then read out.
+- `badge` shows a small number, such as unread notifications; at 0 it disappears. Screen readers hear it with the name ("Notifications (3)").
+
+## Props
+
+<PropsTable of="IconButton" />
+
+## Accessibility
+
+- `label` becomes `aria-label` and `title`; the icon itself is hidden.
+- `pressed` sets `aria-pressed`.
+- 36 px even in `sm`; `md` meets 44 px.

@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { cx } from "../cx";
 import { Button, IconButton } from "./Button";
 import { Notice } from "./Notice";
+import { uiText } from "../text";
 
 export interface DialogProps {
   title: ReactNode;
@@ -60,7 +61,7 @@ export function Dialog({ title, description, onClose, children, footer, size = "
             </p>
           )}
         </div>
-        {!hideClose && <IconButton icon="close" label="Schließen" size="sm" onClick={onClose} />}
+        {!hideClose && <IconButton icon="close" label={uiText().close} size="sm" onClick={onClose} />}
       </div>
       {children && <div className="ui-dialog-body">{children}</div>}
       {footer && <div className="ui-dialog-footer">{footer}</div>}
@@ -72,7 +73,7 @@ export interface ConfirmDialogProps {
   title: ReactNode;
   /** What happens, and whether it can be undone. */
   children: ReactNode;
-  /** The button's verb, e.g. "Löschen". */
+  /** The button's verb, e.g. "Delete". */
   confirm: string;
   cancel?: string;
   /** Red, for deleting and leaving. */
@@ -85,7 +86,7 @@ export interface ConfirmDialogProps {
 }
 
 /** Asks before something that cannot be undone easily. Cancel has the focus, so Enter does no harm. */
-export function ConfirmDialog({ title, children, confirm, cancel = "Abbrechen", danger, onConfirm, onClose, describeError }: ConfirmDialogProps) {
+export function ConfirmDialog({ title, children, confirm, cancel = uiText().cancel, danger, onConfirm, onClose, describeError }: ConfirmDialogProps) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   return (

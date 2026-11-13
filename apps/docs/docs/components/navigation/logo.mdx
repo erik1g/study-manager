@@ -1,0 +1,35 @@
+---
+title: Logo
+sidebar_position: 6
+description: The sign of Study Manager.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { DoDont, Do, Dont } from "@site/src/components/DoDont";
+import { Logo } from "@study/ui";
+
+# Logo
+
+`import { Logo } from "@study/ui"`
+
+```jsx live
+<div style={{ display: "flex", gap: 24, alignItems: "center" }}>
+  <Logo />
+  <Logo withName={false} size={32} />
+</div>
+```
+
+<Preview>
+  <Logo />
+</Preview>
+
+An open book on a blue tile. At the top of the sidebar, on the sign-in and as the favicon.
+
+## Props
+
+<PropsTable of="Logo" />
+
+## Accessibility
+
+- Without a visible name, "Study Manager" stays there for screen readers.

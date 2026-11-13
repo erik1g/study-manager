@@ -1,0 +1,60 @@
+---
+title: "Operations"
+sidebar_position: 5
+description: "Manage accounts, update, read logs and find errors."
+---
+
+# Operations
+
+## Accounts and invitations
+
+Accounts exist **by invitation only**; there is no open registration. As an admin you open the **admin area** (`/admin`, in the account menu at the bottom left):
+
+- **Invite users**: enter an email, optionally tick "Admin". If mail is set up, the invitation goes out by mail; otherwise the app shows an **invitation link** that you send to the person. It works once and expires after a day.
+- **Reset password**: creates a link for resetting.
+- **Lock and unlock** and a **storage limit** per person (in GB, empty = none).
+- **Activity**: who changed what and when. **Server**: storage, database, files, backups and calendar subscriptions with errors.
+
+The first admin is created with the link from the server log (see [Install](/admin/installation)).
+
+## Updating
+
+The package comes with a script that makes an update safe:
+
+```sh
+./update.sh --status        # which version is running
+./update.sh 0.2.0           # go to version 0.2.0 (or back to an older one)
+```
+
+In order, stopping at the first problem, it:
+
+1. **Backs up** database and documents (encrypted with `BACKUP_PASSPHRASE`). If that fails, everything stays as it is.
+2. **Pulls the images before it stops anything.** If the version does not exist, nothing changes.
+3. Sets the version in `STUDY_VERSION` (`.env`) and **restarts**.
+4. **Waits until the server answers.** If it does not, the script **automatically goes back to the previous version** and shows the logs.
+
+Notes:
+
+- The server runs **database migrations on start**. Going back to an older version does **not** undo them. Read the [changelog](https://github.com/erik1g/study-manager/releases) before updating: a note **BREAKING CHANGE** means that you have to do something in your `.env`. If a release requires you to go back, restore the backup (see [Backups](/admin/backups)).
+- Before 1.0, minor versions (`0.1` → `0.2`) can also bring changes for operators. Do not update blindly; read the notes.
+- `./update.sh 0.2.0 --no-backup` skips the backup. Only use it if you made one yourself.
+- The package itself (the compose file and the script) rarely changes between versions. If the release notes say it changes, download the package of the new version and copy your `.env` into it.
+
+## Logs and health
+
+```sh
+docker compose ps
+docker compose logs -f server      # or auth, db, web
+docker compose exec server node -e "fetch('http://127.0.0.1:3000/api/health').then(r=>r.text()).then(console.log)"
+```
+
+| Problem | Where to look |
+|---|---|
+| Sign-in does not work | `docker compose logs auth`; check `SITE_URL`/`API_EXTERNAL_URL` |
+| Page does not load | `docker compose logs web`; check proxy and port |
+| Search does not find new documents | On the first start the server downloads a small search model (`/data/models`); it needs internet for that. Be patient a moment, indexing runs every 10 minutes |
+| Calendar subscription shows errors | Admin area → *Calendar subscriptions with errors*; the feed link must be publicly reachable |
+
+## Housekeeping
+
+Background jobs run by themselves: calendar subscriptions every hour, the search every 10 minutes, the backup at night at 3:30 and emptying the trash (after 30 days) at 3:45, each in your `TZ`.

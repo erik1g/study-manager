@@ -1,4 +1,5 @@
 import { cx } from "../cx";
+import { uiText } from "../text";
 
 export interface SpinnerProps {
   /** Width and height in px. */
@@ -9,7 +10,7 @@ export interface SpinnerProps {
 }
 
 /** Something is on its way. Only for waits that take longer than a moment; for whole pages use `PageSkeleton`. */
-export function Spinner({ size = 20, label = "Lädt", className }: SpinnerProps) {
+export function Spinner({ size = 20, label = uiText().loading, className }: SpinnerProps) {
   return (
     <span className={cx("ui-spinner", className)} style={{ width: size, height: size }} {...(label ? { role: "status", "aria-label": label } : { "aria-hidden": true })} />
   );

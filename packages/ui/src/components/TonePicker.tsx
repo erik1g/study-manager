@@ -1,14 +1,15 @@
 import { useId } from "react";
 import { cx } from "../cx";
-import { TONE_NAMES, TONES, type Tone } from "../tokens";
+import { uiText } from "../text";
+import { TONES, type Tone } from "../tokens";
 
 export interface TonePickerProps {
-  /** What the colour is for, e.g. "Farbe des Fachs". */
+  /** What the colour is for, e.g. "Course colour". */
   label: string;
   /** The chosen tone; null for none. */
   value: Tone | null;
   onChange: (tone: Tone | null) => void;
-  /** Offers "keine Farbe" as a last choice. */
+  /** Offers "no colour" as a last choice. */
   allowNone?: boolean;
   className?: string;
 }
@@ -20,10 +21,10 @@ export function TonePicker({ label, value, onChange, allowNone, className }: Ton
   return (
     <div role="radiogroup" aria-label={label} className={cx("ui-tonepicker", className)}>
       {choices.map((tone) => (
-        <label key={tone ?? "none"} className="ui-tone-choice" title={tone ? TONE_NAMES[tone] : "Keine Farbe"}>
+        <label key={tone ?? "none"} className="ui-tone-choice" title={tone ? uiText().tones[tone] : uiText().noColour}>
           <input type="radio" name={name} checked={value === tone} onChange={() => onChange(tone)} />
           <span className={cx("ui-tone-swatch", tone ? `ui-tone-${tone}` : "ui-tone-none")} aria-hidden="true" />
-          <span className="ui-visually-hidden">{tone ? TONE_NAMES[tone] : "Keine Farbe"}</span>
+          <span className="ui-visually-hidden">{tone ? uiText().tones[tone] : uiText().noColour}</span>
         </label>
       ))}
     </div>

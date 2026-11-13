@@ -1,0 +1,40 @@
+---
+title: Toast
+sidebar_position: 3
+description: A short message that goes away by itself.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { DoDont, Do, Dont } from "@site/src/components/DoDont";
+import { toast, Toaster, Button } from "@study/ui";
+
+# Toast
+
+`import { toast, Toaster } from "@study/ui"`
+
+```jsx live
+<div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+  <Button onClick={() => toast("Saved")}>Neutral</Button>
+  <Button onClick={() => toast("Link copied", "success")}>Success</Button>
+  <Button onClick={() => toast("No connection", "danger")}>Error</Button>
+  <Toaster />
+</div>
+```
+
+`<Toaster />` is in the app once; `toast(text, tone?)` works from anywhere.
+
+## When to use
+
+- Confirmations that people do not have to read: "Saved", "Copied", "Moved to the trash".
+- Nothing people have to react to – use a [Notice](./notice) or a dialog for that.
+- At most one sentence.
+
+## Props
+
+<PropsTable of="Toaster" />
+
+## Accessibility
+
+- The toaster is an `aria-live="polite"` region: screen readers read the message without interrupting.
+- It stays for 2.8 seconds – long enough to read, not so long that it gets in the way.

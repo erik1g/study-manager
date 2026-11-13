@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { atLeast } from "@study/shared";
 import { Button, EmptyState, Notice, SegmentedControl, Select, Switch, TextArea } from "@study/ui";
-import { de, errorMessage, formatDateTime } from "../i18n/de";
+import { t, errorMessage, formatDateTime } from "../i18n";
 import { usePinchZoom } from "../lib/pinch";
 import { api, NotesConflictError, type Course, type CourseFile, type Notes } from "../lib/api";
 import { Avatar } from "./Avatar";
@@ -183,32 +183,32 @@ export function NotesPane({ course, followScript, followPage, onOpenSection, zoo
     <section className="notes-pane" ref={root} style={zoom === undefined ? undefined : ({ "--notes-zoom": zoom } as React.CSSProperties)}>
       <div className="notes-bar">
         <SegmentedControl
-          label={de.notes.which}
+          label={t.notes.which}
           size="sm"
           value={which}
           onChange={setWhich}
           options={[
-            { value: "shared", label: de.notes.shared, icon: "people" },
-            { value: "private", label: de.notes.private, icon: "lock" },
+            { value: "shared", label: t.notes.shared, icon: "people" },
+            { value: "private", label: t.notes.private, icon: "lock" },
           ]}
         />
         {(which === "private" || canEdit) && (
           <SegmentedControl
-            label={de.notes.mode}
+            label={t.notes.mode}
             size="sm"
             value={editing ? "write" : "read"}
             onChange={(value) => setWriting(value === "write")}
             options={[
-              { value: "read", label: de.notes.read, icon: "eye" },
-              { value: "write", label: de.notes.write, icon: "edit" },
+              { value: "read", label: t.notes.read, icon: "eye" },
+              { value: "write", label: t.notes.write, icon: "edit" },
             ]}
           />
         )}
-        <Switch label={de.notes.follow} checked={follow} onChange={(e) => setFollow(e.target.checked)} className="notes-follow" />
+        <Switch label={t.notes.follow} checked={follow} onChange={(e) => setFollow(e.target.checked)} className="notes-follow" />
         <span className="spacer" />
         <span className="quiet small notes-state">
           {state === "saved" && which === "shared" && notes?.updatedBy && <Avatar userId={notes.updatedById} name={notes.updatedBy} size={16} />}
-          {state === "saving" ? de.notes.saving : state === "dirty" ? "…" : state === "saved" && which === "shared" && notes?.updatedBy ? de.notes.lastBy(notes.updatedBy, formatDateTime(notes.updatedAt!)) : ""}
+          {state === "saving" ? t.notes.saving : state === "dirty" ? "…" : state === "saved" && which === "shared" && notes?.updatedBy ? t.notes.lastBy(notes.updatedBy, formatDateTime(notes.updatedAt!)) : ""}
         </span>
         {tools}
       </div>
@@ -227,7 +227,7 @@ export function NotesPane({ course, followScript, followPage, onOpenSection, zoo
                 setState("saved");
               }}
             >
-              {de.notes.takeTheirs}
+              {t.notes.takeTheirs}
             </Button>
             <Button
               size="sm"
@@ -238,28 +238,28 @@ export function NotesPane({ course, followScript, followPage, onOpenSection, zoo
                 await save(text, base);
               }}
             >
-              {de.notes.keepMine}
+              {t.notes.keepMine}
             </Button>
             </div>
           }
         >
-          {de.notes.conflict(conflict.updatedBy ?? "?")}
+          {t.notes.conflict(conflict.updatedBy ?? "?")}
         </Notice>
       )}
       <div className="notes-body" ref={pane}>
         {editing ? (
           <TextArea
-            label={which === "shared" ? de.notes.shared : de.notes.private}
+            label={which === "shared" ? t.notes.shared : t.notes.private}
             hideLabel
             className="notes-editor"
             value={which === "shared" ? text : privateText}
             onChange={(e) => edit(e.target.value)}
             spellCheck
-            placeholder={which === "private" ? de.notes.privatePlaceholder : undefined}
+            placeholder={which === "private" ? t.notes.privatePlaceholder : undefined}
           />
         ) : parts.length === 0 ? (
-          <EmptyState variant="plain" size="sm" illustration="pflanze" title={which === "private" ? de.notes.private : de.notes.empty}>
-            {which === "private" ? de.notes.privateEmpty : null}
+          <EmptyState variant="plain" size="sm" illustration="pflanze" title={which === "private" ? t.notes.private : t.notes.empty}>
+            {which === "private" ? t.notes.privateEmpty : null}
           </EmptyState>
         ) : (
           parts.map((section) => (
@@ -276,7 +276,7 @@ export function NotesPane({ course, followScript, followPage, onOpenSection, zoo
           ))
         )}
       </div>
-      {which === "shared" && !editing && <p className="quiet small notes-hint">{de.notes.claudeHint}</p>}
+      {which === "shared" && !editing && <p className="quiet small notes-hint">{t.notes.claudeHint}</p>}
     </section>
   );
 }
@@ -316,7 +316,7 @@ export function NotesTab({ course, onLecture }: { course: Course; onLecture?: (f
                 actions={
                   <>
                     {scripts.length > 1 && (
-                      <Select label={de.notes.script} hideLabel size="sm" value={script.id} onChange={(e) => setScript(scripts.find((s) => s.id === e.target.value) ?? null)}>
+                      <Select label={t.notes.script} hideLabel size="sm" value={script.id} onChange={(e) => setScript(scripts.find((s) => s.id === e.target.value) ?? null)}>
                         {scripts.map((s) => (
                           <option key={s.id} value={s.id}>
                             {s.name}
@@ -326,7 +326,7 @@ export function NotesTab({ course, onLecture }: { course: Course; onLecture?: (f
                     )}
                     {onLecture && (
                       <Button size="sm" icon="expand" onClick={() => onLecture(script)}>
-                        {de.lecture.enter}
+                        {t.lecture.enter}
                       </Button>
                     )}
                   </>
@@ -335,8 +335,8 @@ export function NotesTab({ course, onLecture }: { course: Course; onLecture?: (f
             )}
           </>
         ) : (
-          <EmptyState variant="plain" size="sm" illustration="buecher" title={de.notes.noScriptsTitle}>
-            {de.notes.noScripts}
+          <EmptyState variant="plain" size="sm" illustration="buecher" title={t.notes.noScriptsTitle}>
+            {t.notes.noScripts}
           </EmptyState>
         )}
       </section>

@@ -1,0 +1,75 @@
+---
+title: "Configuration"
+sidebar_position: 3
+description: "All settings of the .env at a glance."
+---
+
+# Configuration
+
+All settings are in the file `.env` next to the `docker-compose.yml`. A commented template is in the repository as [`.env.example`](https://github.com/erik1g/study-manager/blob/main/.env.example). After a change: `docker compose up -d` (the affected containers are recreated).
+
+## Addresses
+
+| Variable | Meaning |
+|---|---|
+| `DOMAIN` | Public address without `https://`, e.g. `study.example.org` |
+| `SITE_URL` | With scheme, e.g. `https://study.example.org`; no `/` at the end |
+| `API_EXTERNAL_URL` | Where browsers and Claude reach the sign-in: `SITE_URL` + `/auth/v1`. Also the issuer (`iss`) of the tokens |
+| `ADMIN_EMAIL` | Address of the first admin |
+
+## Secrets
+
+Created by the script `setup.mjs`. **Never** share them between installations or put them in a repository.
+
+| Variable | Meaning |
+|---|---|
+| `POSTGRES_PASSWORD`, `POSTGRES_DB`, `POSTGRES_PORT` | Database |
+| `JWT_SECRET`, `JWT_KEYS`, `JWT_EXPIRY` | Signature of the sign-in tokens (`JWT_EXPIRY` in seconds) |
+| `ANON_KEY`, `SERVICE_ROLE_KEY` | Access keys for the sign-in, derived from `JWT_SECRET` |
+| `APP_SECRET` | Encrypts what the app stores for users (e.g. API keys) |
+| `BACKUP_PASSPHRASE` | Encrypts the nightly backups. Without it there are no backups; without a copy of it they cannot be read |
+
+## Behaviour
+
+| Variable | Default | Meaning |
+|---|---|---|
+| `TZ` | `Europe/Berlin` | Time zone for tasks, calendar and the backup time |
+| `LOG_LEVEL` | `warn` | `debug`, `info`, `warn` or `error` |
+| `RATE_LIMIT_SCALE` | – | Loosens the request limits (only needed for tests) |
+
+## Reachability
+
+| Variable | Default | Meaning |
+|---|---|---|
+| `BIND_ADDRESS` | `127.0.0.1` | The address on which the host opens the port. If your proxy runs on another machine, set `0.0.0.0` and protect the port with a firewall |
+| `HTTP_PORT` | `8080` | The port of the `web` container on the host |
+| `TRUSTED_PROXIES` | `private_ranges` | Addresses or ranges of your proxy, which the app believes about who the visitor is (`X-Forwarded-For`). The default trusts proxies from private networks |
+
+## Storage
+
+Without a setting, Docker keeps documents/backups (`study-data`) and the database (`study-db`) in **named volumes**. If you want to use folders on the host:
+
+| Variable | Meaning |
+|---|---|
+| `DATA_DIR` | Folder for uploads, backups and the search model. Must belong to the user with the ID **1000**: `chown -R 1000:1000 /path` |
+| `DB_DIR` | Folder for the database (PostgreSQL sets the permissions itself) |
+
+## Mail (optional)
+
+Without mail, the app shows the admin invitation and recovery links to pass on. With mail, it sends them itself:
+
+| Variable | Meaning |
+|---|---|
+| `SMTP_HOST`, `SMTP_PORT` | Your mail server (default port 587) |
+| `SMTP_USER`, `SMTP_PASS` | Credentials |
+
+The mails go out in the recipient's language (English or German). The texts come from the app; their **subjects** are set in `docker-compose.yml` (`GOTRUE_MAILER_SUBJECTS_*`) and pick the language themselves. Leave these lines as they are; if you changed them, keep the `{{ if … }}` conditions.
+
+The sender is `noreply@<DOMAIN>`; your mail provider must allow the domain for that (set up SPF/DKIM).
+
+## Images
+
+| Variable | Default | Meaning |
+|---|---|---|
+| `STUDY_VERSION` | `latest` | Which version runs, e.g. `0.2.1`. **Recommended: a fixed version**, updated deliberately |
+| `STUDY_IMAGE_PREFIX` | `docker.io/erik1g` | Which registry the images come from (for your own builds or mirrors) |

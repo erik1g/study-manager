@@ -2,7 +2,7 @@
 // form at the right; on phones the picture shrinks to a band on top.
 import type { ReactNode } from "react";
 import { Card, Illustration, Logo } from "@study/ui";
-import { de } from "../i18n/de";
+import { t } from "../i18n";
 
 export function AuthLayout({ children, inApp = false }: { children: ReactNode; inApp?: boolean }) {
   if (inApp) {
@@ -23,8 +23,8 @@ export function AuthLayout({ children, inApp = false }: { children: ReactNode; i
           <Illustration kind="tasse" />
         </div>
         <div>
-          <p className="auth-tagline ui-display">{de.signIn.tagline}</p>
-          <p className="auth-subline">{de.signIn.subline}</p>
+          <p className="auth-tagline ui-display">{t.signIn.tagline}</p>
+          <p className="auth-subline">{t.signIn.subline}</p>
         </div>
       </Card>
       <main className="auth-form">

@@ -36,7 +36,7 @@ import { FlashcardsTab } from "../components/FlashcardsTab";
 import { LectureMode } from "../components/LectureMode";
 import { LecturesTab } from "../components/LecturesTab";
 import { NotesTab } from "../components/NotesTab";
-import { de, errorMessage, formatDateTime, formatShortDate, formatSize, formatTime, formatWeekTime, semesterName } from "../i18n/de";
+import { t, errorMessage, formatDateTime, formatShortDate, formatSize, formatTime, formatWeekTime, semesterName } from "../i18n";
 import { api, type ActivityEntry, type Course, type CourseFile, type Deadline, type Member, type PendingInvitation, type PersonMatch, type SearchHit, type Session, type Task } from "../lib/api";
 import { emitChanged, useChanged } from "../lib/events";
 import { useGo } from "../lib/motion";
@@ -49,14 +49,14 @@ const MORE_TABS = ["mitglieder", "aktivitaet", "papierkorb"] as const;
 const TABS = [...MAIN_TABS, ...MORE_TABS];
 type Tab = (typeof TABS)[number];
 const TAB_LABEL: Record<Tab, string> = {
-  ueberblick: de.course.tabs.overview,
-  dokumente: de.course.tabs.documents,
-  notizen: de.course.tabs.notes,
-  vorlesungen: de.course.tabs.lectures,
-  lernkarten: de.course.tabs.cards,
-  mitglieder: de.course.tabs.members,
-  aktivitaet: de.course.tabs.activity,
-  papierkorb: de.course.tabs.trash,
+  ueberblick: t.course.tabs.overview,
+  dokumente: t.course.tabs.documents,
+  notizen: t.course.tabs.notes,
+  vorlesungen: t.course.tabs.lectures,
+  lernkarten: t.course.tabs.cards,
+  mitglieder: t.course.tabs.members,
+  aktivitaet: t.course.tabs.activity,
+  papierkorb: t.course.tabs.trash,
 };
 
 export function CourseView() {
@@ -96,7 +96,7 @@ export function CourseView() {
   if (error)
     return (
       <div className="page">
-        <EmptyState illustration="fehler" title={error} actions={<Button icon="arrow-left" onClick={() => history.back()}>{de.common.back}</Button>} />
+        <EmptyState illustration="fehler" title={error} actions={<Button icon="arrow-left" onClick={() => history.back()}>{t.common.back}</Button>} />
       </div>
     );
   if (!course) return <PageSkeleton />;
@@ -112,7 +112,7 @@ export function CourseView() {
     <div className={`page course-page ${wide ? "course-wide" : ""}`}>
       <Card as="header" tone={tone} glow grain className={tab === "ueberblick" ? "course-head" : "course-head compact"} style={{ viewTransitionName: `fach-${course.id}` }}>
         <div className="course-head-text">
-          <Breadcrumb linkAs={Link} items={[{ label: de.nav.subjects, href: "/faecher" }, { label: semesterName(course.semester) }]} />
+          <Breadcrumb linkAs={Link} items={[{ label: t.nav.subjects, href: "/faecher" }, { label: semesterName(course.semester) }]} />
           <div className="course-head-title">
             <span className="course-icon big" aria-hidden="true">
               <Icon name={courseIcon(course.title)} size={32} />
@@ -120,16 +120,16 @@ export function CourseView() {
             <h1 className="ui-display">{course.title}</h1>
           </div>
           <p className="course-head-meta">
-            {[course.number, de.roles[course.role], course.credits != null ? de.programs.credits(course.credits) : null].filter(Boolean).join(" · ")}
+            {[course.number, t.roles[course.role], course.credits != null ? t.programs.credits(course.credits) : null].filter(Boolean).join(" · ")}
           </p>
           {members.length > 0 && (
             <div className="course-head-people">
-              <AvatarGroup label={de.members.count(members.length)}>
+              <AvatarGroup label={t.members.count(members.length)}>
                 {members.map((m) => (
                   <Avatar key={m.userId} userId={m.userId} name={m.displayName} size={34} decorative />
                 ))}
               </AvatarGroup>
-              <span>{members.length === 1 ? de.members.count(1) : members.map((m) => m.displayName.split(" ")[0]).join(", ")}</span>
+              <span>{members.length === 1 ? t.members.count(1) : members.map((m) => m.displayName.split(" ")[0]).join(", ")}</span>
             </div>
           )}
         </div>
@@ -138,14 +138,14 @@ export function CourseView() {
 
       <div className="course-tabs-row">
         <Tabs
-          label={de.course.areas}
+          label={t.course.areas}
           items={tabs}
           active={tab}
           onSelect={(value) => show(value as Tab)}
           trailing={
             <IconButton
               icon="more"
-              label={de.course.more}
+              label={t.course.more}
               aria-haspopup="menu"
               aria-expanded={menu !== null}
               onClick={(event) => setMenu(menuPositionFrom(event.currentTarget))}
@@ -153,7 +153,7 @@ export function CourseView() {
           }
         />
         {menu && (
-          <ContextMenu at={menu} label={de.course.more} onClose={() => setMenu(null)}>
+          <ContextMenu at={menu} label={t.course.more} onClose={() => setMenu(null)}>
             {MORE_TABS.map((value) => (
               <MenuItem
                 key={value}
@@ -171,7 +171,7 @@ export function CourseView() {
       </div>
 
       <div className={wide ? "course-work" : "course-body"} key={tab}>
-        {!canEdit && ["dokumente", "ueberblick", "papierkorb"].includes(tab) && <Notice>{de.course.readOnly}</Notice>}
+        {!canEdit && ["dokumente", "ueberblick", "papierkorb"].includes(tab) && <Notice>{t.course.readOnly}</Notice>}
         {tab === "ueberblick" && <OverviewTab course={course} canEdit={canEdit} />}
         {tab === "dokumente" && <DocumentsTab course={course} onLecture={enterLecture} />}
         {tab === "notizen" && <NotesTab course={course} onLecture={(file) => enterLecture(file, true)} />}
@@ -196,9 +196,9 @@ function OverviewTab({ course, canEdit }: { course: Course; canEdit: boolean }) 
   const [allSessions, setAllSessions] = useState(false);
 
   const load = useCallback(async () => {
-    const [d, t, s, a] = await Promise.all([api.deadlines({ courseId: course.id }), api.tasks({ courseId: course.id, open: true }), api.sessions(course.id), api.courseActivity(course.id)]);
+    const [d, open, s, a] = await Promise.all([api.deadlines({ courseId: course.id }), api.tasks({ courseId: course.id, open: true }), api.sessions(course.id), api.courseActivity(course.id)]);
     setAllDeadlines(d);
-    setTasks(t);
+    setTasks(open);
     setSessions(s);
     setRecent(a.slice(0, 5));
   }, [course.id]);
@@ -224,7 +224,7 @@ function OverviewTab({ course, canEdit }: { course: Course; canEdit: boolean }) 
       <div className="ui-stack course-col">
         <Card as="section" className="progress-card" aria-labelledby="verlauf">
           {held.length > 0 && (
-            <ProgressRing value={done / held.length} label={de.course.progressText(done, held.length)} tone={tone} size={104} thickness={12} animateKey={`subject-${course.id}`}>
+            <ProgressRing value={done / held.length} label={t.course.progressText(done, held.length)} tone={tone} size={104} thickness={12} animateKey={`subject-${course.id}`}>
               <span className="progress-card-number">
                 {done}
                 <small>/{held.length}</small>
@@ -232,29 +232,29 @@ function OverviewTab({ course, canEdit }: { course: Course; canEdit: boolean }) 
             </ProgressRing>
           )}
           <div className="progress-card-text">
-            <SectionHeader id="verlauf" title={de.course.progress} description={held.length > 0 ? de.course.progressText(done, held.length) : de.course.sessionsEmpty} />
+            <SectionHeader id="verlauf" title={t.course.progress} description={held.length > 0 ? t.course.progressText(done, held.length) : t.course.sessionsEmpty} />
             {next && (
               <p>
-                <strong>{de.course.nextSession}:</strong> {formatWeekTime(next.start)}
+                <strong>{t.course.nextSession}:</strong> {formatWeekTime(next.start)}
                 {next.location && ` · ${next.location}`}
               </p>
             )}
             {held.length > 0 && (
               <Button variant="ghost" size="sm" icon={allSessions ? "chevron-down" : "chevron-right"} onClick={() => setAllSessions(!allSessions)}>
-                {allSessions ? de.course.hideSessions : de.course.showSessions}
+                {allSessions ? t.course.hideSessions : t.course.showSessions}
               </Button>
             )}
           </div>
         </Card>
         {allSessions && (
           <Card as="section" aria-labelledby="sitzungen">
-            <SectionHeader id="sitzungen" title={de.course.sessions} />
+            <SectionHeader id="sitzungen" title={t.course.sessions} />
             <List ordered className="card-list">
               {sessions.map((s) => (
                 <ListRow
                   key={s.id}
                   rowClassName={s.cancelled || new Date(s.end) < now ? "row-past" : undefined}
-                  leading={<span className="mono quiet session-number">{de.course.session(s.number, s.total)}</span>}
+                  leading={<span className="mono quiet session-number">{t.course.session(s.number, s.total)}</span>}
                   title={s.title}
                   meta={s.location ?? undefined}
                   trailing={`${formatShortDate(s.start)} ${formatTime(s.start)}`}
@@ -266,16 +266,16 @@ function OverviewTab({ course, canEdit }: { course: Course; canEdit: boolean }) 
         <Card as="section" aria-labelledby="termine">
           <SectionHeader
             id="termine"
-            title={de.course.datesAndTasks}
+            title={t.course.datesAndTasks}
             action={
               <>
                 {canEdit && (
                   <Button size="sm" icon="flag" onClick={() => setAdding(adding === "deadline" ? null : "deadline")}>
-                    {de.course.addDeadline}
+                    {t.course.addDeadline}
                   </Button>
                 )}
                 <Button size="sm" icon="plus" onClick={() => setAdding(adding === "task" ? null : "task")}>
-                  {de.course.addTask}
+                  {t.course.addTask}
                 </Button>
               </>
             }
@@ -284,7 +284,7 @@ function OverviewTab({ course, canEdit }: { course: Course; canEdit: boolean }) 
             <div className="row-editing">
               <DeadlineForm
                 courseId={course.id}
-                submitLabel={de.common.add}
+                submitLabel={t.common.add}
                 onCancel={() => setAdding(null)}
                 onSubmit={async (draft) => {
                   await api.createDeadline({ ...draft, courseId: course.id });
@@ -299,7 +299,7 @@ function OverviewTab({ course, canEdit }: { course: Course; canEdit: boolean }) 
               <TaskForm
                 courseId={course.id}
                 deadlines={deadlines}
-                submitLabel={de.common.add}
+                submitLabel={t.common.add}
                 onCancel={() => setAdding(null)}
                 onSubmit={async (draft) => {
                   await api.createTask({ ...draft, courseId: course.id });
@@ -310,22 +310,22 @@ function OverviewTab({ course, canEdit }: { course: Course; canEdit: boolean }) 
             </div>
           )}
           {deadlines.length + tasks.length === 0 ? (
-            <p className="card-quiet quiet">{de.course.nothingDue}</p>
+            <p className="card-quiet quiet">{t.course.nothingDue}</p>
           ) : (
             <List className="card-list">
               {deadlines.map((d) => (
                 <DeadlineRow key={d.id} deadline={d} onChanged={changed} showCourse={false} />
               ))}
-              {tasks.map((t) => (
-                <TaskRow key={t.id} task={t} onChanged={changed} showCourse={false} />
+              {tasks.map((task) => (
+                <TaskRow key={task.id} task={task} onChanged={changed} showCourse={false} />
               ))}
             </List>
           )}
-          {tasks.length > 0 && <p className="quiet small">{de.tasks.privateHint}</p>}
+          {tasks.length > 0 && <p className="quiet small">{t.tasks.privateHint}</p>}
         </Card>
         {settled.length > 0 && (
           <Card as="section" variant="sunken" aria-labelledby="erledigt">
-            <SectionHeader id="erledigt" title={de.deadlines.settled} description={de.deadlines.settledHint} action={<Chip>{settled.length}</Chip>} />
+            <SectionHeader id="erledigt" title={t.deadlines.settled} description={t.deadlines.settledHint} action={<Chip>{settled.length}</Chip>} />
             <List variant="raised" className="card-list">
               {settled.map((d) => (
                 <DeadlineRow key={d.id} deadline={d} onChanged={changed} showCourse={false} />
@@ -335,8 +335,8 @@ function OverviewTab({ course, canEdit }: { course: Course; canEdit: boolean }) 
         )}
       </div>
       <Card as="section" aria-labelledby="neu" className="course-col">
-        <SectionHeader id="neu" title={de.course.recent} />
-        {recent.length === 0 ? <p className="card-quiet quiet">{de.activity.empty}</p> : <ActivityList entries={recent} compact />}
+        <SectionHeader id="neu" title={t.course.recent} />
+        {recent.length === 0 ? <p className="card-quiet quiet">{t.activity.empty}</p> : <ActivityList entries={recent} compact />}
       </Card>
     </div>
   );
@@ -399,19 +399,19 @@ function DocumentsTab({ course, onLecture }: { course: Course; onLecture: (file:
 
   return (
     <div className="work-split">
-      <aside className="file-tree" aria-label={de.course.tabs.documents}>
-        <SearchField label={de.search.placeholder.replace(" …", "")} value={query} onChange={(e) => setQuery(e.target.value)} onClear={() => setQuery("")} />
+      <aside className="file-tree" aria-label={t.course.tabs.documents}>
+        <SearchField label={t.search.placeholder.replace(" …", "")} value={query} onChange={(e) => setQuery(e.target.value)} onClear={() => setQuery("")} />
         {error && <Notice tone="danger">{error}</Notice>}
-        {uploading > 0 && <Notice>{de.course.uploading(uploading)}</Notice>}
+        {uploading > 0 && <Notice>{t.course.uploading(uploading)}</Notice>}
         {hits && (
           <List>
-            {hits.length === 0 && <ListRow title={de.search.none} />}
+            {hits.length === 0 && <ListRow title={t.search.none} />}
             {hits.map((hit, i) => (
               <ListRow
                 key={i}
                 title={
                   <>
-                    {hit.name} <span className="quiet">{de.search.page(hit.page)}</span>
+                    {hit.name} <span className="quiet">{t.search.page(hit.page)}</span>
                   </>
                 }
                 meta={`${hit.text.slice(0, 160)} …`}
@@ -433,7 +433,7 @@ function DocumentsTab({ course, onLecture }: { course: Course; onLecture: (file:
               <section
                 key={folder}
                 className={`folder ${dropTarget === folder ? "folder-drop" : ""}`}
-                aria-label={de.folders[folder]}
+                aria-label={t.folders[folder]}
                 onDragOver={(e) => {
                   if (!canEdit) return;
                   e.preventDefault();
@@ -455,13 +455,13 @@ function DocumentsTab({ course, onLecture }: { course: Course; onLecture: (file:
                     onClick={() => setOpen({ ...open, [folder]: !open[folder] })}
                     className="folder-switch"
                   >
-                    {de.folders[folder]} <span className="quiet">{inFolder.length}</span>
+                    {t.folders[folder]} <span className="quiet">{inFolder.length}</span>
                   </Button>
-                  {canEdit && <IconButton icon="upload" size="sm" label={de.course.uploadTo(de.folders[folder])} onClick={async () => upload(folder, await pickFiles())} />}
+                  {canEdit && <IconButton icon="upload" size="sm" label={t.course.uploadTo(t.folders[folder])} onClick={async () => upload(folder, await pickFiles())} />}
                 </div>
                 {open[folder] &&
                   (inFolder.length === 0 ? (
-                    <p className="folder-empty quiet small">{canEdit ? de.course.dropHere : de.course.emptyFolder}</p>
+                    <p className="folder-empty quiet small">{canEdit ? t.course.dropHere : t.course.emptyFolder}</p>
                   ) : (
                     <List>
                       {inFolder.map((file) => (
@@ -482,7 +482,7 @@ function DocumentsTab({ course, onLecture }: { course: Course; onLecture: (file:
                           meta={`${formatShortDate(file.createdAt)} · ${formatSize(file.size)}`}
                           actions={
                             canEdit ? (
-                              <IconButton icon="more" size="sm" label={de.course.fileActions(file.name)} onClick={(e) => openMenu(file, menuPositionFrom(e.currentTarget))} />
+                              <IconButton icon="more" size="sm" label={t.course.fileActions(file.name)} onClick={(e) => openMenu(file, menuPositionFrom(e.currentTarget))} />
                             ) : undefined
                           }
                         />
@@ -501,21 +501,21 @@ function DocumentsTab({ course, onLecture }: { course: Course; onLecture: (file:
             page={page}
             actions={
               <Button size="sm" icon="expand" onClick={() => onLecture(selected)}>
-                {de.lecture.enter}
+                {t.lecture.enter}
               </Button>
             }
           />
         ) : files.length === 0 ? (
           <EmptyState
             illustration="buecher"
-            title={de.course.noFiles}
-            actions={canEdit && <Button variant="primary" icon="upload" onClick={async () => upload("skripte", await pickFiles())}>{de.course.upload}</Button>}
+            title={t.course.noFiles}
+            actions={canEdit && <Button variant="primary" icon="upload" onClick={async () => upload("skripte", await pickFiles())}>{t.course.upload}</Button>}
           >
-            {de.course.noFilesText}
+            {t.course.noFilesText}
           </EmptyState>
         ) : (
-          <EmptyState variant="plain" size="sm" illustration="buecher" title={de.course.selectTitle}>
-            {de.course.select}
+          <EmptyState variant="plain" size="sm" illustration="buecher" title={t.course.selectTitle}>
+            {t.course.select}
           </EmptyState>
         )}
       </section>
@@ -528,7 +528,7 @@ function DocumentsTab({ course, onLecture }: { course: Course; onLecture: (file:
               setMenu(null);
             }}
           >
-            {de.course.rename}
+            {t.course.rename}
           </MenuItem>
           <MenuSeparator />
           {FILE_FOLDERS.filter((f) => f !== menu.file.folder).map((folder) => (
@@ -541,7 +541,7 @@ function DocumentsTab({ course, onLecture }: { course: Course; onLecture: (file:
                 await load();
               }}
             >
-              {de.course.moveTo} {de.folders[folder]}
+              {t.course.moveTo} {t.folders[folder]}
             </MenuItem>
           ))}
           <MenuSeparator />
@@ -556,7 +556,7 @@ function DocumentsTab({ course, onLecture }: { course: Course; onLecture: (file:
               await load();
             }}
           >
-            {de.course.trash}
+            {t.course.trash}
           </MenuItem>
         </ContextMenu>
       )}
@@ -590,13 +590,13 @@ function RenameDialog({ file, onClose, onSaved }: { file: CourseFile; onClose: (
   };
   return (
     <Dialog
-      title={de.course.rename}
+      title={t.course.rename}
       onClose={onClose}
       footer={
         <>
-          <Button onClick={onClose}>{de.common.cancel}</Button>
+          <Button onClick={onClose}>{t.common.cancel}</Button>
           <Button variant="primary" loading={busy} disabled={!name.trim()} onClick={() => void save()}>
-            {de.common.save}
+            {t.common.save}
           </Button>
         </>
       }
@@ -608,7 +608,7 @@ function RenameDialog({ file, onClose, onSaved }: { file: CourseFile; onClose: (
           void save();
         }}
       >
-        <TextField label={de.course.newName} value={name} onChange={(e) => setName(e.target.value)} autoFocus error={error ?? undefined} />
+        <TextField label={t.course.newName} value={name} onChange={(e) => setName(e.target.value)} autoFocus error={error ?? undefined} />
       </form>
     </Dialog>
   );
@@ -646,7 +646,7 @@ function MembersTab({ course, onChanged }: { course: Course; onChanged: () => vo
     <div className="narrow ui-stack">
       {error && <Notice tone="danger">{error}</Notice>}
       <Card as="section" aria-labelledby="mitglieder">
-        <SectionHeader id="mitglieder" title={de.members.count(members.length)} />
+        <SectionHeader id="mitglieder" title={t.members.count(members.length)} />
         <List className="card-list">
           {members.map((m) => (
             <ListRow
@@ -655,31 +655,31 @@ function MembersTab({ course, onChanged }: { course: Course; onChanged: () => vo
               title={
                 <>
                   {m.displayName}
-                  {m.userId === me?.id && <span className="quiet"> ({de.members.you})</span>}
+                  {m.userId === me?.id && <span className="quiet"> ({t.members.you})</span>}
                 </>
               }
               meta={m.email}
               trailing={
                 <>
                   {owner ? (
-                    <Select label={de.course.roleOf(m.displayName)} hideLabel size="sm" value={m.role} onChange={(e) => run(api.setRole(course.id, m.userId, e.target.value as CourseRole))}>
+                    <Select label={t.course.roleOf(m.displayName)} hideLabel size="sm" value={m.role} onChange={(e) => run(api.setRole(course.id, m.userId, e.target.value as CourseRole))}>
                       {COURSE_ROLES.map((role) => (
                         <option key={role} value={role}>
-                          {de.roles[role]}
+                          {t.roles[role]}
                         </option>
                       ))}
                     </Select>
                   ) : (
-                    <Chip>{de.roles[m.role]}</Chip>
+                    <Chip>{t.roles[m.role]}</Chip>
                   )}
                   {owner && m.userId !== me?.id && (
                     <Button size="sm" variant="ghost" onClick={() => run(api.removeMember(course.id, m.userId))}>
-                      {de.members.remove}
+                      {t.members.remove}
                     </Button>
                   )}
                   {m.userId === me?.id && (
                     <Button size="sm" variant="danger" onClick={() => setLeaving(true)}>
-                      {de.members.leave}
+                      {t.members.leave}
                     </Button>
                   )}
                 </>
@@ -690,8 +690,8 @@ function MembersTab({ course, onChanged }: { course: Course; onChanged: () => vo
         <dl className="role-legend">
           {COURSE_ROLES.map((role) => (
             <div key={role}>
-              <dt>{de.roles[role]}</dt>
-              <dd>{de.roleHints[role]}</dd>
+              <dt>{t.roles[role]}</dt>
+              <dd>{t.roleHints[role]}</dd>
             </div>
           ))}
         </dl>
@@ -699,27 +699,27 @@ function MembersTab({ course, onChanged }: { course: Course; onChanged: () => vo
       {owner && <InvitePeople course={course} onChanged={() => void load()} />}
       {owner && (
         <Card as="section" variant="sunken" aria-labelledby="einladen">
-          <SectionHeader id="einladen" title={de.members.byLink} description={de.members.inviteHint} />
+          <SectionHeader id="einladen" title={t.members.byLink} description={t.members.inviteHint} />
           <div className="invite-row">
-            <Select label={de.members.inviteRole} value={inviteRole} onChange={(e) => setInviteRole(e.target.value as CourseRole)}>
+            <Select label={t.members.inviteRole} value={inviteRole} onChange={(e) => setInviteRole(e.target.value as CourseRole)}>
               {COURSE_ROLES.map((role) => (
                 <option key={role} value={role}>
-                  {de.roles[role]}
+                  {t.roles[role]}
                 </option>
               ))}
             </Select>
             <Button icon="link" onClick={async () => setInvite((await api.createInvite(course.id, inviteRole)).url)}>
-              {de.members.invite}
+              {t.members.invite}
             </Button>
           </div>
-          {invite && <CopyField value={invite} label={de.members.inviteLink} />}
+          {invite && <CopyField value={invite} label={t.members.inviteLink} />}
         </Card>
       )}
       {leaving && (
         <ConfirmDialog
-          title={de.overview.leave}
-          text={de.course.leaveConfirm(course.title)}
-          confirm={de.members.leave}
+          title={t.overview.leave}
+          text={t.course.leaveConfirm(course.title)}
+          confirm={t.members.leave}
           danger
           onClose={() => setLeaving(false)}
           onConfirm={async () => {
@@ -759,7 +759,7 @@ function InvitePeople({ course, onChanged }: { course: Course; onChanged: () => 
     setError(null);
     try {
       await api.inviteUser(course.id, person.id, role);
-      toast(de.members.invitedToast(person.displayName), "success");
+      toast(t.members.invitedToast(person.displayName), "success");
       setMatches((list) => list?.map((p) => (p.id === person.id ? { ...p, status: "invited" } : p)) ?? null);
       await loadPending();
       onChanged();
@@ -772,21 +772,21 @@ function InvitePeople({ course, onChanged }: { course: Course; onChanged: () => 
 
   return (
     <Card as="section" tone="blau" aria-labelledby="hinzufuegen">
-      <SectionHeader id="hinzufuegen" title={de.members.addTitle} description={de.members.addText} />
+      <SectionHeader id="hinzufuegen" title={t.members.addTitle} description={t.members.addText} />
       <div className="invite-search">
-        <SearchField label={de.members.search} value={query} onChange={(e) => setQuery(e.target.value)} onClear={() => setQuery("")} />
-        <Select label={de.members.role} size="md" value={role} onChange={(e) => setRole(e.target.value as CourseRole)}>
+        <SearchField label={t.members.search} value={query} onChange={(e) => setQuery(e.target.value)} onClear={() => setQuery("")} />
+        <Select label={t.members.role} size="md" value={role} onChange={(e) => setRole(e.target.value as CourseRole)}>
           {COURSE_ROLES.map((r) => (
             <option key={r} value={r}>
-              {de.roles[r]}
+              {t.roles[r]}
             </option>
           ))}
         </Select>
       </div>
       {error && <Notice tone="danger">{error}</Notice>}
-      {matches && matches.length === 0 && <p className="card-quiet">{de.members.noMatch}</p>}
+      {matches && matches.length === 0 && <p className="card-quiet">{t.members.noMatch}</p>}
       {matches && matches.length > 0 && (
-        <List variant="raised" className="card-list" aria-label={de.members.search}>
+        <List variant="raised" className="card-list" aria-label={t.members.search}>
           {matches.map((person) => (
             <ListRow
               key={person.id}
@@ -795,14 +795,14 @@ function InvitePeople({ course, onChanged }: { course: Course; onChanged: () => 
               meta={person.email}
               trailing={
                 person.status === "member" ? (
-                  <Chip size="sm">{de.members.isMember}</Chip>
+                  <Chip size="sm">{t.members.isMember}</Chip>
                 ) : person.status === "invited" ? (
                   <Chip size="sm" tone="gelb">
-                    {de.members.isInvited}
+                    {t.members.isInvited}
                   </Chip>
                 ) : (
                   <Button size="sm" variant="primary" icon="plus" loading={busy === person.id} onClick={() => void invite(person)}>
-                    {de.members.inviteOne}
+                    {t.members.inviteOne}
                   </Button>
                 )
               }
@@ -813,18 +813,18 @@ function InvitePeople({ course, onChanged }: { course: Course; onChanged: () => 
       {pending.length > 0 && (
         <>
           <div className="settings-sub">
-            <h3>{de.members.pending}</h3>
+            <h3>{t.members.pending}</h3>
           </div>
-          <List variant="raised" className="card-list" aria-label={de.members.pending}>
+          <List variant="raised" className="card-list" aria-label={t.members.pending}>
             {pending.map((p) => (
               <ListRow
                 key={p.userId}
                 leading={<Avatar userId={p.userId} name={p.displayName} size={36} decorative />}
                 title={p.displayName}
-                meta={`${de.roles[p.role]} · ${formatDateTime(p.createdAt)}`}
+                meta={`${t.roles[p.role]} · ${formatDateTime(p.createdAt)}`}
                 trailing={
                   <Button size="sm" variant="ghost" onClick={() => api.withdrawInvitation(course.id, p.userId).then(loadPending, (e) => setError(errorMessage(e)))}>
-                    {de.members.withdraw}
+                    {t.members.withdraw}
                   </Button>
                 }
               />
@@ -861,9 +861,9 @@ function TrashTab({ course }: { course: Course }) {
 
   return (
     <div className="narrow ui-stack">
-      <p className="quiet">{de.course.trashText}</p>
+      <p className="quiet">{t.course.trashText}</p>
       {error && <Notice tone="danger">{error}</Notice>}
-      {files && files.length === 0 && <EmptyState variant="plain" size="sm" illustration="pflanze" title={de.course.trashEmpty} />}
+      {files && files.length === 0 && <EmptyState variant="plain" size="sm" illustration="pflanze" title={t.course.trashEmpty} />}
       {files && files.length > 0 && (
         <Card>
           <List>
@@ -872,11 +872,11 @@ function TrashTab({ course }: { course: Course }) {
                 key={f.id}
                 leading={<FileTile kind={fileKind(f.name, f.mime)} size={34} />}
                 title={f.name}
-                meta={`${de.folders[f.folder]} · ${de.course.deletedBy(f.deletedBy, formatDateTime(f.deletedAt!))}`}
+                meta={`${t.folders[f.folder]} · ${t.course.deletedBy(f.deletedBy, formatDateTime(f.deletedAt!))}`}
                 trailing={
                   canEdit && (
                     <Button size="sm" icon="restore" onClick={() => api.restoreFile(f.id).then(load, (e) => setError(errorMessage(e)))}>
-                      {de.course.restore}
+                      {t.course.restore}
                     </Button>
                   )
                 }
