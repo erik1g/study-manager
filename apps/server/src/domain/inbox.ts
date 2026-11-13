@@ -1,7 +1,7 @@
 // The work inbox: what is waiting for the user's Claude. The cloud runs no
 // AI itself, so instead of doing this work it lists it, and Claude picks it
 // up through MCP when the user says so.
-import { atLeast } from "@study/shared";
+import { atLeast, type Locale } from "@study/shared";
 import type { coursesOf } from "./courses.ts";
 import type { notesOf } from "./notes.ts";
 import type { recordingsOf } from "./recordings.ts";
@@ -10,6 +10,8 @@ export interface WorkItem {
   kind: "outline" | "lecture";
   courseId: string;
   course: string;
+  /** The course's language: what Claude writes into it is in this language. */
+  locale: Locale;
   /** The file or recording to work on. */
   id: string;
   title: string;
@@ -29,9 +31,10 @@ export function inboxOf(courses: ReturnType<typeof coursesOf>, notes: ReturnType
             kind: "outline",
             courseId: course.id,
             course: course.title,
+            locale: course.locale,
             id: script.id,
             title: script.name,
-            todo: "Skript mit read_document lesen und seine Gliederung (Kapitel, Abschnitte, Seiten) mit submit_outline in die Notizen eintragen.",
+            todo: "Read the script with read_document and add its outline (chapters, sections, pages) to the notes with submit_outline.",
           });
         }
         for (const recording of await recordings.unanalysed(course.id)) {
@@ -39,9 +42,10 @@ export function inboxOf(courses: ReturnType<typeof coursesOf>, notes: ReturnType
             kind: "lecture",
             courseId: course.id,
             course: course.title,
+            locale: course.locale,
             id: recording.id,
             title: `${recording.title} (${recording.date})`,
-            todo: "Transkript mit read_transcript lesen, Kernpunkte und wörtliche Prüfungshinweise den Abschnitten aus notes_outline zuordnen und mit submit_lecture_notes eintragen.",
+            todo: "Read the transcript with read_transcript, assign key points (in the course's language) and verbatim exam hints to the sections from notes_outline and add them with submit_lecture_notes.",
           });
         }
       }

@@ -44,7 +44,7 @@ describe("Claude through MCP", () => {
     const page = await call("read_handbook", { program_id: program.id, from_page: 1 });
     expect(page.error).toBe(false);
     expect(page.data.pageCount).toBeGreaterThan(0);
-    expect(page.data.text).toContain("--- Seite 1 ---");
+    expect(page.data.text).toContain("--- Page 1 ---");
 
     const submitted = await call("submit_modules", {
       program_id: program.id,
@@ -72,6 +72,33 @@ describe("Claude through MCP", () => {
     expect((await call("list_tasks", { open_only: false })).data[0]).toMatchObject({ title: "Kapitel 4 lesen", done: true, startTime: "10:00" });
     const overview = await call("overview");
     expect(overview.data.openTasks).toEqual([]);
+  });
+});
+
+describe("languages through MCP", () => {
+  it("tells Claude the user's language and each course's, and how to use them", async () => {
+    const mira = await w.user("Mira");
+    await w.services.users.updateProfile(mira, { locale: "de" });
+    const german = await w.services.courses.create(mira, { title: "Regelungstechnik", semester: "WiSe26-27" });
+    await w.services.users.updateProfile(mira, { locale: "en" });
+    const { client, call } = await claude(mira);
+
+    const instructions = client.getInstructions() ?? "";
+    expect(instructions).toContain("talk to the user in their language");
+    expect(instructions).toContain("course's language");
+    // Exam hints are recognised in both languages.
+    expect(instructions).toContain("this will be on the exam");
+    expect(instructions).toContain("kommt in der Klausur dran");
+
+    expect((await call("get_profile")).data.locale).toBe("en");
+    expect((await call("overview")).data.user.locale).toBe("en");
+    expect((await call("list_courses")).data.find((c: { id: string }) => c.id === german.id).locale).toBe("de");
+    expect((await call("course_details", { course_id: german.id })).data.course.locale).toBe("de");
+
+    // A course Claude creates speaks the user's language.
+    const { data: created } = await call("create_course", { semester: "WiSe26-27", title: "Control Engineering" });
+    expect(created.locale).toBe("en");
+    expect((await call("create_course", { semester: "WiSe26-27" })).error).toBe(true);
   });
 });
 
