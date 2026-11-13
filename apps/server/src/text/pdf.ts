@@ -41,7 +41,7 @@ export async function pdfText(path: string, from = 1, to?: number): Promise<{ te
   const last = Math.min(pages.length, to ?? first + 9);
   const text = pages
     .slice(first - 1, last)
-    .map((page, i) => `--- Seite ${first + i} ---\n${page}`)
+    .map((page, i) => `--- Page ${first + i} ---\n${page}`)
     .join("\n\n");
   return { text, pageCount: pages.length };
 }

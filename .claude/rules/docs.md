@@ -10,6 +10,6 @@ paths:
 - **Front matter:** Put values containing `: ` in **quotes** (`description: "The building blocks (Snug Simple): …"`), otherwise the YAML breaks.
 - **MDX:** Curly braces and `<` in running text are code. Put them in backticks or code blocks.
 - **Write for the audience:** user pages without technical jargon; admin pages with commands to copy; developer pages with paths. **Try commands before you document them**, and say on the page what is not tested.
-- **Stay honest:** The interface speaks English and German, the instructions for Claude are still German, the timetable connection fits CAMPUSonline; the docs say so. No promises the code does not keep.
+- **Stay honest:** The interface speaks English and German, the instructions for Claude are English, the timetable connection fits CAMPUSonline; the docs say so. No promises the code does not keep.
 - **Invented examples:** `study.example.org`, `you@example.org`, no real domains or people.
 - **Build and view:** `pnpm --filter @study/docs build` (first generates `src/generated/props.json` from the building blocks), `pnpm --filter @study/docs start` for `http://localhost:3002`. Publishing happens automatically through GitHub Pages (`docs.yml`).

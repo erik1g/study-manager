@@ -118,7 +118,7 @@ export async function buildApp(services: Services, extras: AppExtras = {}) {
       return reply.status(status).send({ code: (error as { code?: string }).code ?? "invalid", message: (error as Error).message });
     }
     request.log.error(error);
-    return reply.status(500).send({ code: "server_error", message: "Interner Fehler" });
+    return reply.status(500).send({ code: "server_error", message: "Internal error" });
   });
 
   app.get("/api/health", async () => ({ ok: true }));
