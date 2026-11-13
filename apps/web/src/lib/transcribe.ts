@@ -3,6 +3,7 @@
 // the audio, in pieces, to a transcription service with the member's own
 // key. The key never leaves the browser.
 
+import type { Locale } from "@study/shared";
 import { t } from "../i18n";
 
 export interface Segment {
@@ -26,10 +27,42 @@ export function timestamp(seconds: number): string {
 /** How long a paragraph runs before a new one starts. */
 const PARAGRAPH = 60;
 
-/** The transcript as Markdown: a header, then paragraphs of about a minute, each with when it was said. */
-export function toMarkdown(title: string, course: string, date: string, language: string | null, duration: number, segments: Segment[]): string {
-  const languageName = language === "de" ? "Deutsch" : language === "en" ? "Englisch" : "automatisch erkannt";
-  let text = `# ${title}\n\n${course} · ${date} · Dauer ${timestamp(duration)} · Sprache: ${languageName}\n\n*Automatisch transkribiert; Namen und Fachbegriffe können falsch geschrieben sein.*\n`;
+/** The words of a transcript's header, in the course's language: everyone in the course reads it. */
+const HEADER: Record<Locale, { duration: string; language: string; languages: Record<string, string>; auto: string; note: string; intl: string }> = {
+  en: {
+    duration: "Duration",
+    language: "Language",
+    languages: { de: "German", en: "English" },
+    auto: "detected automatically",
+    note: "*Transcribed automatically; names and technical terms may be misspelt.*",
+    intl: "en-GB",
+  },
+  de: {
+    duration: "Dauer",
+    language: "Sprache",
+    languages: { de: "Deutsch", en: "Englisch" },
+    auto: "automatisch erkannt",
+    note: "*Automatisch transkribiert; Namen und Fachbegriffe können falsch geschrieben sein.*",
+    intl: "de-DE",
+  },
+};
+
+/**
+ * The transcript as Markdown: a header in the course's language, then
+ * paragraphs of about a minute, each with when it was said.
+ */
+export function toMarkdown(
+  title: string,
+  course: { title: string; locale: Locale },
+  day: string,
+  language: string | null,
+  duration: number,
+  segments: Segment[],
+): string {
+  const words = HEADER[course.locale];
+  const languageName = language ? (words.languages[language] ?? language) : words.auto;
+  const date = new Date(`${day}T00:00:00`).toLocaleDateString(words.intl, { weekday: "short", day: "2-digit", month: "2-digit", year: "numeric" });
+  let text = `# ${title}\n\n${course.title} · ${date} · ${words.duration} ${timestamp(duration)} · ${words.language}: ${languageName}\n\n${words.note}\n`;
   let paragraphStart: number | null = null;
   for (const segment of segments) {
     const words = segment.text.trim();

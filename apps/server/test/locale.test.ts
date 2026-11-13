@@ -37,6 +37,24 @@ describe("the language of an account", () => {
   });
 });
 
+describe("the language of a course", () => {
+  it("is its creator's when it is made, whoever joins later", async () => {
+    const mira = await w.user("Mira");
+    await w.services.users.updateProfile(mira, { locale: "de" });
+    const jonas = await w.user("Jonas");
+    const german = await w.services.courses.create(mira, { title: "Regelungstechnik", semester: "WiSe26-27" });
+    const english = await w.services.courses.create(jonas, { title: "Control Engineering", semester: "WiSe26-27" });
+    expect(german.locale).toBe("de");
+    expect(english.locale).toBe("en");
+    expect((await w.services.notes.get(mira, german.id)).content).toContain("## Prüfungsrelevant");
+    expect((await w.services.notes.get(jonas, english.id)).content).toContain("## Exam-relevant");
+
+    // Changing one's own language later leaves the course as it is.
+    await w.services.users.updateProfile(mira, { locale: "en" });
+    expect((await w.services.courses.get(mira, german.id)).locale).toBe("de");
+  });
+});
+
 describe("the mails", () => {
   it("carry every language and fall back to German for accounts without one", () => {
     const page = mailPage("invite");

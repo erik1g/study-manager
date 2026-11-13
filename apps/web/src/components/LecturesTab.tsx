@@ -174,7 +174,8 @@ function TranscribePanel({ course, onClose, onDone }: { course: Course; onClose:
   const [file, setFile] = useState<File | null>(null);
   const [title, setTitle] = useState("");
   const [date, setDate] = useState(today());
-  const [language, setLanguage] = useState<string>("de");
+  // Lectures are usually held in the language the course is written in.
+  const [language, setLanguage] = useState<string>(course.locale);
   // Chosen in the settings; here it is only shown.
   const [method] = useState(storedMethod);
   const [provider] = useState(storedProvider);
@@ -209,7 +210,7 @@ function TranscribePanel({ course, onClose, onDone }: { course: Course; onClose:
       if (segments.length === 0) throw new Error(t.lectures.nothingHeard);
       progress("uploading", 0);
       const name = title.trim() || file.name.replace(/\.[^.]+$/, "");
-      const markdown = toMarkdown(name, course.title, formatDate(date), lang, duration, segments);
+      const markdown = toMarkdown(name, course, date, lang, duration, segments);
       const { id } = await api.createRecording(course.id, { title: name, date, language: lang, durationSeconds: duration, transcript: markdown });
       onDone(id);
     } catch (e) {
