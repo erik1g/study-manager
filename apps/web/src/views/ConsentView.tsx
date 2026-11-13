@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
 import { Button, Icon, Notice, SectionHeader } from "@study/ui";
 import { AuthLayout } from "../components/AuthLayout";
-import { de } from "../i18n/de";
+import { t } from "../i18n";
 import { auth } from "../lib/auth";
 import { useSession } from "../lib/session";
 import { isAllowedRedirect } from "../lib/oauthTargets";
@@ -24,7 +24,7 @@ export function ConsentView() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (!id) return setError("Es fehlt die Kennung der Anfrage.");
+    if (!id) return setError(t.consent.missingId);
     auth()
       .auth.oauth.getAuthorizationDetails(id)
       .then(({ data, error }) => {
@@ -33,7 +33,7 @@ export function ConsentView() {
         else if (data && "redirect_url" in data && data.redirect_url) window.location.href = data.redirect_url as string;
         else if (!isAllowedRedirect((data as Details).redirect_uri)) {
           // An app that would send the access elsewhere than Claude is refused without asking.
-          setError(de.consent.unknownTarget((data as Details).redirect_uri));
+          setError(t.consent.unknownTarget((data as Details).redirect_uri));
           void auth().auth.oauth.denyAuthorization(id);
         } else setDetails(data as Details);
       });
@@ -59,20 +59,20 @@ export function ConsentView() {
         <span className="consent-icon" aria-hidden="true">
           <Icon name="claude" size={30} />
         </span>
-        <SectionHeader level={1} size="lg" title={de.consent.title} />
+        <SectionHeader level={1} size="lg" title={t.consent.title} />
         {error && <Notice tone="danger">{error}</Notice>}
         {details && (
           <>
-            <p>{de.consent.text(client)}</p>
+            <p>{t.consent.text(client)}</p>
             {details.redirect_uri && <p className="quiet small mono">{new URL(details.redirect_uri).host}</p>}
-            <p className="quiet small">{de.consent.hint}</p>
-            {me && <p className="quiet small">{de.consent.signedInAs(me.email)}</p>}
+            <p className="quiet small">{t.consent.hint}</p>
+            {me && <p className="quiet small">{t.consent.signedInAs(me.email)}</p>}
             <div className="form-actions">
               <Button disabled={busy} onClick={() => decide(false)}>
-                {de.consent.deny}
+                {t.consent.deny}
               </Button>
               <Button variant="primary" loading={busy} onClick={() => decide(true)}>
-                {de.consent.allow}
+                {t.consent.allow}
               </Button>
             </div>
           </>

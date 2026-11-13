@@ -1,54 +1,54 @@
 ---
 title: "Backups"
 sidebar_position: 6
-description: "Wie die Backups entstehen, wo sie liegen und wie du sie zurückspielst."
+description: "How the backups are made, where they are and how you restore them."
 ---
 
 # Backups
 
-## Was gesichert wird
+## What is backed up
 
-Jede Nacht um **3:30 Uhr** (deiner `TZ`) legt der Server zwei verschlüsselte Dateien an:
+Every night at **3:30** (in your `TZ`) the server creates two encrypted files:
 
-- `db-<datum>.dump.enc`: die Datenbank (`pg_dump`)
-- `files-<datum>.tar.gz.enc`: alle hochgeladenen Dokumente
+- `db-<date>.dump.enc`: the database (`pg_dump`)
+- `files-<date>.tar.gz.enc`: all uploaded documents
 
-Beide sind mit **AES-256** und deiner `BACKUP_PASSPHRASE` verschlüsselt. **30 Tage** werden aufbewahrt, ältere löscht der Server. Du kannst jederzeit im Admin-Bereich *Jetzt sichern* drücken.
+Both are encrypted with **AES-256** and your `BACKUP_PASSPHRASE`. **30 days** are kept, the server deletes older ones. You can press *Back up now* in the admin area at any time.
 
-Sie liegen im Ordner `/data/backups` im Container, also im Volume `study-data` (oder unter `DATA_DIR/backups`). **Ein Backup auf demselben Server schützt nicht vor einem Plattenausfall.** Kopiere den Ordner regelmäßig an einen zweiten Ort (anderer Rechner, Cloud-Speicher), zum Beispiel mit `rsync` oder `rclone`:
+They are in the folder `/data/backups` in the container, that is in the volume `study-data` (or under `DATA_DIR/backups`). **A backup on the same server does not protect against a disk failure.** Copy the folder to a second place regularly (another machine, cloud storage), for example with `rsync` or `rclone`:
 
 ```sh
-# bei Benutzung eines Host-Ordners (DATA_DIR)
-rclone copy /srv/study-manager/data/backups meinspeicher:study-manager-backups
+# when using a host folder (DATA_DIR)
+rclone copy /srv/study-manager/data/backups mystorage:study-manager-backups
 ```
 
-Bei benannten Volumes findest du den Pfad mit `docker volume inspect study-manager_study-data`.
+With named volumes, you find the path with `docker volume inspect study-manager_study-data`.
 
-## Wiederherstellen
+## Restoring
 
-**Probiere das einmal auf einem Testsystem aus, bevor du es brauchst.**
+**Try this once on a test system before you need it.**
 
-1. Neue, leere Installation starten (siehe [Installieren](/admin/installation)) **mit derselben `.env`** (gleiche `BACKUP_PASSPHRASE`, `JWT_*` und `APP_SECRET`).
-2. Backup-Dateien auf den Server kopieren.
-3. Datenbank einspielen:
+1. Start a new, empty installation (see [Install](/admin/installation)) **with the same `.env`** (same `BACKUP_PASSPHRASE`, `JWT_*` and `APP_SECRET`).
+2. Copy the backup files to the server.
+3. Restore the database:
 
 ```sh
 docker compose stop server
-openssl enc -d -aes-256-cbc -pbkdf2 -pass env:BACKUP_PASSPHRASE -in db-<datum>.dump.enc \
+openssl enc -d -aes-256-cbc -pbkdf2 -pass env:BACKUP_PASSPHRASE -in db-<date>.dump.enc \
   | docker compose exec -T db pg_restore --clean --if-exists --no-owner -U postgres -d postgres
 ```
 
-4. Dokumente zurückspielen:
+4. Restore the documents:
 
 ```sh
-openssl enc -d -aes-256-cbc -pbkdf2 -pass env:BACKUP_PASSPHRASE -in files-<datum>.tar.gz.enc \
+openssl enc -d -aes-256-cbc -pbkdf2 -pass env:BACKUP_PASSPHRASE -in files-<date>.tar.gz.enc \
   | docker compose run --rm -T --no-deps --entrypoint sh server -c "tar xz -C /data/files"
 ```
 
-5. `docker compose up -d` und prüfen, dass Anmeldung und Dokumente da sind.
+5. `docker compose up -d` and check that sign-in and documents are there.
 
-:::note Meldungen von pg_restore
-Bei Datenbanken aus dem Supabase-Image meldet `pg_restore` oft einige hundert Fehler („errors ignored on restore“), etwa zu Erweiterungen und Rollen, die schon vorhanden sind. Sie sind erwartbar und betreffen nicht deine Daten. Entscheidend ist, dass die Anmeldung funktioniert und deine Fächer und Dokumente da sind.
+:::note Messages from pg_restore
+With databases from the Supabase image, `pg_restore` often reports a few hundred errors ("errors ignored on restore"), for example about extensions and roles that already exist. They are expected and do not affect your data. What matters is that sign-in works and your courses and documents are there.
 :::
 
-Ohne `BACKUP_PASSPHRASE` lassen sich die Dateien **nicht** entschlüsseln. Bewahre sie getrennt vom Server auf.
+Without the `BACKUP_PASSPHRASE` the files **cannot** be decrypted. Keep it separate from the server.

@@ -4,7 +4,7 @@ import type { Tone } from "../tokens";
 export interface ProgressBarProps {
   /** How far, from 0 to 1. */
   value: number;
-  /** What is in progress, e.g. "Transkription". Read with the percentage. */
+  /** What is in progress, e.g. "Transcription". Read with the percentage. */
   label: string;
   tone?: Tone;
   /** Shows the percentage next to the label. */

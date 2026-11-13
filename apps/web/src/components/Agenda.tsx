@@ -2,7 +2,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { DEFAULT_SLOT_MINUTES, type DeadlineDraft, type TaskDraft } from "@study/shared";
 import { Button, Checkbox, CountdownTile, IconButton, ListRow, Notice, Select, TextField, type Tone } from "@study/ui";
-import { daysUntil, de, errorMessage, formatDate, formatDuration, formatShortDate, formatTime, relativeDay, today } from "../i18n/de";
+import { daysUntil, t, errorMessage, formatDate, formatDuration, formatShortDate, formatTime, relativeDay, today } from "../i18n";
 import { api, type Course, type Deadline, type Task } from "../lib/api";
 import { prefersLessMotion } from "../lib/motion";
 import { useSession } from "../lib/session";
@@ -46,10 +46,10 @@ function courseOf(courses: Course[], id: string | null) {
 /** How long until a day, as a tile: "2 Tage", "Heute 23:59"; ticked off or past it says so. */
 export function Countdown({ day, time, tone, done, past }: { day: string; time?: string | null; tone: Tone; done?: boolean; past?: boolean }) {
   const days = daysUntil(day);
-  if (done) return <CountdownTile value="✓" unit={de.deadlines.done} tone="gruen" />;
-  if (past || days < 0) return <CountdownTile value="–" unit={de.deadlines.past} tone="grau" />;
-  if (days === 0) return <CountdownTile value={de.deadlines.today} unit={time ?? ""} tone={tone} />;
-  return <CountdownTile value={days} unit={days === 1 ? de.deadlines.day : de.deadlines.days} tone={tone} />;
+  if (done) return <CountdownTile value="✓" unit={t.deadlines.done} tone="gruen" />;
+  if (past || days < 0) return <CountdownTile value="–" unit={t.deadlines.past} tone="grau" />;
+  if (days === 0) return <CountdownTile value={t.deadlines.today} unit={time ?? ""} tone={tone} />;
+  return <CountdownTile value={days} unit={days === 1 ? t.deadlines.day : t.deadlines.days} tone={tone} />;
 }
 
 /** The ⋯ of a row with Edit and Delete. */
@@ -61,15 +61,15 @@ function RowMenu({ label, onEdit, onDelete }: { label: string; onEdit: () => voi
   };
   return (
     <>
-      <IconButton icon="more" size="sm" label={de.common.actionsFor(label)} aria-haspopup="menu" aria-expanded={at !== null} onClick={(e) => setAt(menuPositionFrom(e.currentTarget))} />
+      <IconButton icon="more" size="sm" label={t.common.actionsFor(label)} aria-haspopup="menu" aria-expanded={at !== null} onClick={(e) => setAt(menuPositionFrom(e.currentTarget))} />
       {at && (
-        <ContextMenu at={at} label={de.common.actionsFor(label)} onClose={() => setAt(null)}>
+        <ContextMenu at={at} label={t.common.actionsFor(label)} onClose={() => setAt(null)}>
           <MenuItem icon="edit" onSelect={choose(onEdit)}>
-            {de.common.edit}
+            {t.common.edit}
           </MenuItem>
           <MenuSeparator />
           <MenuItem icon="trash" danger onSelect={choose(onDelete)}>
-            {de.common.delete}
+            {t.common.delete}
           </MenuItem>
         </ContextMenu>
       )}
@@ -91,7 +91,7 @@ export function TaskRow({ task, onChanged, showCourse = true }: { task: Task; on
       <li className="row-editing">
         <TaskForm
           initial={task}
-          submitLabel={de.common.save}
+          submitLabel={t.common.save}
           onCancel={() => setEditing(false)}
           onSubmit={async (draft) => {
             await api.updateTask(task.id, draft);
@@ -104,8 +104,8 @@ export function TaskRow({ task, onChanged, showCourse = true }: { task: Task; on
   }
 
   const meta = [
-    showCourse ? (course?.title ?? de.tasks.general) : null,
-    task.plannedDate ? (overdue ? `${de.tasks.overdue} (${formatShortDate(task.plannedDate)})` : relativeDay(task.plannedDate)) + (task.startTime ? `, ${slotLabel(task)}` : "") : null,
+    showCourse ? (course?.title ?? t.tasks.general) : null,
+    task.plannedDate ? (overdue ? `${t.tasks.overdue} (${formatShortDate(task.plannedDate)})` : relativeDay(task.plannedDate)) + (task.startTime ? `, ${slotLabel(task)}` : "") : null,
     task.estimateMinutes !== null && !task.startTime ? `≈ ${formatDuration(task.estimateMinutes)}` : null,
   ].filter(Boolean);
 
@@ -165,7 +165,7 @@ export function DeadlineRow({ deadline, onChanged, showCourse = true }: { deadli
       <li className="row-editing">
         <DeadlineForm
           initial={deadline}
-          submitLabel={de.common.save}
+          submitLabel={t.common.save}
           onCancel={() => setEditing(false)}
           onSubmit={async (draft) => {
             await api.updateDeadline(deadline.id, draft);
@@ -190,13 +190,13 @@ export function DeadlineRow({ deadline, onChanged, showCourse = true }: { deadli
     }
   };
   const when = `${formatShortDate(day)}${deadline.allDay ? "" : `, ${formatTime(deadline.startsAt!)}`}`;
-  const meta = [showCourse ? (course?.title ?? de.tasks.general) : null, when, deadline.notes].filter(Boolean).join(" · ");
+  const meta = [showCourse ? (course?.title ?? t.tasks.general) : null, when, deadline.notes].filter(Boolean).join(" · ");
   return (
     <ListRow
       rowClassName={done || past ? "deadline-settled" : undefined}
       leading={
         <span className="deadline-lead">
-          <Checkbox label={de.deadlines.markDone(deadline.title)} hideLabel tone="gruen" checked={done} onChange={() => void toggle()} />
+          <Checkbox label={t.deadlines.markDone(deadline.title)} hideLabel tone="gruen" checked={done} onChange={() => void toggle()} />
           <Countdown day={day} time={deadline.allDay ? null : formatTime(deadline.startsAt!)} tone={toneOf(course?.color)} done={done} past={past} />
         </span>
       }
@@ -210,7 +210,7 @@ export function DeadlineRow({ deadline, onChanged, showCourse = true }: { deadli
       trailing={
         <>
           {deadline.courseId && (
-            <span title={de.deadlines.createdBy(deadline.createdBy)}>
+            <span title={t.deadlines.createdBy(deadline.createdBy)}>
               <Avatar userId={deadline.createdById} name={deadline.createdBy} size={24} />
             </span>
           )}
@@ -275,10 +275,10 @@ export function TaskForm(props: {
 
   return (
     <form className="entry-form" onSubmit={submit}>
-      <TextField className="wide" label={de.tasks.name} value={title} onChange={(e) => setTitle(e.target.value)} autoFocus required />
+      <TextField className="wide" label={t.tasks.name} value={title} onChange={(e) => setTitle(e.target.value)} autoFocus required />
       {props.courseId === undefined && (
-        <Select label={de.tasks.subject} value={courseId} onChange={(e) => setCourseId(e.target.value)}>
-          <option value="">{de.tasks.general}</option>
+        <Select label={t.tasks.subject} value={courseId} onChange={(e) => setCourseId(e.target.value)}>
+          <option value="">{t.tasks.general}</option>
           {courses.map((c) => (
             <option key={c.id} value={c.id}>
               {c.title}
@@ -287,8 +287,8 @@ export function TaskForm(props: {
         </Select>
       )}
       {deadlines.length > 0 && (
-        <Select label={de.tasks.deadline} value={deadlineId} onChange={(e) => setDeadlineId(e.target.value)}>
-          <option value="">{de.tasks.noDeadline}</option>
+        <Select label={t.tasks.deadline} value={deadlineId} onChange={(e) => setDeadlineId(e.target.value)}>
+          <option value="">{t.tasks.noDeadline}</option>
           {deadlines.map((d) => (
             <option key={d.id} value={d.id}>
               {d.title} · {formatDate(deadlineDay(d))}
@@ -296,10 +296,10 @@ export function TaskForm(props: {
           ))}
         </Select>
       )}
-      <TextField label={de.tasks.plannedOn} type="date" value={planned} onChange={(e) => setPlanned(e.target.value)} />
-      <TextField label={de.tasks.startAt} type="time" step={900} value={start} disabled={!planned} onChange={(e) => setStart(e.target.value)} />
-      <Select label={de.tasks.estimate} value={estimate} onChange={(e) => setEstimate(e.target.value)}>
-        <option value="">{de.tasks.noEstimate}</option>
+      <TextField label={t.tasks.plannedOn} type="date" value={planned} onChange={(e) => setPlanned(e.target.value)} />
+      <TextField label={t.tasks.startAt} type="time" step={900} value={start} disabled={!planned} onChange={(e) => setStart(e.target.value)} />
+      <Select label={t.tasks.estimate} value={estimate} onChange={(e) => setEstimate(e.target.value)}>
+        <option value="">{t.tasks.noEstimate}</option>
         {ESTIMATES.map((minutes) => (
           <option key={minutes} value={minutes}>
             {formatDuration(minutes)}
@@ -312,7 +312,7 @@ export function TaskForm(props: {
         </Notice>
       )}
       <div className="form-actions wide">
-        {props.onCancel && <Button onClick={props.onCancel}>{de.common.cancel}</Button>}
+        {props.onCancel && <Button onClick={props.onCancel}>{t.common.cancel}</Button>}
         <Button type="submit" variant="primary" loading={busy} disabled={!title.trim()}>
           {props.submitLabel}
         </Button>
@@ -374,10 +374,10 @@ export function DeadlineForm(props: {
 
   return (
     <form className="entry-form" onSubmit={submit}>
-      <TextField className="wide" label={de.deadlines.name} value={title} onChange={(e) => setTitle(e.target.value)} autoFocus required />
+      <TextField className="wide" label={t.deadlines.name} value={title} onChange={(e) => setTitle(e.target.value)} autoFocus required />
       {props.courseId === undefined && (
-        <Select label={de.deadlines.subject} value={courseId} onChange={(e) => setCourseId(e.target.value)}>
-          <option value="">{de.deadlines.general}</option>
+        <Select label={t.deadlines.subject} value={courseId} onChange={(e) => setCourseId(e.target.value)}>
+          <option value="">{t.deadlines.general}</option>
           {editable.map((c) => (
             <option key={c.id} value={c.id}>
               {c.title}
@@ -385,23 +385,23 @@ export function DeadlineForm(props: {
           ))}
         </Select>
       )}
-      <Checkbox className="wide" label={de.deadlines.allDay} checked={allDay} onChange={(e) => setAllDay(e.target.checked)} />
+      <Checkbox className="wide" label={t.deadlines.allDay} checked={allDay} onChange={(e) => setAllDay(e.target.checked)} />
       {allDay ? (
-        <TextField label={de.deadlines.date} type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
+        <TextField label={t.deadlines.date} type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
       ) : (
         <>
-          <TextField label={de.deadlines.start} type="datetime-local" value={start} onChange={(e) => setStart(e.target.value)} required />
-          <TextField label={de.deadlines.end} type="datetime-local" value={end} onChange={(e) => setEnd(e.target.value)} />
+          <TextField label={t.deadlines.start} type="datetime-local" value={start} onChange={(e) => setStart(e.target.value)} required />
+          <TextField label={t.deadlines.end} type="datetime-local" value={end} onChange={(e) => setEnd(e.target.value)} />
         </>
       )}
-      <TextField className="wide" label={de.deadlines.notes} value={notes} onChange={(e) => setNotes(e.target.value)} hint={courseId ? de.deadlines.sharedHint : undefined} />
+      <TextField className="wide" label={t.deadlines.notes} value={notes} onChange={(e) => setNotes(e.target.value)} hint={courseId ? t.deadlines.sharedHint : undefined} />
       {error && (
         <Notice tone="danger" className="wide">
           {error}
         </Notice>
       )}
       <div className="form-actions wide">
-        {props.onCancel && <Button onClick={props.onCancel}>{de.common.cancel}</Button>}
+        {props.onCancel && <Button onClick={props.onCancel}>{t.common.cancel}</Button>}
         <Button type="submit" variant="primary" loading={busy} disabled={!title.trim()}>
           {props.submitLabel}
         </Button>

@@ -9,6 +9,6 @@ const config = loadConfig();
 const { db, client } = createDb(config.DATABASE_URL);
 const accounts = gotrueAccounts({ url: config.AUTH_URL, serviceKey: config.SERVICE_ROLE_KEY, siteUrl: config.SITE_URL });
 const email = process.argv[2] ?? config.ADMIN_EMAIL;
-const { link } = await users(db, accounts, config.FILES_DIR).invite(email, "Admin", true);
-console.log(`\nEinrichtungslink für ${email}:\n${link}\n`);
+const { link } = await users(db, accounts, config.FILES_DIR).invite(email, "Admin", { makeAdmin: true });
+console.log(`\nSetup link for ${email}:\n${link}\n`);
 await client.end();

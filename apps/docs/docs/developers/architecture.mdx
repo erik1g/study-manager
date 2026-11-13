@@ -1,0 +1,55 @@
+---
+title: "Architecture"
+sidebar_position: 2
+description: "Containers, server, web app and how a request travels through the system."
+---
+
+# Architecture
+
+## Containers
+
+```
+Browser / Claude
+      │  HTTPS (your reverse proxy)
+      ▼
+   web (Caddy) ── /            → built web app (static files)
+      │            /api /mcp /ical → server:3000
+      │            /auth/v1, /.well-known/* → auth:9999
+      ▼
+   server (Node.js) ──► db (PostgreSQL 17) ◄── auth (GoTrue)
+```
+
+- `web` is **Caddy** with the built web app and the file `infra/caddy/Caddyfile`: it is the one address to the outside.
+- `server` is **Fastify**: REST API under `/api`, the **MCP server** under `/mcp`, the calendar subscription feed under `/ical` and **pg-boss** background jobs (calendar subscriptions, search index, backups, trash).
+- `auth` is **Supabase Auth (GoTrue)**: sign-in, passkeys, TOTP and an **OAuth 2.1 server** through which MCP clients such as Claude sign in. The server checks the tokens against the JWKS.
+- `db` is **PostgreSQL 17** (Supabase image with `pgvector` for the search).
+
+## Server (`apps/server/src`)
+
+| Folder | Role |
+|---|---|
+| `domain/` | The domain logic, one file per area (`courses`, `files`, `planning`, `calendar`, `notes`, `flashcards`, `programs`, `recordings`, `inbox` …). Plain functions on the database; **this is where permissions belong** (`access.ts`: roles) |
+| `http/` | Fastify routes that point thinly to `domain/` |
+| `mcp/` | The MCP server: tools that call the same `domain/` logic with the user's permissions |
+| `jobs/` | Scheduled jobs (`scheduler.ts`, `backup.ts`) |
+| `search/` | Search by meaning (embeddings, local) and wording |
+| `db/` | Drizzle schema (`schema.ts`) and migrations (`drizzle/`) |
+
+One rule runs through everything: **permissions are checked in `domain/`**, not in the routes. Then they apply to the web app and to MCP alike.
+
+## Web app (`apps/web/src`)
+
+`views/` are the pages (`CourseView`, `PlanningView` …), `components/` reusable parts, `lib/` helpers (API client, session, zoom, stored settings), `i18n/` all texts (`en.ts` the source, `de.ts` the German one; `index.ts` picks the language and formats dates and numbers). The interface only uses building blocks from `@study/ui`.
+
+## Data
+
+- **Documents** live as plain folders under `FILES_DIR/courses/<course>/<folder>/`; the database knows them with metadata.
+- **Users** (`profiles`) hang off the GoTrue accounts. Roles apply **per course** (`course_members`).
+- **Deadlines** are shared (with a course) or private (without). Ticking off is per user (`deadline_done`).
+
+## Decisions
+
+Important decisions are under [Decisions](/developers/decisions/web-app-on-a-home-server):
+
+- [0001](/developers/decisions/web-app-on-a-home-server): A web app on one's own server instead of a synced desktop app.
+- [0002](/developers/decisions/ai-only-through-the-users-claude): The AI work is done by each user's own Claude through MCP.

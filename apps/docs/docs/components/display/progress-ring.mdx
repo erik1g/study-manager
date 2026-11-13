@@ -1,0 +1,53 @@
+---
+title: ProgressRing
+sidebar_position: 4
+description: How far something is, as a ring.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { DoDont, Do, Dont } from "@site/src/components/DoDont";
+import { ProgressRing, Card } from "@study/ui";
+
+# ProgressRing
+
+`import { ProgressRing } from "@study/ui"`
+
+```jsx live
+function Example() {
+  const [v, setV] = useState(0.62);
+  return (
+    <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
+      <ProgressRing value={v} label={`${Math.round(v * 100)} percent done`} size={104} thickness={12} tone="petrol">
+        <span style={{ fontSize: 24 }}>{Math.round(v * 100)} %</span>
+      </ProgressRing>
+      <input type="range" min="0" max="1" step="0.01" value={v} onChange={(e) => setV(+e.target.value)} aria-label="Value" />
+    </div>
+  );
+}
+```
+
+## Variants and states
+
+<Preview>
+  <ProgressRing value={0.2} label="20 percent" tone="gelb" />
+  <ProgressRing value={0.54} label="54 percent" tone="violett" />
+  <ProgressRing value={0.85} label="85 percent" tone="gruen" size={64} thickness={8}>85</ProgressRing>
+  <Card tone="blau" padding="sm"><ProgressRing value={0.62} label="62 percent" tone="blau" onTint /></Card>
+</Preview>
+
+## When to use
+
+- Progress of a course, a study session, an upload of known size.
+- On course colours with `onTint` – then the track is white.
+- `animateKey`: the ring runs up the first time it appears in a visit, afterwards it stands still.
+- Unknown duration? Then [Spinner](../feedback/spinner).
+
+## Props
+
+<PropsTable of="ProgressRing" />
+
+## Accessibility
+
+- An image with `label` as its description – say the number in words there ("8 of 13 chapters").
+- The colour `strong` is light; so the number is always also there as text next to it or inside.

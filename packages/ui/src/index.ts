@@ -4,6 +4,7 @@ import "@fontsource-variable/figtree";
 import "@fontsource-variable/bricolage-grotesque";
 
 export * from "./tokens";
+export * from "./text";
 export { cx } from "./cx";
 export { pickFiles, type PickFilesOptions } from "./files";
 

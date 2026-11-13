@@ -5,13 +5,14 @@ paths:
 
 # Server (`apps/server`)
 
-- **Aufbau:** `src/domain/` ist die Fachlogik (eine Datei pro Bereich), `src/http/` sind dünne Fastify-Routen, `src/mcp/` der MCP-Server, `src/jobs/` zeitgesteuerte Jobs (pg-boss), `src/search/` die Suche, `src/db/` Schema und Migrationen. Die Routen und MCP rufen dieselbe Logik aus `domain/` auf.
-- **Rechte:** Prüfe sie in `domain/` (`access.ts`: `requireRole`, `roleIn`; Rollen `viewer` < `editor` < `owner` aus `@study/shared`). Ein Fach, das jemand nicht sehen darf, „existiert nicht“ (`notFound`), nicht `forbidden`.
-- **Deadlines:** geteilt (mit Fach: anlegen, ändern, löschen ab `editor`) oder privat (ohne Fach: nur der Besitzer). **Abhaken ist pro Nutzer** (`deadline_done`) und ändert nichts für andere.
-- **Datenbank:** Drizzle. Schema in `src/db/schema.ts`, Migration mit `pnpm --filter @study/server db:generate`, danach **die erzeugte Migration prüfen und mit committen**. Der Server führt Migrationen beim Start aus (`migrateDb`). Eine Migration muss auf einer bestehenden Installation laufen.
-- **Erweiterungen:** Die Suche braucht `vector`, im Schema `extensions` (legt `migrateDb` an). Migrationen schreiben `vector(384)` ohne Schema und verlassen sich auf den Suchpfad.
-- **Konfiguration:** nur über `src/config.ts` (zod). Eine neue Umgebungsvariable ist eine Änderung für **Betreiber**: ergänze `.env.example`, `docker-compose.yml`, `apps/docs/docs/admin/konfiguration.mdx` und nutze `BREAKING CHANGE`, wenn sie Pflicht ist.
-- **Die KI läuft nicht auf dem Server** (ADR `0002`): Claude arbeitet über MCP mit den Rechten des Nutzers; was früher automatisch lief, steht im Arbeitseingang (`domain/inbox.ts`).
-- **Aus dem Image:** Der Server läuft als Benutzer `node` mit `node --import tsx src/index.ts`. Im Container gibt es kein `pnpm` zur Laufzeit; Skripte rufen `node --import tsx` auf.
-- **Anfragen nach außen** (Kalender-Feeds) gehen nur an öffentliche Adressen (`publicFetch`); schwäche das nicht ab.
-- **Tests:** `apps/server/test/`, gegen die echte Datenbank (siehe `tests.md`). Beispieldateien in `test/fixtures/` sind **erfunden**.
+- **Structure:** `src/domain/` is the domain logic (one file per area), `src/http/` are thin Fastify routes, `src/mcp/` the MCP server, `src/jobs/` scheduled jobs (pg-boss), `src/search/` the search, `src/db/` schema and migrations. The routes and MCP call the same logic from `domain/`.
+- **Permissions:** Check them in `domain/` (`access.ts`: `requireRole`, `roleIn`; roles `viewer` < `editor` < `owner` from `@study/shared`). A course someone may not see "does not exist" (`notFound`), not `forbidden`.
+- **Deadlines:** shared (with a course: create, change, delete from `editor`) or private (without a course: only the owner). **Ticking off is per user** (`deadline_done`) and changes nothing for others.
+- **Database:** Drizzle. Schema in `src/db/schema.ts`, migration with `pnpm --filter @study/server db:generate`, then **review the generated migration and commit it too**. The server runs migrations on start (`migrateDb`). A migration must run on an existing installation.
+- **Extensions:** The search needs `vector`, in the schema `extensions` (created by `migrateDb`). Migrations write `vector(384)` without a schema and rely on the search path.
+- **Configuration:** only through `src/config.ts` (zod). A new environment variable is a change for **operators**: add it to `.env.example`, `docker-compose.yml`, `apps/docs/docs/admin/configuration.mdx` and use `BREAKING CHANGE` if it is required.
+- **MCP texts** (instructions, tool descriptions, error texts, the work inbox) are English, tool names never change. Claude learns the languages from the data: `locale` of the user (`get_profile`, `overview`) and of each course (`list_courses`, `course_details`, `work_inbox`).
+- **The AI does not run on the server** (ADR `0002`): Claude works through MCP with the user's permissions; what used to run automatically is listed in the work inbox (`domain/inbox.ts`).
+- **From the image:** The server runs as user `node` with `node --import tsx src/index.ts`. There is no `pnpm` in the container at runtime; scripts call `node --import tsx`.
+- **Outgoing requests** (calendar feeds) only go to public addresses (`publicFetch`); do not weaken that.
+- **Tests:** `apps/server/test/`, against the real database (see `tests.md`). Sample files in `test/fixtures/` are **invented**.

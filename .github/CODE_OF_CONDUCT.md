@@ -1,10 +1,10 @@
-# Verhaltenskodex
+# Code of Conduct
 
-Dieses Projekt übernimmt den [Contributor Covenant, Version 2.1](https://www.contributor-covenant.org/de/version/2/1/code_of_conduct/) sinngemäß:
+This project follows the spirit of the [Contributor Covenant, version 2.1](https://www.contributor-covenant.org/version/2/1/code_of_conduct/):
 
-- Wir gehen freundlich, respektvoll und geduldig miteinander um – egal, wie viel Erfahrung jemand mitbringt.
-- Wir diskutieren Sachen, nicht Personen. Kritik ist willkommen, Herabsetzung nicht.
-- Belästigung, Diskriminierung und das Veröffentlichen privater Daten anderer sind nicht erlaubt.
-- Wer sich nicht daran hält, kann aus Issues, Pull Requests und Diskussionen ausgeschlossen werden.
+- We treat each other kindly, respectfully and patiently, no matter how much experience someone brings.
+- We discuss things, not people. Criticism is welcome, belittling is not.
+- Harassment, discrimination and publishing other people's private data are not allowed.
+- Whoever does not keep to this can be excluded from issues, pull requests and discussions.
 
-Wenn dir etwas begegnet, das nicht in Ordnung ist, melde es über die [privaten Sicherheitsmeldungen](https://github.com/erik1g/study-manager/security/advisories/new) von GitHub oder per Nachricht an die Betreuer des Projekts. Deine Meldung wird vertraulich behandelt.
+If you come across something that is not okay, report it through GitHub's [private security reports](https://github.com/erik1g/study-manager/security/advisories/new) or by message to the project's maintainers. Your report is treated confidentially.

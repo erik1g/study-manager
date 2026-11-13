@@ -27,7 +27,7 @@ const app = await buildApp(services, { extend: (instance) => mountMcp(instance, 
 
 // The very first start: the admin gets a link to set up their account.
 if ((await services.users.adminCount()) === 0) {
-  const { link } = await services.users.invite(config.ADMIN_EMAIL, "Admin", true);
+  const { link } = await services.users.invite(config.ADMIN_EMAIL, "Admin", { makeAdmin: true });
   app.log.warn(`No admin yet. Set up ${config.ADMIN_EMAIL} with: ${link}`);
 }
 

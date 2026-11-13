@@ -1,23 +1,23 @@
 ---
-title: "Reverse Proxy"
+title: "Reverse proxy"
 sidebar_position: 4
-description: "Beispiele für Nginx Proxy Manager, Caddy, Traefik und Cloudflare Tunnel."
+description: "Examples for Nginx Proxy Manager, Caddy, Traefik and Cloudflare Tunnel."
 ---
 
-# Reverse Proxy
+# Reverse proxy
 
-Der `web`-Container spricht **HTTP auf Port 8080** (siehe `HTTP_PORT`). Dein Reverse Proxy nimmt Anfragen an deiner Domain mit **HTTPS** an und leitet **alles** an diesen Port weiter: die Web-App, `/api`, `/mcp`, `/ical` und `/auth`. Der Study Manager braucht keine besonderen Pfadregeln.
+The `web` container speaks **HTTP on port 8080** (see `HTTP_PORT`). Your reverse proxy accepts requests to your domain with **HTTPS** and forwards **everything** to this port: the web app, `/api`, `/mcp`, `/ical` and `/auth`. Study Manager needs no special path rules.
 
-Wichtig für jeden Proxy:
+Important for every proxy:
 
-- **Host-Header** und **`X-Forwarded-For`** durchreichen. Die App begrenzt Anfragen pro Besucher.
-- **Upload-Größe**: Dokumente können groß sein. Erlaube mindestens **100 MB** pro Anfrage (die App lädt Dateien einzeln hoch).
-- **HTTPS ist Pflicht**: Passkeys und die Anmeldung von Claude (OAuth) funktionieren nur darüber.
-- Läuft der Proxy auf einem **anderen Rechner**, setze `BIND_ADDRESS=0.0.0.0` und schütze den Port mit einer Firewall, sodass nur der Proxy ihn erreicht. Trage die Adresse des Proxys in `TRUSTED_PROXIES` ein, wenn sie nicht in einem privaten Netz liegt.
+- Pass on the **Host header** and **`X-Forwarded-For`**. The app limits requests per visitor.
+- **Upload size**: documents can be large. Allow at least **100 MB** per request (the app uploads files one by one).
+- **HTTPS is required**: passkeys and Claude's sign-in (OAuth) only work over it.
+- If the proxy runs on **another machine**, set `BIND_ADDRESS=0.0.0.0` and protect the port with a firewall so that only the proxy reaches it. Enter the proxy's address in `TRUSTED_PROXIES` if it is not in a private network.
 
 ## Caddy
 
-Der einfachste Weg, wenn du keinen Proxy hast: Caddy holt sich das Zertifikat selbst.
+The easiest way if you have no proxy: Caddy gets the certificate itself.
 
 ```caddyfile
 study.example.org {
@@ -30,13 +30,13 @@ study.example.org {
 
 ## Nginx Proxy Manager
 
-1. *Proxy Hosts → Add Proxy Host*: Domain `study.example.org`, Schema `http`, Weiterleiten an `<IP des Servers>` Port `8080`, **Websockets Support** an.
-2. Reiter *SSL*: ein Let's-Encrypt-Zertifikat anfordern, *Force SSL* an.
-3. Reiter *Advanced*: `client_max_body_size 100m;`
+1. *Proxy Hosts → Add Proxy Host*: domain `study.example.org`, scheme `http`, forward to `<IP of the server>` port `8080`, **Websockets Support** on.
+2. Tab *SSL*: request a Let's Encrypt certificate, *Force SSL* on.
+3. Tab *Advanced*: `client_max_body_size 100m;`
 
 ## Traefik
 
-Hänge den `web`-Container mit Labels an dein Traefik. In einer `docker-compose.override.yml` neben der `docker-compose.yml`:
+Attach the `web` container to your Traefik with labels. In a `docker-compose.override.yml` next to the `docker-compose.yml`:
 
 ```yaml
 services:
@@ -56,26 +56,26 @@ networks:
     external: true
 ```
 
-Die Namen von Netzwerk, Entrypoint und Resolver passt du an dein Traefik an.
+Adjust the names of network, entrypoint and resolver to your Traefik.
 
 ## Cloudflare Tunnel
 
-Ein Tunnel braucht keinen offenen Port. Zeige ihn auf den Host-Port:
+A tunnel needs no open port. Point it to the host port:
 
 ```yaml
-# config.yml von cloudflared
+# config.yml of cloudflared
 ingress:
   - hostname: study.example.org
     service: http://localhost:8080
   - service: http_status:404
 ```
 
-Beachte: Cloudflare lässt pro Anfrage höchstens **100 MB** durch (im kostenlosen Tarif); größere Dateien lassen sich dann nicht hochladen. Die App sendet Dateien einzeln. Du kannst vor `/admin` und `/api/admin` zusätzlich **Cloudflare Access** schalten, dann kommt der Admin-Bereich nur noch mit zweiter Prüfung. Das ist optional; die App verlangt für Admins ohnehin Passkey oder Authenticator-App.
+Note: Cloudflare lets through at most **100 MB** per request (on the free plan); larger files cannot be uploaded then. The app sends files one by one. You can additionally put **Cloudflare Access** in front of `/admin` and `/api/admin`; then the admin area is only reachable with a second check. That is optional; the app requires a passkey or authenticator app for admins anyway.
 
-## Prüfen
+## Checking
 
 ```sh
 curl -I https://study.example.org/api/health
 ```
 
-muss `200` liefern. Zeigt die Anmeldung einen Fehler, stimmen meist `SITE_URL` und `API_EXTERNAL_URL` in der `.env` nicht mit der Adresse überein, die du im Browser benutzt.
+must return `200`. If the sign-in shows an error, `SITE_URL` and `API_EXTERNAL_URL` in the `.env` usually do not match the address you use in the browser.

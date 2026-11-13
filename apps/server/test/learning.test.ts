@@ -16,6 +16,8 @@ async function subject() {
   const alex = await w.user("Alex");
   const lena = await w.user("Lena");
   const tom = await w.user("Tom");
+  // Alex uses the German interface, so the course and its notes are German.
+  await w.services.users.updateProfile(alex, { locale: "de" });
   const course = await w.services.courses.create(alex, { title: "Real-time Systems", semester: "WiSe26-27" });
   await w.services.courses.acceptInvite(lena, (await w.services.courses.createInvite(alex, course.id)).token);
   await w.services.courses.acceptInvite(tom, (await w.services.courses.createInvite(alex, course.id, "viewer")).token);
