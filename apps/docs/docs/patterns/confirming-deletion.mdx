@@ -1,0 +1,38 @@
+---
+title: Confirming deletion
+sidebar_position: 4
+description: Ask where it is necessary – and only there.
+---
+
+# Confirming deletion
+
+| What | How |
+| --- | --- |
+| Files, cards, recordings | into the trash **without** asking, plus a toast "Moved to the trash" |
+| Permanently from the trash | `ConfirmDialog` |
+| A whole course, removing a member, leaving a course | `ConfirmDialog` with `danger` |
+| Your own account | a page of its own: type in your email address to confirm |
+
+```jsx live
+function Example() {
+  const [ask, setAsk] = useState(false);
+  return (
+    <>
+      <Button variant="danger" icon="logout" onClick={() => setAsk(true)}>Leave course</Button>
+      {ask && (
+        <ConfirmDialog title="Leave Control Engineering?" confirm="Leave" danger onClose={() => setAsk(false)} onConfirm={() => toast("You left the course")}>
+          You will no longer see its files and notes. A member can invite you again.
+        </ConfirmDialog>
+      )}
+      <Toaster />
+    </>
+  );
+}
+```
+
+## Rules
+
+- The title is a question with the **name** of what disappears.
+- The text says what happens afterwards, and whether it comes back.
+- The button repeats the verb: "Delete", "Leave", "Remove" – never "Yes".
+- "Cancel" has the focus.

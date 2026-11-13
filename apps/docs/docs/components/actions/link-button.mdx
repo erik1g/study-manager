@@ -1,0 +1,64 @@
+---
+title: LinkButton
+sidebar_position: 3
+description: Looks like a button, leads somewhere else.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { DoDont, Do, Dont } from "@site/src/components/DoDont";
+import { LinkButton } from "@study/ui";
+
+# LinkButton
+
+`import { LinkButton } from "@study/ui"`
+
+A link dressed as a button: "Study now", "All documents", "To sign-in". It navigates – [Button](./button) is there for actions.
+
+```jsx live
+<div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+  <LinkButton href="#" variant="primary" iconEnd="arrow-right">Study now</LinkButton>
+  <LinkButton href="#">All documents</LinkButton>
+</div>
+```
+
+In the app with the router:
+
+```tsx
+import { Link } from "react-router";
+
+<LinkButton as={Link} to="/faecher" variant="secondary">All courses</LinkButton>
+```
+
+## Variants and states
+
+The same as for [Button](./button), without `loading`.
+
+<Preview>
+  <LinkButton href="#" variant="primary">Primary</LinkButton>
+  <LinkButton href="#">Secondary</LinkButton>
+  <LinkButton href="#" variant="soft" tone="violett" icon="cards">Study</LinkButton>
+  <LinkButton href="#" variant="ghost" iconEnd="external">External</LinkButton>
+</Preview>
+
+## When to use
+
+<DoDont>
+  <Do caption="Navigation that is important enough for a button.">
+    <LinkButton href="#" variant="primary" iconEnd="arrow-right">Study now</LinkButton>
+  </Do>
+  <Dont caption="A link that saves or deletes something – that is a Button.">
+    <LinkButton href="#" variant="danger">Delete</LinkButton>
+  </Dont>
+</DoDont>
+
+## Props
+
+Plus all props of the element from `as` (`href`, `to`, `target` …).
+
+<PropsTable of="LinkButton" />
+
+## Accessibility
+
+- Stays a link: screen readers say "link", Ctrl-click opens a new tab.
+- External links with `target="_blank"` get `rel="noreferrer"` and the icon `external`.

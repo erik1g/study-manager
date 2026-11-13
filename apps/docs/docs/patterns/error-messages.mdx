@@ -1,0 +1,38 @@
+---
+title: Error messages
+sidebar_position: 3
+description: What went wrong, and what helps now.
+---
+
+# Error messages
+
+A good error message says **what happened** and **what you can do** – without blame, without technology.
+
+| Instead of | Better |
+| --- | --- |
+| Error 413 | The file is larger than 95 MB. |
+| Request failed | No connection. Try again in a moment. |
+| Invalid input | Give the course a name. |
+| Unauthorized | You have been signed out. Sign in again. |
+| Forbidden | Only editors can upload here. |
+
+## Where what appears
+
+| Kind | Component |
+| --- | --- |
+| about a field | `error` on the field |
+| when saving, loading, uploading | `Notice tone="danger"` in place, with "Try again" |
+| in the confirm dialog | appears in the `ConfirmDialog` itself |
+| a whole page is missing | `EmptyState` with `fehler` and a way back |
+| on the side, not important | `toast(…, "danger")` |
+
+```jsx live
+<div className="ui-stack" style={{ maxWidth: 480 }}>
+  <Notice tone="danger" title="Not saved" action={<Button size="sm">Try again</Button>}>
+    No connection to the server.
+  </Notice>
+  <EmptyState size="sm" illustration="fehler" title="This course no longer exists" actions={<Button icon="arrow-left">To your courses</Button>}>
+    Maybe it was deleted or you are no longer a member.
+  </EmptyState>
+</div>
+```

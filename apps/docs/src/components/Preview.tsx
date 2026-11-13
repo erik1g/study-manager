@@ -6,7 +6,7 @@ export function Preview({ children, column = false }: { children: ReactNode; col
     <div className="doc-preview">
       {(["light", "dark"] as const).map((theme) => (
         <div key={theme} className={`doc-preview-pane ui-theme-${theme}${column ? " column" : ""}`}>
-          <p className="doc-preview-label">{theme === "light" ? "Hell" : "Dunkel"}</p>
+          <p className="doc-preview-label">{theme === "light" ? "Light" : "Dark"}</p>
           {children}
         </div>
       ))}

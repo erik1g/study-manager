@@ -1,0 +1,44 @@
+---
+title: Notice
+sidebar_position: 2
+description: A message that stays on the page.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { DoDont, Do, Dont } from "@site/src/components/DoDont";
+import { Notice, Button } from "@study/ui";
+
+# Notice
+
+`import { Notice } from "@study/ui"`
+
+```jsx live
+<Notice tone="danger" title="Upload failed" action={<Button size="sm">Try again</Button>}>
+  Chapter 4.pdf is larger than 95 MB.
+</Notice>
+```
+
+## Variants and states
+
+<Preview column>
+  <Notice tone="info">Claude can create deadlines and tasks for you.</Notice>
+  <Notice tone="success" title="Connected">Your calendar is synced every hour.</Notice>
+  <Notice tone="warning">The key expires in 5 days.</Notice>
+  <Notice tone="danger">Wrong password.</Notice>
+</Preview>
+
+## When to use
+
+- What people **must** read or what stays: errors when saving, an expiring key, an explanation.
+- Short confirmations like "Saved": [Toast](./toast).
+- Errors about a field: `error` on the field, not here.
+
+## Props
+
+<PropsTable of="Notice" />
+
+## Accessibility
+
+- `danger` is `role="alert"` and is read out at once; all others are `status`.
+- Icon **and** text carry the meaning, not only the colour.

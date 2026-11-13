@@ -1,0 +1,61 @@
+---
+title: "Glossary"
+sidebar_position: 9
+description: "The terms of Study Manager: course, deadline, task, member and more – with the fixed German interface terms."
+---
+
+# Study Manager – Glossary
+
+The English term is the one used in code, docs and the English interface. **German** is the fixed term in the German interface; translations use exactly these words.
+
+**Programme** (German: *Studiengang*; code: `program`):
+A degree programme at a university with examination regulations, e.g. "M.Sc. Technische Systeme, Beispieluniversität, PO 2024". Has exactly one module catalogue, shared by everyone who studies it.
+_Avoid_: study, degree (German: Studium, Programm)
+
+**Module** (German: *Modul*):
+An entry of a programme's module handbook, with number, title, credits and the other details from the handbook.
+
+**Manager** (German: *Verwalter*):
+Whoever created a programme; only they (or an admin) change its module catalogue.
+
+**Course** (German: *Fach*):
+A module (or a freely created class) in one semester, together with its members. Documents, deadlines and sessions belong to it.
+_Avoid_: class, subject (German for users: Kurs, Veranstaltung)
+
+**Member** (German: *Mitglied*):
+A user in a course, with exactly one role: **owner** (German: *Besitzer*; everything, including roles and deleting), **editor** (German: *Bearbeiter*; add, change, delete shared things), **reader** (German: *Leser*; see everything, only create their own things). In code the reader role is `viewer`.
+
+**Document** (German: *Dokument*; code: `file`):
+A file of a course in one of the folders **Scripts** (*Skripte*), **Exercises** (*Übungen*), **Past exams** (*Altklausuren*) or **Other** (*Sonstiges*). Deleted documents stay in the course's **trash** (*Papierkorb*) for 30 days.
+
+**Deadline** (German: *Deadline*):
+A point in time such as an exam or a submission. With a course it is visible to all members, without a course only to whoever creates it.
+_Avoid_: appointment (German: Termin, for calendar entries in general)
+
+**Task** (German: *Aufgabe*, shown as *Todo* in lists):
+A user's to-do, always private, planned for a day and optionally a time; with a time it blocks its estimated duration as a **time block** (*Zeitblock*) in the calendar.
+_Avoid_: appointment
+
+**Calendar subscription** (German: *Kalender-Abo*; code: `feed`):
+A subscribed iCal calendar of a user, e.g. the timetable. Its recurring titles are called a **series** (*Serie*); a series assigned to a course supplies its **sessions** (*Sitzungen*).
+
+**Subscription link** (German: *Abo-Link*; code: calendar link):
+The private link through which the phone's calendar shows deadlines and planned tasks – read only.
+
+**Personal key** (German: *Persönlicher Schlüssel*):
+An access key for MCP clients without OAuth, e.g. Claude Code.
+
+**Notes** (German: *Notizen*):
+The **shared notes** (*gemeinsame Notizen*) of a course – a Markdown text that all editors change like a wiki; whoever saves against an outdated version gets a conflict warning. In addition, every member has **private notes** (*private Notizen*) that only they see.
+
+**Outline** (German: *Gliederung*):
+The chapters and sections of a script in the shared notes, with a reference to script and page. Claude adds to it but never deletes anything.
+
+**Lecture** (German: *Vorlesung*; code: `recording`):
+The transcript of a lecture recording, for all members of a course. Transcription happens in the member's browser or with their own key for a service. Its **evaluation** (*Auswertung*: key points and verbatim **exam hints**, *Prüfungshinweise*) is added to the shared notes by Claude.
+
+**Deck** and **flashcard** (German: *Stapel*, *Lernkarte*; code: `deck`, `card`):
+Flashcards belong to a course and are shared; when a card is due again is calculated by FSRS for each member separately. Claude does not create cards but makes **suggestions** (*Vorschläge*) that the member accepts or discards.
+
+**Work inbox** (German: *Arbeitseingang*):
+What waits for a user's Claude: scripts without an outline and lectures without an evaluation. The cloud runs no AI itself; it lists the work, and Claude fetches it through MCP.

@@ -1,0 +1,43 @@
+---
+title: ProgressBar
+sidebar_position: 5
+description: How far a longer job is, as a bar.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { ProgressBar } from "@study/ui";
+
+# ProgressBar
+
+`import { ProgressBar } from "@study/ui"`
+
+```jsx live
+function Example() {
+  const [v, setV] = useState(0.35);
+  return (
+    <div className="ui-stack" style={{ maxWidth: 420 }}>
+      <ProgressBar value={v} label="Transcribing" tone="violett" />
+      <Button size="sm" onClick={() => setV(Math.min(1, v + 0.15))}>Next</Button>
+    </div>
+  );
+}
+```
+
+<Preview column>
+  <ProgressBar value={0.2} label="Loading model" />
+  <ProgressBar value={0.8} label="Uploading" tone="gruen" />
+</Preview>
+
+## When to use
+
+- For jobs with known progress that take seconds to minutes: uploading, transcribing.
+- Progress of a course: [ProgressRing](./progress-ring). Unknown duration: [Spinner](../feedback/spinner).
+
+## Props
+
+<PropsTable of="ProgressBar" />
+
+## Accessibility
+
+- `role="progressbar"` with a value of 0–100 and the label as its name; the value is also there as text.

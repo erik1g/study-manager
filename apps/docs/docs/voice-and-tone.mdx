@@ -1,0 +1,50 @@
+---
+title: Voice and tone
+sidebar_position: 50
+description: How the app talks to you.
+---
+
+# Voice and tone
+
+Study Manager talks like a friendly fellow student: informal, short, concrete, without jargon.
+
+## Principles
+
+- **Short sentences.** One thought per sentence.
+- **Say what happens**, not what the system does: "Saved" rather than "The data was successfully persisted".
+- **No blame**: "The password does not match" rather than "You entered a wrong password".
+- **Proper names stay** (Claude, passkey). Claude is "Claude", not "the AI".
+
+## Buttons and titles
+
+- **Buttons are verbs**: Save, Create, Upload, Delete, Leave. Never "OK", "Yes", "Send" without an object when it is ambiguous.
+- **Titles are nouns or questions**: "New course", "Delete course?".
+- **Empty states** say "No … yet" – the "yet" gives courage.
+- **Confirmations** are short and in the past: "Saved", "Link copied", "Moved to the trash".
+
+## Claude
+
+What Claude did on someone's behalf is marked "via Claude" (a chip in yellow).
+
+## The German interface
+
+The texts in `apps/web/src/i18n/de.ts` follow these rules:
+
+- **Informal "du"**, capitalised only at the start of a sentence: „Leg dein erstes Fach an.“
+- **No Denglisch** where there is a good German word: hochladen, Ordner, Fach, Frist. Use the German terms from the [glossary](/developers/glossary).
+- Proper umlauts and ß – never "ue" or "ss" as a replacement.
+- German quotation marks „so“, ellipsis with … (one character), dash – with spaces.
+- Numbers with a unit: „95 MB“, „84 Min.“, „3,2 MB“ (decimal comma).
+
+### Dates and times
+
+| What | Like this |
+| --- | --- |
+| today, tomorrow, yesterday | „heute“, „morgen, 09:45“ |
+| this week | „Do“, „Do, 5. Nov.“ |
+| further away | „17. Feb.“, „17. Februar 2027“ in headings |
+| time | 24 hours, „09:45“ |
+| deadlines | „in 2 Tagen“, „noch 106 Tage“, „heute, 23:59“ |
+| ranges | „09:45–11:15“ (en dash without spaces) |
+
+Rules for the English interface follow with its texts.

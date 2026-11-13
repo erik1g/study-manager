@@ -1,0 +1,55 @@
+---
+title: Chip
+sidebar_position: 2
+description: A short tag – abbreviation, number, state.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { DoDont, Do, Dont } from "@site/src/components/DoDont";
+import { Chip, Card } from "@study/ui";
+
+# Chip
+
+`import { Chip } from "@study/ui"`
+
+```jsx live
+<div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+  <Chip tone="blau">CE</Chip>
+  <Chip tone="petrol">in 9 days</Chip>
+  <Chip tone="violett" icon="cards">24 due</Chip>
+  <Chip tone="gelb" icon="claude">via Claude</Chip>
+  <Chip>Draft</Chip>
+</div>
+```
+
+## Variants and states
+
+<Preview column>
+  <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+    <Chip tone="blau">Blue</Chip><Chip tone="petrol">Mint</Chip><Chip tone="gruen">Sage</Chip><Chip tone="gelb">Butter</Chip>
+    <Chip tone="orange">Peach</Chip><Chip tone="rot">Rosé</Chip><Chip tone="violett">Lavender</Chip><Chip tone="grau">Stone</Chip>
+  </div>
+  <div style={{ display: "flex", gap: 8 }}><Chip size="sm" tone="blau">small</Chip><Chip tone="blau">normal</Chip></div>
+  <Card tone="gelb" padding="sm"><Chip onTint>Streak: 6 days</Chip></Card>
+</Preview>
+
+## When to use
+
+<DoDont>
+  <Do caption="Short, in the colour of the course it belongs to.">
+    <Chip tone="orange">EM</Chip>
+  </Do>
+  <Dont caption="Whole sentences or clicks – chips cannot be pressed.">
+    <Chip tone="blau">Click here to open the course</Chip>
+  </Dont>
+</DoDont>
+
+## Props
+
+<PropsTable of="Chip" />
+
+## Accessibility
+
+- Plain text; an icon in it is decoration.
+- If an abbreviation like "CE" stands alone, give it a `title` with the full name.

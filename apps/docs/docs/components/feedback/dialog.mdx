@@ -1,0 +1,67 @@
+---
+title: Dialog and ConfirmDialog
+sidebar_position: 1
+description: A question or a small form above the page.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { DoDont, Do, Dont } from "@site/src/components/DoDont";
+import { Dialog, ConfirmDialog, Button, TextField } from "@study/ui";
+
+# Dialog and ConfirmDialog
+
+`import { Dialog, ConfirmDialog } from "@study/ui"`
+
+A dialog is visible as long as it is rendered; `onClose` removes it.
+
+```jsx live
+function Example() {
+  const [open, setOpen] = useState(null);
+  return (
+    <div style={{ display: "flex", gap: 10 }}>
+      <Button variant="primary" icon="plus" onClick={() => setOpen("new")}>Create course</Button>
+      <Button variant="danger" icon="trash" onClick={() => setOpen("delete")}>Delete course</Button>
+      {open === "new" && (
+        <Dialog title="New course" onClose={() => setOpen(null)}
+          footer={<><Button onClick={() => setOpen(null)}>Cancel</Button><Button variant="primary" onClick={() => setOpen(null)}>Create</Button></>}>
+          <TextField label="Name" placeholder="e.g. Control Engineering" autoFocus />
+        </Dialog>
+      )}
+      {open === "delete" && (
+        <ConfirmDialog title="Delete Control Engineering?" confirm="Delete" danger onClose={() => setOpen(null)}
+          onConfirm={() => new Promise((r) => setTimeout(r, 800))}>
+          The course's files, notes and flashcards then stay in the trash for 30 days.
+        </ConfirmDialog>
+      )}
+    </div>
+  );
+}
+```
+
+## When to use
+
+<DoDont>
+  <Do caption="Short things that belong to the page: create, rename, ask.">
+    <Button variant="primary">Create course</Button>
+  </Do>
+  <Dont caption="Long forms or dialogs in dialogs – use a page of its own for that.">
+    <Button>Edit all settings …</Button>
+  </Dont>
+</DoDont>
+
+- At the bottom right: Cancel first, the main action last.
+- `ConfirmDialog` before anything that cannot easily be undone; its `onConfirm` may be a promise – the button loads, an error appears in the dialog.
+- More under [Patterns › Confirming deletion](/patterns/confirming-deletion).
+
+## Props
+
+<PropsTable of="Dialog" />
+<PropsTable of="ConfirmDialog" />
+
+## Accessibility
+
+- A real `<dialog>` as a modal: the rest of the page is locked, the focus stays inside.
+- Title and description are connected with `aria-labelledby`/`aria-describedby`.
+- Escape and the × close it; afterwards the focus returns to the button that opened it.
+- In the `ConfirmDialog`, "Cancel" has the focus – Enter does no harm.

@@ -1,0 +1,40 @@
+---
+title: FileTile
+sidebar_position: 6
+description: The kind of a file at a glance.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { DoDont, Do, Dont } from "@site/src/components/DoDont";
+import { FileTile, fileKind, List, ListRow } from "@study/ui";
+
+# FileTile
+
+`import { FileTile, fileKind } from "@study/ui"`
+
+```jsx live
+<List style={{ maxWidth: 480 }}>
+  {["Script chapter 4.pdf", "Formula sheet.docx", "Lecture 27 Oct.m4a", "Blackboard.jpg"].map((name) => (
+    <ListRow key={name} leading={<FileTile kind={fileKind(name)} />} title={name} meta="Scripts · today" />
+  ))}
+</List>
+```
+
+## Variants and states
+
+<Preview>
+  <FileTile kind="pdf" /><FileTile kind="word" /><FileTile kind="slides" /><FileTile kind="sheet" />
+  <FileTile kind="text" /><FileTile kind="image" /><FileTile kind="audio" /><FileTile kind="other" />
+  <FileTile kind="pdf" size={32} />
+</Preview>
+
+`fileKind(name, mime?)` determines the kind from the extension or MIME type.
+
+## Props
+
+<PropsTable of="FileTile" />
+
+## Accessibility
+
+- Pure decoration (`aria-hidden`); the file name next to it says everything.
