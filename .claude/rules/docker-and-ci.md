@@ -12,7 +12,7 @@ paths:
 - **All Dockerfiles** live in `infra/docker/`; `dev.Dockerfile` is the development container. **Two images**: `server.Dockerfile` (Node 24, `pg_dump`, server code, user `node`) and `web.Dockerfile` (Caddy with the built web app and `infra/caddy/Caddyfile`). `pnpm` gets into the image through `npm install -g pnpm@12.16.1` (not through `corepack`).
 - **Compose files:** `docker-compose.yml` is the one for **operators** (images only, `web` on `127.0.0.1:8080`), `infra/compose/dev.yml` for developers (source mounted, hot reload), `infra/compose/test.yml` sits on top of the first and builds the images from the checkout for the test stack.
 - **TLS ends at the operator's reverse proxy.** Caddy in the `web` image only speaks HTTP on port 80. Trusted proxies come from `TRUSTED_PROXIES`.
-- **New setting** ⇒ add it to `.env.example`, `apps/docs/docs/admin/konfiguration.mdx` and `setup.mjs` (if it is generated).
+- **New setting** ⇒ add it to `.env.example`, `apps/docs/docs/admin/configuration.mdx` and `setup.mjs` (if it is generated).
 - **Nothing about the maintainer's server goes into the repository:** no domains, IPs, paths, firewall scripts.
 
 ## GitHub Actions (`.github/workflows`)

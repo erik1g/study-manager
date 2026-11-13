@@ -4,7 +4,7 @@ import { themes } from "prism-react-renderer";
 
 const config: Config = {
   title: "Study Manager",
-  tagline: "Die selbst gehostete Web-App für Studierende",
+  tagline: "The self-hosted web app for students",
   // Published on GitHub Pages: https://erik1g.github.io/study-manager/
   url: "https://erik1g.github.io",
   baseUrl: "/study-manager/",
@@ -14,7 +14,7 @@ const config: Config = {
   onBrokenLinks: "throw",
   markdown: { hooks: { onBrokenMarkdownLinks: "throw" } },
   favicon: "img/favicon.svg",
-  i18n: { defaultLocale: "de", locales: ["de"] },
+  i18n: { defaultLocale: "en", locales: ["en"] },
   clientModules: ["./src/client.ts"],
 
   presets: [
@@ -40,7 +40,7 @@ const config: Config = {
       "@easyops-cn/docusaurus-search-local",
       {
         hashed: true,
-        language: ["de"],
+        language: ["en"],
         indexBlog: false,
         docsRouteBasePath: "/",
         highlightSearchTermsOnTargetPage: true,
@@ -54,14 +54,14 @@ const config: Config = {
       title: "Study Manager",
       logo: { alt: "", src: "img/favicon.svg" },
       items: [
-        { type: "docSidebar", sidebarId: "nutzer", position: "left", label: "Nutzer" },
+        { type: "docSidebar", sidebarId: "users", position: "left", label: "Users" },
         { type: "docSidebar", sidebarId: "admin", position: "left", label: "Admin" },
-        { type: "docSidebar", sidebarId: "entwickler", position: "left", label: "Entwickler" },
+        { type: "docSidebar", sidebarId: "developers", position: "left", label: "Developers" },
         { href: "https://github.com/erik1g/study-manager", label: "GitHub", position: "right" },
       ],
     },
     footer: {
-      copyright: "Study Manager · freie Software unter der GPL-3.0",
+      copyright: "Study Manager · free software under the GPL-3.0",
     },
     docs: { sidebar: { hideable: true } },
     tableOfContents: { minHeadingLevel: 2, maxHeadingLevel: 3 },

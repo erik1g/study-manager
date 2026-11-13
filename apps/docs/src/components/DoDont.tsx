@@ -10,7 +10,7 @@ export function Do({ children, caption }: { children: ReactNode; caption: ReactN
     <div className="doc-do">
       <div className="doc-do-stage">{children}</div>
       <div className="doc-do-caption">
-        <strong>✓ So</strong>
+        <strong>✓ Do</strong>
         <span>{caption}</span>
       </div>
     </div>
@@ -22,7 +22,7 @@ export function Dont({ children, caption }: { children: ReactNode; caption: Reac
     <div className="doc-dont">
       <div className="doc-do-stage">{children}</div>
       <div className="doc-do-caption">
-        <strong>✗ Nicht so</strong>
+        <strong>✗ Don't</strong>
         <span>{caption}</span>
       </div>
     </div>

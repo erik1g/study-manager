@@ -1,0 +1,48 @@
+---
+title: "Tests"
+sidebar_position: 4
+description: "Unit tests, type check, UI check and the end-to-end tests with the test stack."
+---
+
+# Tests
+
+| What | Command | Where |
+|---|---|---|
+| Types | `pnpm typecheck` | all packages |
+| Unit tests | `pnpm test` | `packages/ui/test`, `packages/shared`, `apps/server/test`, `apps/web` |
+| UI check | `node infra/scripts/ui-gate.mjs` | checks `apps/web`: only building blocks from `@study/ui` |
+| End to end | `./infra/test/stack.sh e2e` | `apps/e2e` (Playwright) |
+
+CI runs types, tests, UI check and build on every pull request; the Playwright tests run on every pull request to `dev` or `main` (required for merging) and on other pull requests with the label `e2e`.
+
+## Server unit tests
+
+They run against a **real PostgreSQL database**: the tests create their own database `study_test` and empty it between files. Set `DATABASE_URL` to a server you may use for this, or run them in the dev container:
+
+```sh
+docker compose --project-directory . -f infra/compose/dev.yml exec server sh -c "cd apps/server && pnpm exec vitest run"
+```
+
+In the tests, sign-in is replaced by a stand-in (`memoryAccounts`), the calendar feeds by files from `test/fixtures/`.
+
+## The test stack
+
+A second, isolated instance **with the images you build from your checkout**, its own database, its own keys and **invented data** (Mira, Jonas and Sina with fixed roles). It only listens on `127.0.0.1:8090`:
+
+```sh
+pnpm install                                   # once, for Playwright
+./infra/test/stack.sh up      # builds and starts
+./infra/test/stack.sh seed    # fills in the data (SEED_DAY=2026-11-03 for the fixed day)
+./infra/test/stack.sh e2e     # reset, fill, all Playwright tests
+./infra/test/stack.sh e2e --reporter=line tests/course.spec.ts   # only a part
+./infra/test/stack.sh screenshots   # like e2e, but takes the pictures for README and docs
+./infra/test/stack.sh down | reset
+```
+
+`e2e` **resets** the stack, fills it with the data of a fixed day (3 November 2026, 10:00 Berlin time; the browser clock stands still there) and then starts the tests in a Playwright container. The visual comparisons (appearance, light and dark) run first, then the tests that change data, last the deletion of an account.
+
+- New tests go in `apps/e2e/tests/` and use `helpers.ts` (`signIn`, `openSubject`, `isPhone`). The tests run in Chromium, WebKit and an iPhone profile; things that only exist on wide or narrow screens you skip with `test.skip(isPhone(page), "…")`.
+- If a test changes shared data, it is **robust against repetition** and cleans up or creates its own data (titles with `info.project.name`).
+- Wait for a **visible confirmation** (e.g. the message "Deadline angelegt") before you change the page; otherwise you cancel the request.
+- **Pictures for README and docs** are in `apps/docs/static/img/oberflaeche/` (light, dark, laptop and phone). They are made with `./infra/test/stack.sh screenshots` from the invented test data (`apps/e2e/screenshots/`); retake them after bigger changes in appearance and commit them. The times of uploads and changes are hidden in them, because the server's clock is the real one.
+- Intended changes in appearance: `./infra/test/stack.sh e2e --update-snapshots tests/visual.spec.ts`, then check the changed images in `apps/e2e/tests/__screenshots__` in the pull request.

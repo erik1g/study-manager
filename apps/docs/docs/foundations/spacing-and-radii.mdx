@@ -1,0 +1,35 @@
+---
+title: Spacing and radii
+sidebar_position: 3
+description: A 4 px grid, round corners, buttons as pills.
+---
+
+import { RadiusScale, SpaceScale } from "@site/src/components/Foundations";
+
+# Spacing and radii
+
+## Spacing
+
+All spacing is a multiple of 4 px.
+
+<SpaceScale />
+
+- Between cards: `--ui-space-5` (20 px), on phones `--ui-space-4`.
+- Inside cards: `--ui-space-6` (24 px), on phones 20 px – `Card` does this itself.
+- Between a title and its content: `--ui-space-3` to `--ui-space-4`.
+
+## Radii
+
+<RadiusScale />
+
+| What | Radius |
+| --- | --- |
+| Large cards | `xl` 28 px |
+| Small cards, empty areas | `lg` 24 px |
+| Fields, notices | `md` 18 px |
+| Tiles, rows on cards | 14–18 px |
+| Buttons, tabs, chips, search | `pill` – fully round |
+
+## Heights
+
+Buttons and fields are **44 px** high (`--ui-control-md`) – the smallest height that can be hit safely with a finger. `sm` (36 px) only in dense toolbars on the desktop, `lg` (52 px) for the sign-in and main actions on phones.

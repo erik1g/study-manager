@@ -7,7 +7,7 @@ paths:
 # Interface (`apps/web`, `packages/ui`)
 
 - **The one rule:** In `apps/web` use only **building blocks from `@study/ui`**: no bare `<button>`, `<input>`, `<select>`, `<textarea>`, no old classes (`button`, `icon-button`, `popover`, `notice`, `segmented`, `tag`) and **no colours as hex, `rgb()` or `hsl()` values**, but tokens (`--ui-…`). `node infra/scripts/ui-gate.mjs` checks this. An exception needs `ui-allow: <reason>` on the line before.
-- **New building block:** first check whether a variant or prop is enough; component in `packages/ui/src/components`, CSS in `src/styles` with `ui-` classes and tokens, export in `src/index.ts`, test in `test/`, page under `apps/docs/docs/bausteine/`. Change colours only in `src/tokens.ts` (then `pnpm --filter @study/ui tokens`).
+- **New building block:** first check whether a variant or prop is enough; component in `packages/ui/src/components`, CSS in `src/styles` with `ui-` classes and tokens, export in `src/index.ts`, test in `test/`, page under `apps/docs/docs/components/`. Change colours only in `src/tokens.ts` (then `pnpm --filter @study/ui tokens`).
 - **Texts** live in `apps/web/src/i18n/de.ts`, not scattered through the code. German, informal "du", verbs on buttons ("Speichern", not "OK").
 - **Permissions:** The interface only **shows** what the server allows (`deadline.editable`, `course.role`). Never rely on it alone.
 - **Hooks:** All hooks before any early `return` (a bug here made "Edit" crash for deadlines).

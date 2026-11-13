@@ -1,0 +1,21 @@
+---
+title: "Lectures and flashcards"
+sidebar_position: 7
+description: "Have lectures transcribed, evaluate them with Claude and review with flashcards."
+---
+
+import { Screenshot } from "@site/src/components/Screenshot";
+
+# Lectures and flashcards
+
+## Lectures
+
+In the **Lectures** tab you record a lecture and have it **transcribed**. That happens in **your browser** (Whisper, on the graphics card through WebGPU) or with **your own key** for a transcription service, which you set up under *Settings → Transcription*. The server only stores the text; it runs no AI.
+
+The evaluation (key points per chapter, exam hints such as "this will be on the exam" with a timestamp) is done by **your Claude**: the work inbox lists what is waiting for evaluation. See [Connect Claude](/users/connect-claude).
+
+## Flashcards
+
+In the **Flashcards** tab you create decks and write cards (question on the front, answer on the back, formulas in LaTeX). The app remembers what you know and asks hard cards more often. What is due today shows up on *Today* every morning. You can also have Claude suggest cards from your script and accept them in the app.
+
+<Screenshot name="lernkarten" alt="Flashcards of a course: a deck with a question, below it the button “Show answer”." />

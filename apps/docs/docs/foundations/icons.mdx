@@ -1,0 +1,33 @@
+---
+title: Icons
+sidebar_position: 5
+description: One set of round line icons at 24 px, some also filled.
+---
+
+import { IconGallery } from "@site/src/components/Foundations";
+import { PropsTable } from "@site/src/components/PropsTable";
+
+# Icons
+
+```tsx
+import { Icon } from "@study/ui";
+
+<Icon name="calendar" />
+<Icon name="star" filled size={24} />
+```
+
+All icons are drawn on a 24 × 24 grid with round 2 px lines and take on the **text colour**. Some have a **filled** form (second icon in the tile) – for course tiles and states that should carry more weight.
+
+A click copies the code.
+
+<IconGallery />
+
+## Rules
+
+- No emojis, no icons from other sets. If one is missing, it is added to `Icon.tsx` in the same style.
+- Next to text, an icon is decoration and hidden from screen readers. If it stands alone, it needs a `label` – or it sits in an `IconButton`, which carries the name.
+- Sizes: 16 in small buttons, 18–20 in text, 22 in navigation, 26–34 in course tiles.
+
+## Props
+
+<PropsTable of="Icon" />
