@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link, useLocation } from "react-router";
 import { IconButton, LinkButton, Logo, NavItem, NavSection, Sidebar, TabBar } from "@study/ui";
-import { de, semesterName, semesterOf, today } from "../i18n/de";
+import { t, semesterName, semesterOf, today } from "../i18n";
 import { api } from "../lib/api";
 import { openPalette, useChanged } from "../lib/events";
 import { useGo } from "../lib/motion";
@@ -25,11 +25,11 @@ function useCounts() {
     const from = new Date(`${today()}T00:00:00`);
     const to = new Date(from.getTime() + BADGE_DAYS * 86_400_000);
     void Promise.all([api.deadlines({ from: from.toISOString(), to: to.toISOString() }), api.tasks({ open: true })]).then(
-      ([d, t]) => {
+      ([d, open]) => {
         const counts: Record<string, number> = {};
         for (const item of d) if (item.courseId && deadlineOpen(item)) counts[item.courseId] = (counts[item.courseId] ?? 0) + 1;
         setDeadlines(counts);
-        setTasks(t.length);
+        setTasks(open.length);
       },
       () => {},
     );
@@ -77,15 +77,15 @@ export function AppSidebar() {
     <Sidebar
       className={collapsed ? "app-sidebar collapsed" : "app-sidebar"}
       collapsed={collapsed}
-      label={de.nav.main}
+      label={t.nav.main}
       brand={
         <div className="brand-row">
-          <Link to="/" className="brand-link" aria-label={de.nav.today}>
+          <Link to="/" className="brand-link" aria-label={t.nav.today}>
             <Logo withName={!collapsed} />
           </Link>
           <IconButton
             icon="sidebar"
-            label={collapsed ? de.nav.expand : de.nav.collapse}
+            label={collapsed ? t.nav.expand : t.nav.collapse}
             aria-keyshortcuts="Control+B Meta+B"
             onClick={() => setCollapsed(!collapsed)}
           />
@@ -105,19 +105,19 @@ export function AppSidebar() {
       }
     >
       <NavSection>
-        <NavItem icon="sun" label={de.nav.today} href="/" linkAs={Link} active={pathname === "/"} />
-        <NavItem icon="grid" label={de.nav.subjects} href="/faecher" linkAs={Link} active={pathname === "/faecher"} />
-        <NavItem icon="calendar" label={de.nav.planning} href="/planung" linkAs={Link} active={pathname === "/planung"} />
-        <NavItem icon="checklist" label={de.nav.todos} href="/todos" linkAs={Link} active={pathname === "/todos"} badge={tasks} />
-        <NavItem icon="bell" label={de.nav.notifications} href="/benachrichtigungen" linkAs={Link} active={pathname === "/benachrichtigungen"} badge={unread} />
-        <NavItem icon="search" label={de.nav.search} shortcut="⌘K" onClick={openPalette} />
+        <NavItem icon="sun" label={t.nav.today} href="/" linkAs={Link} active={pathname === "/"} />
+        <NavItem icon="grid" label={t.nav.subjects} href="/faecher" linkAs={Link} active={pathname === "/faecher"} />
+        <NavItem icon="calendar" label={t.nav.planning} href="/planung" linkAs={Link} active={pathname === "/planung"} />
+        <NavItem icon="checklist" label={t.nav.todos} href="/todos" linkAs={Link} active={pathname === "/todos"} badge={tasks} />
+        <NavItem icon="bell" label={t.nav.notifications} href="/benachrichtigungen" linkAs={Link} active={pathname === "/benachrichtigungen"} badge={unread} />
+        <NavItem icon="search" label={t.nav.search} shortcut="⌘K" onClick={openPalette} />
       </NavSection>
       <NavSection title={semesterName(current)}>
         {now.map((c) => (
           <NavItem key={c.id} size="sm" dot={toneOf(c.color)} label={c.title} href={`/fach/${c.id}`} linkAs={Link} active={openCourse === c.id} badge={deadlines[c.id]} />
         ))}
         {past.length > 0 && (
-          <NavItem size="sm" icon={older ? "chevron-down" : "chevron-right"} label={de.nav.olderSubjects} aria-expanded={older} onClick={() => setOlder(!older)} />
+          <NavItem size="sm" icon={older ? "chevron-down" : "chevron-right"} label={t.nav.olderSubjects} aria-expanded={older} onClick={() => setOlder(!older)} />
         )}
         {older &&
           past.map((c) => (
@@ -125,18 +125,18 @@ export function AppSidebar() {
           ))}
       </NavSection>
       {menu && (
-        <ContextMenu at={menu} label={de.nav.account} onClose={() => setMenu(null)}>
+        <ContextMenu at={menu} label={t.nav.account} onClose={() => setMenu(null)}>
           <MenuItem icon="settings" onSelect={choose(() => go("/einstellungen"))}>
-            {de.nav.settings}
+            {t.nav.settings}
           </MenuItem>
           {me?.isAdmin && (
             <MenuItem icon="shield" onSelect={choose(openAdmin)}>
-              {de.nav.admin}
+              {t.nav.admin}
             </MenuItem>
           )}
           <MenuSeparator />
           <MenuItem icon="logout" onSelect={choose(() => void signOut())}>
-            {de.nav.signOut}
+            {t.nav.signOut}
           </MenuItem>
         </ContextMenu>
       )}
@@ -151,13 +151,13 @@ export function PhoneBar() {
   const unread = useUnreadNotifications();
   return (
     <header className="phone-bar">
-      <Link to="/" className="brand-link" aria-label={de.nav.today}>
+      <Link to="/" className="brand-link" aria-label={t.nav.today}>
         <Logo size={34} />
       </Link>
       <span className="spacer" />
-      <IconButton icon="bell" label={de.nav.notifications} badge={unread} onClick={() => go("/benachrichtigungen")} />
-      <IconButton icon="search" label={de.nav.search} onClick={openPalette} />
-      <LinkButton as={Link} to="/einstellungen" variant="ghost" className="phone-account" aria-label={de.nav.settings}>
+      <IconButton icon="bell" label={t.nav.notifications} badge={unread} onClick={() => go("/benachrichtigungen")} />
+      <IconButton icon="search" label={t.nav.search} onClick={openPalette} />
+      <LinkButton as={Link} to="/einstellungen" variant="ghost" className="phone-account" aria-label={t.nav.settings}>
         {me && <Avatar userId={me.id} name={me.displayName} size={32} version={me.avatarVersion} decorative />}
       </LinkButton>
     </header>
@@ -170,16 +170,16 @@ export function AppTabBar() {
   return (
     <TabBar
       className="app-tabbar"
-      label={de.nav.main}
+      label={t.nav.main}
       linkAs={Link}
       active={active}
       items={[
-        { id: "heute", label: de.nav.today, icon: "sun", href: "/" },
-        { id: "faecher", label: de.nav.subjects, icon: "grid", href: "/faecher" },
-        { id: "planung", label: de.nav.planning, icon: "calendar", href: "/planung" },
-        { id: "todos", label: de.nav.todos, icon: "checklist", href: "/todos" },
+        { id: "heute", label: t.nav.today, icon: "sun", href: "/" },
+        { id: "faecher", label: t.nav.subjects, icon: "grid", href: "/faecher" },
+        { id: "planung", label: t.nav.planning, icon: "calendar", href: "/planung" },
+        { id: "todos", label: t.nav.todos, icon: "checklist", href: "/todos" },
       ]}
-      action={{ label: de.overview.add, icon: "plus", onClick: openPalette }}
+      action={{ label: t.overview.add, icon: "plus", onClick: openPalette }}
     />
   );
 }

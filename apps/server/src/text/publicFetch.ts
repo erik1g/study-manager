@@ -37,15 +37,15 @@ export async function publicUrl(link: string, resolve = lookup): Promise<URL> {
   try {
     url = new URL(link);
   } catch {
-    throw new LinkNotAllowed("Das ist kein gültiger Link.");
+    throw new LinkNotAllowed("That is not a valid link.");
   }
-  if (url.protocol !== "https:") throw new LinkNotAllowed("Nur https-Links sind erlaubt.");
-  if (url.username || url.password) throw new LinkNotAllowed("Links mit Zugangsdaten sind nicht erlaubt.");
-  if (url.port && url.port !== "443") throw new LinkNotAllowed("Nur der übliche https-Port ist erlaubt.");
+  if (url.protocol !== "https:") throw new LinkNotAllowed("Only https links are allowed.");
+  if (url.username || url.password) throw new LinkNotAllowed("Links with credentials are not allowed.");
+  if (url.port && url.port !== "443") throw new LinkNotAllowed("Only the usual https port is allowed.");
   const host = url.hostname.replace(/^\[|\]$/g, "");
   const addresses = isIP(host) ? [host] : (await resolve(host, { all: true }).catch(() => [])).map((a) => a.address);
   if (addresses.length === 0) throw new LinkNotAllowed("Die Adresse ist nicht erreichbar.");
-  if (addresses.some(isPrivateAddress)) throw new LinkNotAllowed("Links ins lokale Netz sind nicht erlaubt.");
+  if (addresses.some(isPrivateAddress)) throw new LinkNotAllowed("Links into the local network are not allowed.");
   return url;
 }
 
@@ -73,7 +73,7 @@ export async function fetchPublicText(link: string, options: { maxBytes?: number
       size += value.byteLength;
       if (size > maxBytes) {
         await reader.cancel();
-        throw new Error("Die Antwort ist zu groß.");
+        throw new Error("The response is too large.");
       }
       parts.push(value);
     }

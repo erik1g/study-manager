@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { Button, Card, Chip, EmptyState, List, Notice, SectionHeader, SegmentedControl } from "@study/ui";
 import { DeadlineForm, DeadlineRow, TaskForm, TaskRow, deadlineDay, deadlineOpen, settledDeadlines } from "../components/Agenda";
-import { de, errorMessage, daysUntil } from "../i18n/de";
+import { t, errorMessage, daysUntil } from "../i18n";
 import { api, type Deadline, type Task } from "../lib/api";
 import { useChanged } from "../lib/events";
 
-type Bucket = keyof typeof de.todos.buckets;
+type Bucket = keyof typeof t.todos.buckets;
 const BUCKETS: Bucket[] = ["overdue", "today", "week", "later", "undated"];
 const BUCKET_TONE = { overdue: "rot", today: "gelb", week: "blau", later: "grau", undated: "grau" } as const;
 
@@ -31,8 +31,8 @@ export function TodosView() {
   const load = useCallback(async () => {
     try {
       // All deadlines: the done and past ones stay visible below.
-      const [t, d] = await Promise.all([api.tasks({ open: true }), api.deadlines()]);
-      setTasks(t);
+      const [open, d] = await Promise.all([api.tasks({ open: true }), api.deadlines()]);
+      setTasks(open);
       setDeadlines(d);
       setLoaded(true);
     } catch (e) {
@@ -54,27 +54,27 @@ export function TodosView() {
       <SectionHeader
         level={1}
         size="xl"
-        title={de.todos.title}
-        description={de.todos.subtitle}
+        title={t.todos.title}
+        description={t.todos.subtitle}
         action={
           <>
             <Button icon="plus" variant={adding === "task" ? "primary" : "secondary"} onClick={() => setAdding(adding === "task" ? null : "task")}>
-              {de.tasks.add}
+              {t.tasks.add}
             </Button>
             <Button icon="flag" variant={adding === "deadline" ? "primary" : "secondary"} onClick={() => setAdding(adding === "deadline" ? null : "deadline")}>
-              {de.deadlines.add}
+              {t.deadlines.add}
             </Button>
           </>
         }
       />
       <SegmentedControl
-        label={de.todos.show}
+        label={t.todos.show}
         value={filter}
         onChange={setFilter}
         options={[
-          { value: "all", label: de.todos.all },
-          { value: "tasks", label: de.tasks.title, icon: "checklist" },
-          { value: "deadlines", label: de.deadlines.title, icon: "flag" },
+          { value: "all", label: t.todos.all },
+          { value: "tasks", label: t.tasks.title, icon: "checklist" },
+          { value: "deadlines", label: t.deadlines.title, icon: "flag" },
         ]}
       />
       {error && <Notice tone="danger">{error}</Notice>}
@@ -83,7 +83,7 @@ export function TodosView() {
           {adding === "task" ? (
             <TaskForm
               deadlines={deadlines}
-              submitLabel={de.common.add}
+              submitLabel={t.common.add}
               onCancel={() => setAdding(null)}
               onSubmit={async (draft) => {
                 await api.createTask(draft);
@@ -92,7 +92,7 @@ export function TodosView() {
             />
           ) : (
             <DeadlineForm
-              submitLabel={de.common.add}
+              submitLabel={t.common.add}
               onCancel={() => setAdding(null)}
               onSubmit={async (draft) => {
                 await api.createDeadline(draft);
@@ -103,13 +103,13 @@ export function TodosView() {
           )}
         </Card>
       )}
-      {loaded && rows.length === 0 && <EmptyState illustration="fertig" title={de.todos.allDone} />}
+      {loaded && rows.length === 0 && <EmptyState illustration="fertig" title={t.todos.allDone} />}
       {BUCKETS.map((bucket) => {
         const inBucket = rows.filter((r) => bucketOf(r.day) === bucket);
         if (inBucket.length === 0) return null;
         return (
           <Card as="section" key={bucket} aria-labelledby={`b-${bucket}`}>
-            <SectionHeader id={`b-${bucket}`} title={de.todos.buckets[bucket]} action={<Chip tone={BUCKET_TONE[bucket]}>{inBucket.length}</Chip>} />
+            <SectionHeader id={`b-${bucket}`} title={t.todos.buckets[bucket]} action={<Chip tone={BUCKET_TONE[bucket]}>{inBucket.length}</Chip>} />
             <List className="card-list">
               {inBucket.map((row) =>
                 row.kind === "task" ? (
@@ -124,7 +124,7 @@ export function TodosView() {
       })}
       {filter !== "tasks" && settledDeadlines(deadlines).length > 0 && (
         <Card as="section" variant="sunken" aria-labelledby="erledigt-titel" id="erledigt">
-          <SectionHeader id="erledigt-titel" title={de.deadlines.settled} description={de.deadlines.settledHint} action={<Chip>{settledDeadlines(deadlines).length}</Chip>} />
+          <SectionHeader id="erledigt-titel" title={t.deadlines.settled} description={t.deadlines.settledHint} action={<Chip>{settledDeadlines(deadlines).length}</Chip>} />
           <List variant="raised" className="card-list">
             {settledDeadlines(deadlines).map((deadline) => (
               <DeadlineRow key={`s${deadline.id}`} deadline={deadline} onChanged={load} />

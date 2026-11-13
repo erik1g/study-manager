@@ -1,7 +1,7 @@
 // Dialogs as the app uses them, made of the building blocks.
 import { useState, type ReactNode } from "react";
 import { ConfirmDialog as UiConfirmDialog, Dialog as UiDialog, IconButton, TextField } from "@study/ui";
-import { de, errorMessage } from "../i18n/de";
+import { t, errorMessage } from "../i18n";
 
 /** A modal dialog; closing it (Escape, Cancel) calls `onClose`. */
 export function Dialog({ title, onClose, children, wide, footer }: { title: string; onClose: () => void; children: ReactNode; wide?: boolean; footer?: ReactNode }) {
@@ -18,7 +18,7 @@ export function ConfirmDialog(props: { title: string; text: ReactNode; confirm: 
     <UiConfirmDialog
       title={props.title}
       confirm={props.confirm}
-      cancel={de.common.cancel}
+      cancel={t.common.cancel}
       danger={props.danger}
       onConfirm={props.onConfirm}
       onClose={props.onClose}
@@ -34,7 +34,7 @@ export function CopyField({ value, label }: { value: string; label?: string }) {
   const [copied, setCopied] = useState(false);
   return (
     <TextField
-      label={label ?? de.common.copy}
+      label={label ?? t.common.copy}
       hideLabel={!label}
       readOnly
       value={value}
@@ -43,7 +43,7 @@ export function CopyField({ value, label }: { value: string; label?: string }) {
       trailing={
         <IconButton
           icon={copied ? "check" : "copy"}
-          label={copied ? de.common.copied : de.common.copy}
+          label={copied ? t.common.copied : t.common.copy}
           size="sm"
           onClick={async () => {
             await navigator.clipboard.writeText(value);

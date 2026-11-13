@@ -8,7 +8,7 @@ const shown = new Set<string>();
 export interface ProgressRingProps {
   /** How far, from 0 to 1. */
   value: number;
-  /** Said to screen readers, e.g. "8 von 13 Kapiteln". */
+  /** Said to screen readers, e.g. "8 of 13 chapters". */
   label: string;
   /** Width and height in px. */
   size?: number;

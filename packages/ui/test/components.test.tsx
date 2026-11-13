@@ -15,9 +15,12 @@ import {
   LinkButton,
   ListRow,
   ProgressRing,
+  setUiText,
   Tabs,
   TextField,
+  TonePicker,
   toneFor,
+  uiText,
 } from "../src/index";
 
 const html = (node: React.ReactElement) => renderToStaticMarkup(node);
@@ -106,5 +109,19 @@ describe("pictures", () => {
 
   it("says how far a ring has come", () => {
     expect(html(<ProgressRing value={0.62} label="62 Prozent" />)).toContain('aria-label="62 Prozent"');
+  });
+});
+
+describe("the building blocks' own words", () => {
+  it("are English, and an app can hand over its own", () => {
+    expect(html(<TonePicker label="Colour" value={null} onChange={() => {}} allowNone />)).toContain("No colour");
+    setUiText({ noColour: "Keine Farbe", tones: { ...uiText().tones, blau: "Blau" } });
+    try {
+      const picker = html(<TonePicker label="Farbe" value={null} onChange={() => {}} allowNone />);
+      expect(picker).toContain("Keine Farbe");
+      expect(picker).toContain("Blau");
+    } finally {
+      setUiText({ noColour: "No colour", tones: { ...uiText().tones, blau: "Blue" } });
+    }
   });
 });

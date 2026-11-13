@@ -2,7 +2,7 @@
 // and how well the device can do it by itself.
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button, Card, Chip, Notice, ProgressBar, SectionHeader, SegmentedControl, Select, TextField, type NoticeTone } from "@study/ui";
-import { de, errorMessage } from "../i18n/de";
+import { t, errorMessage, formatNumber } from "../i18n";
 import {
   checkBrowser,
   PROVIDERS,
@@ -34,18 +34,18 @@ export function TranscriptionSettings() {
   return (
     <>
       <Card as="section" className="settings-section">
-        <SectionHeader title={de.settings.transcription} description={de.settings.transcriptionText} />
+        <SectionHeader title={t.settings.transcription} description={t.settings.transcriptionText} />
         <div className="ui-stack settings-section-body">
           <SegmentedControl
-            label={de.settings.method}
+            label={t.settings.method}
             value={method}
             onChange={choose}
             options={[
-              { value: "browser", label: de.settings.methodBrowser, icon: "mic" },
-              { value: "api", label: de.settings.methodKey, icon: "key" },
+              { value: "browser", label: t.settings.methodBrowser, icon: "mic" },
+              { value: "api", label: t.settings.methodKey, icon: "key" },
             ]}
           />
-          <p className="quiet small">{method === "browser" ? de.settings.methodBrowserText : de.settings.methodKeyText}</p>
+          <p className="quiet small">{method === "browser" ? t.settings.methodBrowserText : t.settings.methodKeyText}</p>
           {method === "api" && <KeyForm />}
         </div>
       </Card>
@@ -85,10 +85,10 @@ function KeyForm() {
     try {
       await testKey(provider, key.trim());
       save();
-      setResult({ ok: true, text: de.settings.keyGood });
+      setResult({ ok: true, text: t.settings.keyGood });
     } catch (e) {
       const status = (e as Error).message;
-      setResult({ ok: false, text: /^\d+$/.test(status) ? de.settings.keyBad(status) : de.settings.keyUnreachable });
+      setResult({ ok: false, text: /^\d+$/.test(status) ? t.settings.keyBad(status) : t.settings.keyUnreachable });
     } finally {
       setTesting(false);
     }
@@ -97,7 +97,7 @@ function KeyForm() {
   return (
     <Card variant="sunken" padding="sm" className="ui-stack">
       <div className="entry-form">
-        <Select label={de.settings.provider} value={provider} onChange={(e) => pick(e.target.value as Provider)}>
+        <Select label={t.settings.provider} value={provider} onChange={(e) => pick(e.target.value as Provider)}>
           {(Object.keys(PROVIDERS) as Provider[]).map((p) => (
             <option key={p} value={p}>
               {PROVIDERS[p].name}
@@ -106,10 +106,10 @@ function KeyForm() {
         </Select>
         <TextField
           className="wide"
-          label={de.settings.apiKey}
+          label={t.settings.apiKey}
           type="password"
           autoComplete="off"
-          hint={de.settings.apiKeyHint}
+          hint={t.settings.apiKeyHint}
           value={key}
           onChange={(e) => {
             setKey(e.target.value);
@@ -120,19 +120,19 @@ function KeyForm() {
       </div>
       <div className="toolbar-row">
         <Button variant="primary" disabled={!key.trim()} onClick={save}>
-          {de.settings.keySave}
+          {t.settings.keySave}
         </Button>
         <Button loading={testing} disabled={!key.trim()} onClick={test}>
-          {de.settings.keyTest}
+          {t.settings.keyTest}
         </Button>
         {key && storedKey(provider) && (
           <Button variant="ghost" onClick={remove}>
-            {de.settings.keyRemove}
+            {t.settings.keyRemove}
           </Button>
         )}
         {saved && !result && (
           <Chip tone="gruen" icon="check">
-            {de.settings.keySaved}
+            {t.settings.keySaved}
           </Chip>
         )}
       </div>
@@ -172,49 +172,49 @@ function BrowserPanel() {
   const rating = rate(check);
   return (
     <Card as="section" className="settings-section">
-      <SectionHeader title={de.settings.browserCheck} />
+      <SectionHeader title={t.settings.browserCheck} />
       <div className="ui-stack settings-section-body">
-        <Notice tone={RATING_TONE[rating]}>{de.settings.ratings[rating]}</Notice>
+        <Notice tone={RATING_TONE[rating]}>{t.settings.ratings[rating]}</Notice>
         <dl className="check-list">
-          <dt>{de.settings.checkGpu}</dt>
-          <dd>{check.webGpu ? (check.gpuName ?? de.settings.checkGpuUnnamed) : de.settings.checkNoGpu}</dd>
-          <dt>{de.settings.checkCores}</dt>
+          <dt>{t.settings.checkGpu}</dt>
+          <dd>{check.webGpu ? (check.gpuName ?? t.settings.checkGpuUnnamed) : t.settings.checkNoGpu}</dd>
+          <dt>{t.settings.checkCores}</dt>
           <dd>{check.cores || "–"}</dd>
           {check.memoryGb != null && (
             <>
-              <dt>{de.settings.checkMemory}</dt>
-              <dd>{de.settings.checkMemoryValue(check.memoryGb)}</dd>
+              <dt>{t.settings.checkMemory}</dt>
+              <dd>{t.settings.checkMemoryValue(check.memoryGb)}</dd>
             </>
           )}
           {check.freeStorageGb != null && (
             <>
-              <dt>{de.settings.checkStorage}</dt>
-              <dd>{de.settings.checkStorageValue(check.freeStorageGb)}</dd>
+              <dt>{t.settings.checkStorage}</dt>
+              <dd>{t.settings.checkStorageValue(check.freeStorageGb)}</dd>
             </>
           )}
-          <dt>{de.settings.checkModel}</dt>
-          <dd>{check.modelCached ? de.settings.checkModelCached : de.settings.checkModelMissing}</dd>
+          <dt>{t.settings.checkModel}</dt>
+          <dd>{check.modelCached ? t.settings.checkModelCached : t.settings.checkModelMissing}</dd>
         </dl>
-        <p className="quiet small">{de.settings.speedTestText}</p>
+        <p className="quiet small">{t.settings.speedTestText}</p>
         {phase ? (
           <div className="ui-stack">
-            <ProgressBar value={phase.fraction} label={phase.phase === "model" ? de.settings.speedLoad : de.settings.speedRun} tone="violett" />
+            <ProgressBar value={phase.fraction} label={phase.phase === "model" ? t.settings.speedLoad : t.settings.speedRun} tone="violett" />
             <div>
               <Button size="sm" onClick={() => abort.current?.abort()}>
-                {de.settings.speedCancel}
+                {t.settings.speedCancel}
               </Button>
             </div>
           </div>
         ) : (
           <div>
             <Button icon="play" onClick={run}>
-              {de.settings.speedTest}
+              {t.settings.speedTest}
             </Button>
           </div>
         )}
         {speed && (
           <Notice tone="success">
-            {de.settings.speedResult(speed.model, speed.factor.toLocaleString("de-DE", { maximumFractionDigits: 1 }), Math.max(1, Math.round(90 / speed.factor)))}
+            {t.settings.speedResult(speed.model, formatNumber(speed.factor), Math.max(1, Math.round(90 / speed.factor)))}
           </Notice>
         )}
         {error && <Notice tone="danger">{error}</Notice>}

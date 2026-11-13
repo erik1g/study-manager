@@ -3,6 +3,8 @@
 // the audio, in pieces, to a transcription service with the member's own
 // key. The key never leaves the browser.
 
+import { t } from "../i18n";
+
 export interface Segment {
   /** Seconds from the start. */
   start: number;
@@ -144,7 +146,7 @@ export function testSpeed(progress: Progress, signal: AbortSignal): Promise<Spee
     };
     worker.onerror = (event) => {
       worker.terminate();
-      reject(new Error(event.message || "Der Transkriptions-Worker ist abgestürzt."));
+      reject(new Error(event.message || t.lectures.workerCrashed));
     };
     const samples = testAudio();
     worker.postMessage({ type: "test", samples, language: "de" }, [samples.buffer]);
@@ -174,7 +176,7 @@ export function transcribeInBrowser(samples: Float32Array, language: string | nu
     };
     worker.onerror = (event) => {
       worker.terminate();
-      reject(new Error(event.message || "Der Transkriptions-Worker ist abgestürzt."));
+      reject(new Error(event.message || t.lectures.workerCrashed));
     };
     worker.postMessage({ type: "run", samples, language }, [samples.buffer]);
   });

@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import { cx } from "../cx";
+import { uiText } from "../text";
 
 export interface SkeletonProps {
   width?: CSSProperties["width"];
@@ -15,7 +16,7 @@ export function Skeleton({ width, height, shape = "text", className }: SkeletonP
 }
 
 /** Stands in for a whole page while it loads: a heading and a few cards. */
-export function PageSkeleton({ label = "Wird geladen" }: { label?: string }) {
+export function PageSkeleton({ label = uiText().loading }: { label?: string }) {
   return (
     <div className="ui-page-skeleton" aria-busy="true" role="status" aria-label={label}>
       <Skeleton width="40%" height={40} />
