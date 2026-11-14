@@ -154,6 +154,21 @@ describe("search", () => {
     expect(await w.services.search.status(course.id)).toMatchObject({ total: 1, indexed: 1 });
   });
 
+  it("matches words alike in every language, without German stems or stop words", async () => {
+    const { alex, tom, course } = await subject();
+    const english = await w.services.files.upload(
+      alex,
+      course.id,
+      "sonstiges",
+      await w.upload("casting.md", "In die casting, the die is a steel mould. The controller tracks the setpoint.", "text/markdown"),
+    );
+    await w.services.search.index(english.id);
+    // "die" is a German stop word; the German configuration would drop it.
+    const [row] = await w.client`select words @@ websearch_to_tsquery('simple', 'die') as hit from chunks where file_id = ${english.id}`;
+    expect(row!.hit).toBe(true);
+    expect((await w.services.search.search(tom, course.id, "die casting"))[0]).toMatchObject({ fileId: english.id });
+  });
+
   it("cuts long pages into overlapping passages at sentence ends", () => {
     const text = Array.from({ length: 40 }, (_, i) => `Satz Nummer ${i} handelt von etwas.`).join(" ");
     const parts = passages(text);

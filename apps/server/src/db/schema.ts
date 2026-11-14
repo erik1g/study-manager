@@ -439,7 +439,11 @@ export const chunks = pgTable(
     page: integer("page"),
     text: text("text").notNull(),
     embedding: vector("embedding", { dimensions: 384 }).notNull(),
-    words: tsvector("words").generatedAlwaysAs(sql`to_tsvector('german', text)`),
+    /**
+     * The words, as they stand: the `simple` configuration neither stems nor
+     * drops stop words, so it works alike for every language a document is in.
+     */
+    words: tsvector("words").generatedAlwaysAs(sql`to_tsvector('simple', text)`),
   },
   (t) => [
     index().on(t.courseId),
