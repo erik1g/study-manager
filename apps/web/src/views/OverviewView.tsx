@@ -71,7 +71,7 @@ function DayCard({ items }: { items: CalendarItem[] }) {
               }
               title={title(item)}
               meta={meta(item) || undefined}
-              trailing={running?.id === item.id ? <Chip tone="gruen" size="sm">{t.overview.now}</Chip> : `bis ${formatTime(item.end)}`}
+              trailing={running?.id === item.id ? <Chip tone="gruen" size="sm">{t.overview.now}</Chip> : t.overview.until(formatTime(item.end))}
             />
           ))}
         </List>
@@ -161,7 +161,8 @@ export function CourseGrid({ list, progress, deadlines, due, onChanged, onRemove
 const greeting = (name: string, now = new Date()) => {
   const hour = now.getHours();
   const first = name.split(/\s+/)[0];
-  return `${hour < 11 ? "Guten Morgen" : hour < 18 ? "Hallo" : "Guten Abend"}, ${first}`;
+  const words = t.overview.greeting;
+  return (hour < 11 ? words.morning : hour < 18 ? words.day : words.evening)(first ?? "");
 };
 
 export function OverviewView() {

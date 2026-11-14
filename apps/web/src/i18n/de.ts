@@ -178,6 +178,12 @@ export const de: Messages = {
     menuFor: (title: string) => `Aktionen für ${title}`,
     next: "Als Nächstes",
     now: "Jetzt",
+    greeting: {
+      morning: (name: string) => `Guten Morgen, ${name}`,
+      day: (name: string) => `Hallo, ${name}`,
+      evening: (name: string) => `Guten Abend, ${name}`,
+    },
+    until: (time: string) => `bis ${time}`,
   },
   newCourse: {
     title: "Neues Fach",
@@ -710,6 +716,7 @@ export const de: Messages = {
     removeConfirm: (name: string) => `${name} wird gelöscht. Geteilte Fächer bleiben bei den anderen Mitgliedern.`,
     server: "Server",
     disk: "Speicher",
+    diskFree: (total: string) => `frei von ${total}`,
     database: "Datenbank",
     files: "Dateien",
     backups: "Backups",

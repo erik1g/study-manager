@@ -179,6 +179,12 @@ export const en = {
     menuFor: (title: string) => `Actions for ${title}`,
     next: "Next",
     now: "Now",
+    greeting: {
+      morning: (name: string) => `Good morning, ${name}`,
+      day: (name: string) => `Hello, ${name}`,
+      evening: (name: string) => `Good evening, ${name}`,
+    },
+    until: (time: string) => `until ${time}`,
   },
   newCourse: {
     title: "New course",
@@ -712,6 +718,7 @@ export const en = {
     removeConfirm: (name: string) => `${name} is deleted. Shared courses stay with the other members.`,
     server: "Server",
     disk: "Storage",
+    diskFree: (total: string) => `free of ${total}`,
     database: "Database",
     files: "Files",
     backups: "Backups",

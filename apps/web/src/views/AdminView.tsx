@@ -171,7 +171,7 @@ export function AdminView() {
               <Card tone="blau" padding="sm">
                 <span className="stat-label">{t.admin.disk}</span>
                 <strong className="ui-display">{formatSize(status.disk.free)}</strong>
-                <span className="small">frei von {formatSize(status.disk.total)}</span>
+                <span className="small">{t.admin.diskFree(formatSize(status.disk.total))}</span>
               </Card>
             )}
             <Card tone="petrol" padding="sm">
