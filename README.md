@@ -8,8 +8,8 @@ Free software under the [GPL-3.0](LICENSE). Made by students for students – an
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="apps/docs/static/img/oberflaeche/heute-dunkel.png">
-    <img src="apps/docs/static/img/oberflaeche/heute-hell.png" alt="The start page “Today” of Study Manager with the day's dates, tasks and flashcards" width="800">
+    <source media="(prefers-color-scheme: dark)" srcset="apps/docs/static/img/screenshots/today-dark.png">
+    <img src="apps/docs/static/img/screenshots/today-light.png" alt="The start page “Today” of Study Manager with the day's dates, tasks and flashcards" width="800">
   </picture>
 </p>
 

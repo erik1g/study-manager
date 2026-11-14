@@ -5,7 +5,7 @@
 #   down   stops it, keeps the data
 #   reset  stops it and deletes its data, so that the next up starts empty
 #   e2e    resets, fills and runs the Playwright tests of apps/e2e against it (needs `pnpm install` once)
-#   screenshots  the same, but takes the pictures of the app for README and docs (apps/docs/static/img/oberflaeche/)
+#   screenshots  the same, but takes the pictures of the app for README and docs (apps/docs/static/img/screenshots/)
 # It listens only on http://127.0.0.1:8090 of this machine.
 set -e
 cd "$(dirname "$0")/../.."
