@@ -1,51 +1,55 @@
-# Mitmachen
+# Contributing
 
-Danke, dass du den Study Manager besser machen willst! Das Projekt ist für alle Studierenden gedacht, und jede Hilfe zählt: Fehler melden, Dokumentation verbessern, eine Uni anbinden oder ein Feature bauen.
+Thank you for wanting to make Study Manager better! The project is meant for all students, and every bit of help counts: reporting bugs, improving the documentation, connecting a university or building a feature.
 
-Die ausführliche Anleitung steht in der Entwickler-Dokumentation: **https://erik1g.github.io/study-manager/entwickler/mitmachen**. Hier das Wichtigste in Kürze.
+The full guide is in the developer documentation: **https://erik1g.github.io/study-manager/entwickler/mitmachen**. Here are the essentials in short.
 
-## Bevor du anfängst
+## Language
 
-- Suche bei den [Issues](https://github.com/erik1g/study-manager/issues), ob es das Thema schon gibt. Mit einem Kommentar „Ich übernehme das“ vermeidest du doppelte Arbeit.
-- Bei größeren Änderungen eröffne zuerst ein Issue und besprich die Idee. So verlierst du keine Arbeit an einer Änderung, die nicht ins Projekt passt.
-- Einsteigerfreundliche Aufgaben tragen das Label `good first issue`.
+The project language is **English**: issues, pull requests, commits, code, comments and documentation. Please write issues and pull requests in English, even if the app also speaks German.
 
-## Lokal starten
+## Before you start
+
+- Search the [issues](https://github.com/erik1g/study-manager/issues) to see whether the topic already exists. A comment like "I'll take this" avoids duplicate work.
+- For larger changes, open an issue first and discuss the idea. That way you lose no work on a change that does not fit the project.
+- Beginner-friendly tasks carry the label `good first issue`.
+
+## Run it locally
 
 ```sh
 pnpm install
-ADMIN_EMAIL=du@example.org DOMAIN=localhost node infra/scripts/setup.mjs
+ADMIN_EMAIL=you@example.org DOMAIN=localhost node infra/scripts/setup.mjs
 docker compose --project-directory . -f infra/compose/dev.yml up -d
 ```
 
-Alle Schritte, Tests und Hinweise stehen in der Entwickler-Dokumentation.
+All steps, tests and notes are in the developer documentation.
 
-## Wohin dein Pull Request geht
+## Where your pull request goes
 
-Alles für die nächste Version sammelt sich in **`dev`**, dem Default-Branch. Forke das Repository, zweige deinen Branch von `dev` ab und öffne deinen Pull Request **gegen `dev`**, auch für Fehlerbehebungen. `main` ist immer der veröffentlichte Stand und bekommt nur Pull Requests von `dev`; ein Pull Request gegen `main` wird von der CI abgelehnt.
+Everything for the next version collects in **`dev`**, the default branch. Fork the repository, branch off `dev` and open your pull request **against `dev`**, for bug fixes too. `main` is always the published state and only gets pull requests from `dev`; CI rejects a pull request against `main`.
 
-`dev` muss **immer releasefähig** sein. Öffne Unfertiges darum als **Draft-PR**; gemergt wird erst, wenn es fertig ist und alle Prüfungen grün sind.
+`dev` must **always be releasable**. So open unfinished work as a **draft PR**; it is merged only when it is done and all checks are green.
 
-## Commits und Pull Requests
+## Commits and pull requests
 
-Wir nutzen [Conventional Commits](https://www.conventionalcommits.org/de/v1.0.0/); daraus entstehen Versionsnummern und Changelog automatisch (mit `release-please`):
+We use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) in English; version numbers and the changelog are made from them automatically (with `release-please`):
 
-| Präfix | Wofür | Wirkung auf die Version |
+| Prefix | For | Effect on the version |
 |---|---|---|
-| `feat:` | neue Funktion | Minor (`0.1.0` → `0.2.0`) |
-| `fix:` | Fehlerbehebung | Patch (`0.1.0` → `0.1.1`) |
-| `perf:` | schneller | Patch |
-| `docs:`, `test:`, `chore:`, `refactor:`, `ci:`, `style:`, `build:` | alles andere | kein neues Release allein |
-| `feat!:` oder `BREAKING CHANGE:` im Text | Änderung, die bestehende Installationen bricht | Major (ab 1.0), davor Minor |
+| `feat:` | a new feature | minor (`0.1.0` → `0.2.0`) |
+| `fix:` | a bug fix | patch (`0.1.0` → `0.1.1`) |
+| `perf:` | faster | patch |
+| `docs:`, `test:`, `chore:`, `refactor:`, `ci:`, `style:`, `build:` | everything else | no new release on its own |
+| `feat!:` or `BREAKING CHANGE:` in the body | a change that breaks existing installations | major (from 1.0), minor before |
 
-Beispiel: `fix(planung): Wochenansicht auf dem Handy wischbar machen`
+Example: `fix(planning): make the week view swipeable on phones`
 
-- Ein Pull Request = eine Sache. Der **Titel** folgt dem Format oben (er wird beim Mergen der Commit-Titel).
-- Die CI muss grün sein: Typprüfung, Tests, UI-Prüfung, Build und die Playwright-Tests.
-- Bei Änderungen an der Oberfläche gehören **Screenshots oder ein kurzes Video** in den Pull Request.
-- Schreibe Tests für neues Verhalten und aktualisiere die Dokumentation.
-- Mit deinem Beitrag stimmst du zu, dass er unter der **GPL-3.0** des Projekts steht. Eine weitere Vereinbarung ist nicht nötig.
+- One pull request = one thing. The **title** follows the format above (it becomes the commit title on merge).
+- CI must be green: type check, tests, UI check, build and the Playwright tests.
+- For changes to the interface, **screenshots or a short video** belong in the pull request.
+- Write tests for new behaviour and update the documentation.
+- By contributing, you agree that your contribution is licensed under the project's **GPL-3.0**. No further agreement is needed.
 
-## Verhaltenskodex
+## Code of Conduct
 
-Wir halten uns an den [Verhaltenskodex](CODE_OF_CONDUCT.md). Sicherheitslücken meldest du bitte privat (siehe [SECURITY.md](SECURITY.md)).
+We follow the [Code of Conduct](CODE_OF_CONDUCT.md). Please report security vulnerabilities privately (see [SECURITY.md](SECURITY.md)).

@@ -1,18 +1,18 @@
-<!-- Ziel dieses Pull Requests: dev (auch für Fehlerbehebungen). Unfertiges bitte als Draft-PR öffnen: dev muss immer releasefähig sein. -->
+<!-- Target of this pull request: dev (bug fixes too). Please open unfinished work as a draft PR: dev must always be releasable. Please write in English. -->
 
-## Was ändert sich und warum?
+## What changes and why?
 
-<!-- Ein oder zwei Sätze. Verweise auf ein Issue: "Closes #123". -->
+<!-- One or two sentences. Link an issue: "Closes #123". -->
 
-## Wie wurde es geprüft?
+## How was it checked?
 
-- [ ] `pnpm typecheck` und `pnpm test` laufen durch
-- [ ] bei Änderungen an der Oberfläche: gesehen im Browser (Laptop und Handy), Screenshots oder Video unten
-- [ ] bei neuem Verhalten: Test ergänzt
-- [ ] Dokumentation angepasst
+- [ ] `pnpm typecheck` and `pnpm test` pass
+- [ ] for interface changes: seen in the browser (laptop and phone), screenshots or video below
+- [ ] for new behaviour: test added
+- [ ] documentation updated
 
 ## Screenshots
 
-<!-- Bei Änderungen an der Oberfläche: vorher/nachher, hell und dunkel, Laptop und Handy. Sonst entfernen. -->
+<!-- For interface changes: before/after, light and dark, laptop and phone. Otherwise remove. -->
 
-<!-- Der Titel dieses Pull Requests folgt Conventional Commits, z. B. "fix(planung): …" oder "feat(fach): …". -->
+<!-- The title of this pull request follows Conventional Commits in English, e.g. "fix(planning): …" or "feat(course): …". -->

@@ -1,20 +1,24 @@
-name: Idee oder Wunsch
-description: Eine neue Funktion oder eine Verbesserung vorschlagen.
+name: Idea or wish
+description: Suggest a new feature or an improvement.
 labels: [enhancement]
 body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for your idea! Please write in English.
   - type: textarea
     id: problem
     attributes:
-      label: Welches Problem möchtest du lösen?
-      description: Beschreibe, was dir im Studienalltag fehlt – nicht nur die Lösung.
+      label: Which problem do you want to solve?
+      description: Describe what you are missing in your everyday studies, not only the solution.
     validations:
       required: true
   - type: textarea
-    id: vorschlag
+    id: proposal
     attributes:
-      label: Wie könnte es aussehen?
+      label: What could it look like?
   - type: dropdown
-    id: helfen
+    id: help
     attributes:
-      label: Möchtest du selbst daran mitarbeiten?
-      options: [Ja, ich baue es, Ja, mit etwas Hilfe, Nein, ich wünsche es mir nur]
+      label: Would you like to work on it yourself?
+      options: ["Yes, I'll build it", "Yes, with some help", "No, I only wish for it"]

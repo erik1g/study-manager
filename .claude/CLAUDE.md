@@ -1,38 +1,38 @@
-# Study Manager – Anweisungen für Claude und Entwickler
+# Study Manager – instructions for Claude and developers
 
-Der Study Manager ist freie Software (GPL-3.0): eine selbst gehostete Web-App für Studierende mit Fächern, Dokumenten, geteilten Deadlines, Planung, Notizen, Vorlesungsmodus, Lernkarten und einem MCP-Server für das **eigene** Claude der Nutzer. Dieser Ordner (`.claude/`) ist der **eine Ort für alle Anweisungen an Claude und Entwickler**; Claude Code lädt ihn automatisch.
+Study Manager is free software (GPL-3.0): a self-hosted web app for students with courses, documents, shared deadlines, planning, notes, lecture mode, flashcards and an MCP server for the users' **own** Claude. This folder (`.claude/`) is the **one place for all instructions to Claude and developers**; Claude Code loads it automatically.
 
-## Zuerst lesen
+## Read first
 
-- Glossar (Begriffe wie Fach, Deadline, Aufgabe, Besitzer, Bearbeiter, Leser): @../apps/docs/docs/entwickler/glossar.mdx
-- Architekturentscheidungen liegen in `apps/docs/docs/entwickler/entscheidungen/` (lies sie bei Fragen zum „Warum“, vor allem `0002`: keine KI auf dem Server).
-- Die Doku für Nutzer, Admins und Entwickler ist `apps/docs/docs/` (Seite: https://erik1g.github.io/study-manager).
+- Glossary (terms such as course, deadline, task, owner, editor, reader): @../apps/docs/docs/entwickler/glossar.mdx
+- Architecture decisions live in `apps/docs/docs/entwickler/entscheidungen/` (read them for questions about the "why", above all `0002`: no AI on the server).
+- The documentation for users, admins and developers is `apps/docs/docs/` (site: https://erik1g.github.io/study-manager).
 
-## Was wo steht
+## What is where
 
-Die Regeln liegen in `.claude/rules/`. **Immer geladen:**
+The rules live in `.claude/rules/`. **Always loaded:**
 
-| Datei | Inhalt |
+| File | Content |
 |---|---|
-| `commits.md` | Conventional Commits, aus denen Versionen und Changelog entstehen |
-| `tests.md` | Prüfbefehle, die Testdaten und der Test-Stack |
-| `releases-und-sicherheit.md` | Wer veröffentlichen darf, Geheimnisse, die Branches `dev` und `main` |
-| `arbeitsweise.md` | Sprache, Testdaten, wie du mit dem Nutzer und mit Änderungen umgehst |
+| `commits.md` | Conventional Commits, from which versions and the changelog are made |
+| `tests.md` | Check commands, the test data and the test stack |
+| `releases-and-security.md` | Who may publish, secrets, the branches `dev` and `main` |
+| `working-agreements.md` | Language, test data, how you work with the user and with changes |
 
-**Nur geladen, wenn du an passenden Dateien arbeitest:**
+**Only loaded when you work on matching files:**
 
-| Datei | Gilt für |
+| File | Applies to |
 |---|---|
 | `server.md` | `apps/server/**` |
-| `oberflaeche.md` | `apps/web/**`, `packages/ui/**` |
+| `frontend.md` | `apps/web/**`, `packages/ui/**` |
 | `e2e.md` | `apps/e2e/**`, `infra/test/**` |
-| `docker-und-ci.md` | `infra/**`, `.github/**`, `docker-compose*.yml` |
-| `doku.md` | `apps/docs/**` |
+| `docker-and-ci.md` | `infra/**`, `.github/**`, `docker-compose*.yml` |
+| `docs.md` | `apps/docs/**` |
 
-## Dateien, die bewusst im Wurzelordner bleiben
+## Files that deliberately stay in the root
 
-GitHub und Werkzeuge erwarten sie dort: `README.md`, `LICENSE`, `CHANGELOG.md`, `.github/`. In `.github/` liegen auch `CONTRIBUTING.md`, `SECURITY.md` und `CODE_OF_CONDUCT.md`; GitHub findet sie dort. Ändere sie dort, nicht hier. Wenn sich eine Regel in `.claude/rules/` und in `CONTRIBUTING.md` oder der Doku-Seite überschneidet, **halte beide aktuell**.
+GitHub and tools expect them there: `README.md`, `LICENSE`, `CHANGELOG.md`, `.github/`. `.github/` also holds `CONTRIBUTING.md`, `SECURITY.md` and `CODE_OF_CONDUCT.md`; GitHub finds them there. Change them there, not here. When a rule in `.claude/rules/` overlaps with `CONTRIBUTING.md` or the documentation page, **keep both up to date**.
 
-## Persönliches
+## Personal settings
 
-Eigene, nicht für alle gedachte Einstellungen gehören in `CLAUDE.local.md` und `.claude/settings.local.json` (beide stehen in `.gitignore`).
+Your own settings that are not meant for everyone belong in `CLAUDE.local.md` and `.claude/settings.local.json` (both are in `.gitignore`).
