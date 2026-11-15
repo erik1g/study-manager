@@ -19,7 +19,7 @@ Courses, documents, deadlines, tasks, notes, flashcards, search, lecture mode, t
 | **Timetable feeds** | iCal in the style of CAMPUSonline: titles with abbreviations (`VO`, `UE`, `VU`, `SE`, `PR`), description with "fix; Abhaltung" or "Entfall" | `apps/server/src/domain/feeds.ts`, `apps/web/src/views/PlanningView.tsx` (`sessionKind`) |
 | **Detecting cancellations** | The words `entfall`, `abgesagt`, `cancelled` in the description | `isCancelled` in `feeds.ts` |
 | **Semester scheme** | `WiSe26-27`, `SoSe26` (German system; winter term from October) | `semesterOf` in `apps/web/src/i18n/index.ts` |
-| **Language** | Interface and mails in English and German, chosen per user; the instructions for Claude are still German | `apps/web/src/i18n/`, `apps/server/src/http/mails.ts`, `apps/server/src/mcp/server.ts` |
+| **Language** | Interface and mails in English and German, chosen per user; courses have their own language for what is written into them; the instructions for Claude are English and tell it which language to use | `apps/web/src/i18n/`, `apps/server/src/http/mails.ts`, `apps/server/src/mcp/server.ts` |
 | **Time zone** | Default `Europe/Berlin`, adjustable with `TZ` | `config.ts` |
 
 ## Ideas for contributions
