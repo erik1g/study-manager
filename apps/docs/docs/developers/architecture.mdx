@@ -32,7 +32,7 @@ Browser / Claude
 | `http/` | Fastify routes that point thinly to `domain/` |
 | `mcp/` | The MCP server: tools that call the same `domain/` logic with the user's permissions |
 | `jobs/` | Scheduled jobs (`scheduler.ts`, `backup.ts`) |
-| `search/` | Search by meaning (embeddings, local) and wording |
+| `search/` | Search by meaning (embeddings, local) and wording (PostgreSQL full text with the `simple` configuration, the same for every language), fused by rank |
 | `db/` | Drizzle schema (`schema.ts`) and migrations (`drizzle/`) |
 
 One rule runs through everything: **permissions are checked in `domain/`**, not in the routes. Then they apply to the web app and to MCP alike.

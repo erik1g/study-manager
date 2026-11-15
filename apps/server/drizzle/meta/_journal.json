@@ -57,6 +57,13 @@
       "when": 1794606465043,
       "tag": "0007_course_locale",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1794687975505,
+      "tag": "0008_search_simple",
+      "breakpoints": true
     }
   ]
 }

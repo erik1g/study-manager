@@ -89,7 +89,7 @@ export function searchOf(db: Db, embedder: Embedder, filesDir: string) {
         order by c.embedding <=> ${literal}::vector limit 40
       ), wording as (
         select c.id, row_number() over (order by ts_rank(c.words, q) desc) as rank
-        from ${chunks} c join ${files} f on f.id = c.file_id, websearch_to_tsquery('german', ${question}) q
+        from ${chunks} c join ${files} f on f.id = c.file_id, websearch_to_tsquery('simple', ${question}) q
         where c.course_id in (${ids}) and f.deleted_at is null and c.words @@ q
         order by ts_rank(c.words, q) desc limit 40
       ), fused as (
