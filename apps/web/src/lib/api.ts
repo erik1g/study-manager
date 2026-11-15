@@ -67,6 +67,8 @@ export interface Course {
   role: CourseRole;
   color: string | null;
   memberCount: number;
+  /** The language of what is written into the course (notes, transcripts). */
+  locale: Locale;
 }
 
 export interface Member {

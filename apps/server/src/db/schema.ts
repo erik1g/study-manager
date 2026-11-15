@@ -106,6 +106,11 @@ export const courses = pgTable("courses", {
   semester: text("semester").notNull(),
   moduleId: uuid("module_id").references(() => modules.id, { onDelete: "set null" }),
   createdBy: uuid("created_by").references(() => profiles.id, { onDelete: "set null" }),
+  /**
+   * The language of what is written into the course (the notes' headings,
+   * Claude's blocks, transcripts): its creator's at the time it was made.
+   */
+  locale: text("locale").$type<Locale>().notNull().default("en"),
   createdAt: createdAt(),
   deletedAt: at("deleted_at"),
 });

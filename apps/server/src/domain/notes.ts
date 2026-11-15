@@ -38,7 +38,7 @@ export function notesOf(db: Db) {
     if (row) return { content: row.notes.content, version: row.notes.version, updatedAt: row.notes.updatedAt.toISOString(), updatedBy: row.by, updatedById: row.notes.updatedBy };
     const course = await db.query.courses.findFirst({ where: eq(courses.id, courseId) });
     if (!course) throw notFound("unknown_course");
-    return { content: newNotes(course.title), version: 0, updatedAt: null, updatedBy: null, updatedById: null };
+    return { content: newNotes(course.title, course.locale), version: 0, updatedAt: null, updatedBy: null, updatedById: null };
   };
 
   /** Writes the text if it is still at `baseVersion`; the next version otherwise conflicts. */
@@ -133,7 +133,9 @@ export function notesOf(db: Db) {
     /** Enters what a lecture contributed; evaluating it again replaces its blocks. */
     async applyLecture(userId: string, courseId: string, session: SessionInfo, notes: SectionNotes[]): Promise<NotesView> {
       await requireRole(db, userId, courseId, "editor");
-      return change(userId, courseId, (text) => addSession(text, session, notes));
+      const course = await db.query.courses.findFirst({ where: eq(courses.id, courseId) });
+      if (!course) throw notFound("unknown_course");
+      return change(userId, courseId, (text) => addSession(text, session, notes, course.locale));
     },
 
     /** Scripts of the subject that have no chapters in the notes yet. */
