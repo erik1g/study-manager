@@ -4,7 +4,7 @@ import type { Tone } from "../tokens";
 export interface CountdownTileProps {
   /** The number, e.g. 2. */
   value: number | string;
-  /** What it counts, e.g. "Tage"; "Tag" for one. */
+  /** What it counts, e.g. "days"; "day" for one. */
   unit: string;
   tone?: Tone;
   size?: "sm" | "md";

@@ -119,9 +119,9 @@ describe("the calendar of a student", () => {
     const feed = await w.services.calendar.addFeed(alex, { name: "Uni", url: "https://campus.example/feed.ics" });
     const before = await w.services.calendar.items(alex, new Date("2026-10-01"), new Date("2026-11-30"));
     feeds["https://campus.example/feed.ics"] = "<!doctype html><title>Anmeldung</title>";
-    await expect(w.services.calendar.refresh(feed.id)).rejects.toThrow("kein Kalender");
+    await expect(w.services.calendar.refresh(feed.id)).rejects.toThrow("no calendar");
     expect(await w.services.calendar.items(alex, new Date("2026-10-01"), new Date("2026-11-30"))).toHaveLength(before.length);
-    expect((await w.services.calendar.feeds(alex))[0]!.error).toContain("kein Kalender");
+    expect((await w.services.calendar.feeds(alex))[0]!.error).toContain("no calendar");
     feeds["https://campus.example/feed.ics"] = campus;
   });
 

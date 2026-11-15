@@ -19,7 +19,12 @@ export const adminRoutes =
       const body = z
         .object({ email: z.string(), displayName: z.string().default(""), isAdmin: z.boolean().default(false) })
         .parse(request.body);
-      const invited = await services.users.invite(body.email, body.displayName, body.isAdmin, services.mailEnabled);
+      const inviter = await services.users.me(admin.userId);
+      const invited = await services.users.invite(body.email, body.displayName, {
+        makeAdmin: body.isAdmin,
+        byMail: services.mailEnabled,
+        locale: inviter.locale,
+      });
       await record(services.db, { actorId: admin.userId, action: "user.invited", subjectId: invited.userId, subject: body.displayName || body.email, details: { isAdmin: body.isAdmin } });
       return invited;
     });

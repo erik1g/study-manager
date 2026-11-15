@@ -107,7 +107,7 @@ export function searchOf(db: Db, embedder: Embedder, filesDir: string) {
       const file = await db.query.files.findFirst({ where: eq(files.id, fileId) });
       if (!file || file.deletedAt) return 0;
       try {
-        if (file.size > MAX_BYTES) throw new Error("zu groß für die Suche");
+        if (file.size > MAX_BYTES) throw new Error("too large for the search");
         const pages = await pagesOf(file);
         const pieces = (pages ?? []).flatMap(({ page, text }) => passages(text).map((t) => ({ page, text: t })));
         const vectors: number[][] = [];

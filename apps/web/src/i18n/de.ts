@@ -1,9 +1,34 @@
-// Every text the app shows, in German.
+// Every text the app shows, in German. The keys come from `en.ts`; the terms
+// are the fixed German ones from the glossary.
 import type { CourseRole, FileFolder } from "@study/shared";
-import { ApiError } from "../lib/api";
+import type { Tone } from "@study/ui";
+import type { Messages } from "./en";
 
-export const de = {
+export const de: Messages = {
   app: "Study Manager",
+  time: {
+    today: "Heute",
+    tomorrow: "Morgen",
+    clock: (time: string) => `${time} Uhr`,
+    relative: {
+      today: "heute",
+      tomorrow: "morgen",
+      yesterday: "gestern",
+      ago: (days: number) => `vor ${days} Tagen`,
+      in: (days: number) => `in ${days} Tagen`,
+    },
+    winter: (from: string, to: string) => `Wintersemester 20${from}/${to}`,
+    summer: (year: string) => `Sommersemester 20${year}`,
+  },
+  ui: {
+    close: "Schließen",
+    cancel: "Abbrechen",
+    loading: "Wird geladen",
+    clearSearch: "Suche leeren",
+    breadcrumb: "Pfad",
+    noColour: "Keine Farbe",
+    tones: { blau: "Blau", petrol: "Minze", gruen: "Salbei", gelb: "Butter", orange: "Pfirsich", rot: "Rosé", violett: "Lavendel", grau: "Stein" } satisfies Record<Tone, string>,
+  },
   palette: {
     placeholder: "Suchen oder anlegen, z. B. Todo Blatt 6 rechnen",
     add: "Neu anlegen",
@@ -15,6 +40,7 @@ export const de = {
     inDocuments: "In den Dokumenten",
     private: "nur für dich",
     none: "Nichts gefunden.",
+    example: (day: string, month: string) => `Deadline Laborbericht am ${day}.${month}.`,
     tip: (example: string) => `Tipp: Mit „${example}“ oder „Todo Blatt 6 rechnen morgen“ legst du direkt etwas an.`,
     deadlineAdded: "Deadline angelegt.",
     taskAdded: "Todo angelegt.",
@@ -56,6 +82,9 @@ export const de = {
     download: "Herunterladen",
     actionsFor: (name: string) => `Aktionen für ${name}`,
     more: "Mehr",
+    deletedUser: "Gelöschter Nutzer",
+    pdfFailed: "Das PDF lässt sich nicht anzeigen.",
+    tooLarge: (file: string, mb: number) => `„${file}“ ist größer als ${mb} MB. Teile die Datei oder lade eine kleinere Fassung hoch.`,
   },
   roles: { owner: "Besitzer", editor: "Bearbeiter", viewer: "Leser" } satisfies Record<CourseRole, string>,
   roleHints: {
@@ -87,8 +116,9 @@ export const de = {
   },
   welcome: {
     title: "Willkommen beim Study Manager",
-    text: "Lege fest, wie du heißt und wie du dich künftig anmeldest.",
+    text: "Lege fest, wie du heißt, welche Sprache du willst und wie du dich künftig anmeldest.",
     name: "Dein Name",
+    language: "Sprache",
     password: "Neues Passwort (mindestens 10 Zeichen)",
     passwordAgain: "Passwort wiederholen",
     mismatch: "Die Passwörter stimmen nicht überein.",
@@ -325,6 +355,7 @@ export const de = {
     nothingHeard: "In der Aufnahme wurde keine Sprache erkannt.",
     downloadFailed:
       "Die Verbindung ist abgebrochen, vermutlich beim Laden des Whisper-Modells. Starte die Transkription noch einmal – bereits geladene Teile bleiben im Browser gespeichert.",
+    workerCrashed: "Der Transkriptions-Worker ist abgestürzt.",
     phases: { audio: "Tonspur wird gelesen", model: "Modell wird geladen", transcribing: "Wird transkribiert", uploading: "Wird gespeichert" },
   },
   search: {
@@ -456,9 +487,11 @@ export const de = {
     reopen: "Wieder öffnen",
     unplan: "Aus dem Kalender nehmen",
     openSubject: "Zum Fach",
+    allDay: "ganztägig",
     kinds: { session: "Sitzung", event: "Termin", deadline: "Deadline", task: "Aufgabe" },
-    hours: (minutes: number) => formatDuration(minutes),
-    load: (minutes: number) => `${formatDuration(minutes)} eingeplant`,
+    sessionKinds: { VO: "Vorlesung", UE: "Übung", VU: "Vorlesung mit Übung", SE: "Seminar", PR: "Praktikum" } as Record<string, string>,
+    hours: (duration: string) => duration,
+    load: (duration: string) => `${duration} eingeplant`,
   },
   programs: {
     title: "Studiengänge",
@@ -514,6 +547,8 @@ export const de = {
     studiesPlaceholder: "z. B. KIT · Maschinenbau B.Sc.",
     semester: "Fachsemester",
     profileSaved: "Gespeichert.",
+    language: "Sprache",
+    languageText: "Für die Oberfläche und die Mails, die du bekommst. Die Seite lädt beim Wechsel neu.",
     picture: "Profilbild",
     pictureChoose: "Bild auswählen",
     pictureChange: "Ändern",
@@ -551,6 +586,7 @@ export const de = {
     totpCode: "Code aus der App",
     totpVerify: "Bestätigen",
     totpActive: "Authenticator-App ist eingerichtet.",
+    totpQr: "QR-Code für die Authenticator-App",
     password: "Passwort ändern",
     newPassword: "Neues Passwort",
     passwordSaved: "Passwort geändert.",
@@ -697,6 +733,7 @@ export const de = {
     allow: "Erlauben",
     deny: "Ablehnen",
     signedInAs: (email: string) => `Angemeldet als ${email}`,
+    missingId: "Es fehlt die Kennung der Anfrage.",
     unknownTarget: (target: string | undefined) =>
       `Diese Anfrage wurde abgelehnt: Die App will den Zugang an ${target ? new URL(target).host : "eine unbekannte Adresse"} schicken. Erlaubt sind nur Claude (claude.ai) und Claude Code auf deinem eigenen Rechner.`,
   },
@@ -705,6 +742,7 @@ export const de = {
     more: "Ältere anzeigen",
     viaClaude: "über Claude",
     deletedUser: "Gelöschter Nutzer",
+    otherCourse: "anderes Fach",
     times: (n: number) => `${n}×`,
     actions: {
       "course.created": "hat das Fach angelegt:",
@@ -769,6 +807,7 @@ export const de = {
       university: "Uni",
       degree: "Abschluss",
       regulation: "Prüfungsordnung",
+      locale: "Sprache",
     } as Record<string, string>,
   },
   errors: {
@@ -817,120 +856,6 @@ export const de = {
     missing_name: "Bitte gib einen Namen an.",
     invalid_semester: "Semester wie WiSe26-27 oder SoSe27.",
     invalid_study_semester: "Das Fachsemester ist eine Zahl von 1 bis 30.",
+    invalid_locale: "Diese Sprache gibt es nicht.",
   } as Record<string, string>,
 };
-
-export function errorMessage(error: unknown): string {
-  if (error instanceof ApiError) {
-    const known = de.errors[error.code];
-    if (known) return known;
-    return error.message && error.message !== error.code ? error.message : de.errors.unknown;
-  }
-  if (error instanceof Error && error.message) return error.message;
-  return de.errors.unknown;
-}
-
-// --- Formatting ------------------------------------------------------------
-
-export function formatDuration(minutes: number): string {
-  if (minutes < 60) return `${minutes} min`;
-  const hours = minutes / 60;
-  return `${hours.toLocaleString("de-DE", { maximumFractionDigits: 1 })} h`;
-}
-
-/** When a session is, as "Heute, 10:00 Uhr" or "Do, 9:45 Uhr". */
-export function formatWeekTime(value: string): string {
-  const date = new Date(value);
-  const day = date.toLocaleDateString("sv-SE");
-  const time = `${date.getHours()}:${String(date.getMinutes()).padStart(2, "0")} Uhr`;
-  if (day === today()) return `Heute, ${time}`;
-  const days = daysUntil(day);
-  if (days === 1) return `Morgen, ${time}`;
-  if (days > 1 && days < 7) return `${date.toLocaleDateString("de-DE", { weekday: "short" }).replace(".", "")}, ${time}`;
-  return `${date.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit" })}, ${time}`;
-}
-
-export function formatDate(value: string | Date): string {
-  const date = typeof value === "string" ? new Date(value.length === 10 ? `${value}T00:00:00` : value) : value;
-  return date.toLocaleDateString("de-DE", { weekday: "short", day: "2-digit", month: "2-digit", year: "numeric" });
-}
-
-export function formatShortDate(value: string | Date): string {
-  const date = typeof value === "string" ? new Date(value.length === 10 ? `${value}T00:00:00` : value) : value;
-  return date.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit" });
-}
-
-export function formatTime(value: string | Date): string {
-  return new Date(value).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
-}
-
-export function formatDateTime(value: string | Date): string {
-  return `${formatShortDate(value)} ${formatTime(value)}`;
-}
-
-export function formatSize(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 ** 2) return `${Math.round(bytes / 1024)} KB`;
-  if (bytes < 1024 ** 3) return `${(bytes / 1024 ** 2).toLocaleString("de-DE", { maximumFractionDigits: 1 })} MB`;
-  return `${(bytes / 1024 ** 3).toLocaleString("de-DE", { maximumFractionDigits: 1 })} GB`;
-}
-
-/** `WiSe26-27` → „Wintersemester 2026/27“. */
-export function semesterName(id: string): string {
-  const winter = id.match(/^WiSe(\d{2})-(\d{2})$/);
-  if (winter) return `Wintersemester 20${winter[1]}/${winter[2]}`;
-  const summer = id.match(/^SoSe(\d{2})$/);
-  return summer ? `Sommersemester 20${summer[1]}` : id;
-}
-
-/** The semester a date falls in: winter from October to March. */
-export function semesterOf(date = new Date()): string {
-  const year = date.getFullYear() % 100;
-  const month = date.getMonth() + 1;
-  const pad = (n: number) => String((n + 100) % 100).padStart(2, "0");
-  if (month >= 10) return `WiSe${pad(year)}-${pad(year + 1)}`;
-  if (month <= 3) return `WiSe${pad(year - 1)}-${pad(year)}`;
-  return `SoSe${pad(year)}`;
-}
-
-export function nextSemesters(count = 4): string[] {
-  const list = [semesterOf()];
-  const date = new Date();
-  for (let i = 1; i < count; i++) {
-    date.setMonth(date.getMonth() + 6);
-    const id = semesterOf(date);
-    if (!list.includes(id)) list.push(id);
-  }
-  // The semester before, for subjects added late.
-  const before = new Date();
-  before.setMonth(before.getMonth() - 6);
-  return [semesterOf(before), ...list];
-}
-
-/** Today as `YYYY-MM-DD` in local time. */
-export function today(): string {
-  return new Date().toLocaleDateString("sv-SE");
-}
-
-export function daysUntil(day: string): number {
-  const target = new Date(`${day}T00:00:00`).getTime();
-  const start = new Date(`${today()}T00:00:00`).getTime();
-  return Math.round((target - start) / 86_400_000);
-}
-
-export function relativeDay(day: string): string {
-  const days = daysUntil(day);
-  if (days === 0) return "heute";
-  if (days === 1) return "morgen";
-  if (days === -1) return "gestern";
-  if (days < 0) return `vor ${-days} Tagen`;
-  return `in ${days} Tagen`;
-}
-
-/** Green from a week ahead, yellow within the week, red from the day before. */
-export function urgency(day: string): "ok" | "soon" | "urgent" {
-  const days = daysUntil(day);
-  if (days <= 1) return "urgent";
-  if (days <= 7) return "soon";
-  return "ok";
-}

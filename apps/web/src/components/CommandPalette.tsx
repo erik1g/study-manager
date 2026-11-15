@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useLocation } from "react-router";
 import { Dialog, List, ListRow, Notice, SearchField } from "@study/ui";
-import { de, errorMessage, formatDate, today } from "../i18n/de";
+import { t, errorMessage, formatDate, today } from "../i18n";
 import { api, type EverywhereResult } from "../lib/api";
 import { emitChanged, toast } from "../lib/events";
 import { useGo } from "../lib/motion";
@@ -32,7 +32,7 @@ export function CommandPalette() {
   isOpen.current = open;
 
   const currentCourse = pathname.match(/^\/fach\/([^/]+)/)?.[1] ?? null;
-  const titleOf = useCallback((id: string | null | undefined) => courses.find((c) => c.id === id)?.title ?? de.tasks.general, [courses]);
+  const titleOf = useCallback((id: string | null | undefined) => courses.find((c) => c.id === id)?.title ?? t.tasks.general, [courses]);
 
   const close = useCallback(() => setOpen(false), []);
 
@@ -92,7 +92,7 @@ export function CommandPalette() {
       await api.createTask({ title: item.title, courseId: item.courseId, plannedDate: item.date, startTime: item.date ? item.time : null, estimateMinutes: null });
     }
     setOpen(false);
-    toast(item.kind === "deadline" ? de.palette.deadlineAdded : de.palette.taskAdded);
+    toast(item.kind === "deadline" ? t.palette.deadlineAdded : t.palette.taskAdded);
     emitChanged();
   }, []);
 
@@ -101,46 +101,46 @@ export function CommandPalette() {
     const list: Hit[] = [];
     const quick = parseQuickAdd(query, courses, currentCourse);
     if (quick) {
-      const when = quick.date ? `${formatDate(quick.date)}${quick.time ? `, ${quick.time} Uhr` : ""} · ` : "";
+      const when = quick.date ? `${formatDate(quick.date)}${quick.time ? `, ${t.time.clock(quick.time)}` : ""} · ` : "";
       list.push({
-        group: de.palette.add,
-        title: `${quick.kind === "deadline" ? de.deadlines.one : de.tasks.one} „${quick.title}“`,
-        meta: `${when}${quick.courseId ? titleOf(quick.courseId) : quick.kind === "deadline" ? de.palette.private : de.tasks.general}`,
+        group: t.palette.add,
+        title: `${quick.kind === "deadline" ? t.deadlines.one : t.tasks.one} „${quick.title}“`,
+        meta: `${when}${quick.courseId ? titleOf(quick.courseId) : quick.kind === "deadline" ? t.palette.private : t.tasks.general}`,
         courseId: quick.courseId,
         run: () => add(quick),
       });
     }
     if (!term) {
       list.push(
-        { group: de.palette.goTo, title: de.nav.today, run: () => leave("/") },
-        { group: de.palette.goTo, title: de.nav.planning, run: () => leave("/planung") },
-        { group: de.palette.goTo, title: de.nav.todos, run: () => leave("/todos") },
-        { group: de.palette.goTo, title: de.settings.appearance, meta: de.nav.settings, run: () => leave("/einstellungen/darstellung") },
+        { group: t.palette.goTo, title: t.nav.today, run: () => leave("/") },
+        { group: t.palette.goTo, title: t.nav.planning, run: () => leave("/planung") },
+        { group: t.palette.goTo, title: t.nav.todos, run: () => leave("/todos") },
+        { group: t.palette.goTo, title: t.settings.appearance, meta: t.nav.settings, run: () => leave("/einstellungen/darstellung") },
       );
       return list;
     }
     for (const c of courses.filter((c) => c.title.toLowerCase().includes(term))) {
-      list.push({ group: de.palette.subjects, title: c.title, courseId: c.id, run: () => leave(`/fach/${c.id}`) });
+      list.push({ group: t.palette.subjects, title: c.title, courseId: c.id, run: () => leave(`/fach/${c.id}`) });
     }
     if (found) {
       for (const d of found.deadlines) {
-        list.push({ group: de.deadlines.title, title: d.title, meta: `${titleOf(d.courseId)} · ${formatDate(d.date ?? d.startsAt!)}`, courseId: d.courseId, run: () => leave(d.courseId ? `/fach/${d.courseId}` : "/todos") });
+        list.push({ group: t.deadlines.title, title: d.title, meta: `${titleOf(d.courseId)} · ${formatDate(d.date ?? d.startsAt!)}`, courseId: d.courseId, run: () => leave(d.courseId ? `/fach/${d.courseId}` : "/todos") });
       }
-      for (const t of found.tasks) {
-        list.push({ group: de.nav.todos, title: t.title, meta: titleOf(t.courseId), courseId: t.courseId, run: () => leave("/todos") });
+      for (const task of found.tasks) {
+        list.push({ group: t.nav.todos, title: task.title, meta: titleOf(task.courseId), courseId: task.courseId, run: () => leave("/todos") });
       }
       for (const f of found.files) {
-        list.push({ group: de.palette.documents, title: f.name, meta: `${titleOf(f.courseId)} · ${de.folders[f.folder as keyof typeof de.folders]}`, courseId: f.courseId, run: () => leave(`/fach/${f.courseId}?tab=dokumente&datei=${f.id}`) });
+        list.push({ group: t.palette.documents, title: f.name, meta: `${titleOf(f.courseId)} · ${t.folders[f.folder as keyof typeof t.folders]}`, courseId: f.courseId, run: () => leave(`/fach/${f.courseId}?tab=dokumente&datei=${f.id}`) });
       }
       for (const n of found.notes) {
-        list.push({ group: de.palette.notes, title: n.title, meta: titleOf(n.courseId), courseId: n.courseId, run: () => leave(`/fach/${n.courseId}?tab=notizen`) });
+        list.push({ group: t.palette.notes, title: n.title, meta: titleOf(n.courseId), courseId: n.courseId, run: () => leave(`/fach/${n.courseId}?tab=notizen`) });
       }
       for (const r of found.recordings) {
-        list.push({ group: de.palette.lectures, title: r.title, meta: `${titleOf(r.courseId)} · ${formatDate(r.date)}`, courseId: r.courseId, run: () => leave(`/fach/${r.courseId}?tab=vorlesungen&aufnahme=${r.id}`) });
+        list.push({ group: t.palette.lectures, title: r.title, meta: `${titleOf(r.courseId)} · ${formatDate(r.date)}`, courseId: r.courseId, run: () => leave(`/fach/${r.courseId}?tab=vorlesungen&aufnahme=${r.id}`) });
       }
       for (const p of found.passages) {
         list.push({
-          group: de.palette.inDocuments,
+          group: t.palette.inDocuments,
           title: p.name,
           meta: `${p.page ? `S. ${p.page} · ` : ""}${p.text.slice(0, 90)} …`,
           courseId: p.courseId,
@@ -204,12 +204,12 @@ export function CommandPalette() {
   flush();
 
   return (
-    <Dialog title={de.nav.search} hideTitle hideClose placement="top" size="lg" className="palette" onClose={close}>
+    <Dialog title={t.nav.search} hideTitle hideClose placement="top" size="lg" className="palette" onClose={close}>
       <SearchField
-        label={de.nav.search}
+        label={t.nav.search}
         size="lg"
         autoFocus
-        placeholder={de.palette.placeholder}
+        placeholder={t.palette.placeholder}
         value={query}
         autoComplete="off"
         onChange={(e) => setQuery(e.target.value)}
@@ -230,8 +230,8 @@ export function CommandPalette() {
       <div className="palette-list">
         {error && <Notice tone="danger">{error}</Notice>}
         {groups}
-        {hits.length === 0 && <p className="quiet">{de.palette.none}</p>}
-        {!query && <p className="quiet small">{de.palette.tip(`Deadline Laborbericht am ${today().slice(8)}.${today().slice(5, 7)}.`)}</p>}
+        {hits.length === 0 && <p className="quiet">{t.palette.none}</p>}
+        {!query && <p className="quiet small">{t.palette.tip(t.palette.example(today().slice(8), today().slice(5, 7)))}</p>}
       </div>
     </Dialog>
   );

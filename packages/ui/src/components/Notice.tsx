@@ -11,12 +11,12 @@ export interface NoticeProps {
   tone?: NoticeTone;
   title?: ReactNode;
   children?: ReactNode;
-  /** A button or link at the end, e.g. "Erneut versuchen". */
+  /** A button or link at the end, e.g. "Try again". */
   action?: ReactNode;
   className?: string;
 }
 
-/** A message that stays on the page: what went wrong, what to know, what worked. For a short "Gespeichert" use `toast`. */
+/** A message that stays on the page: what went wrong, what to know, what worked. For a short "Saved" use `toast`. */
 export function Notice({ tone = "info", title, children, action, className }: NoticeProps) {
   return (
     <div className={cx("ui-notice", `ui-tone-${STATUS[tone]}`, className)} role={tone === "danger" ? "alert" : "status"}>

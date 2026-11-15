@@ -1,5 +1,6 @@
 // Who is signed in, and the subjects everyone in the app needs.
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import { adoptLocale } from "../i18n";
 import { api, type Course, type Me, type Person } from "./api";
 import { auth, type Session } from "./auth";
 
@@ -31,7 +32,16 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     return () => data.subscription.unsubscribe();
   }, []);
 
-  const reloadMe = useCallback(async () => setMe(await api.me()), []);
+  const reloadMe = useCallback(async () => {
+    const next = await api.me();
+    // The profile's language wins over the browser's. On the welcome page the
+    // person is still choosing theirs, so the page stays as it is there.
+    if (adoptLocale(next.locale) && !window.location.pathname.startsWith("/willkommen")) {
+      window.location.reload();
+      return;
+    }
+    setMe(next);
+  }, []);
   const reloadCourses = useCallback(async () => setCourses(await api.courses()), []);
   const reloadPeople = useCallback(async () => setPeople(new Map((await api.people()).map((p) => [p.id, p]))), []);
 

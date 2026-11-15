@@ -7,7 +7,7 @@ import { DeadlineRow, TaskRow, deadlineOpen } from "../components/Agenda";
 import { CourseCard } from "../components/CourseCard";
 import { ConfirmDialog } from "../components/Dialog";
 import { NewCourseDialog } from "../components/NewCourseDialog";
-import { de, errorMessage, formatTime, semesterName, semesterOf, today } from "../i18n/de";
+import { t, errorMessage, formatLongDate, formatTime, semesterName, semesterOf, today } from "../i18n";
 import { api, type CalendarItem, type Course, type CourseProgress, type Deadline, type Task, type WorkItem } from "../lib/api";
 import { emitChanged, openPalette, useChanged } from "../lib/events";
 import { useGo } from "../lib/motion";
@@ -37,23 +37,23 @@ function DayCard({ items }: { items: CalendarItem[] }) {
   const timed = items.filter((i) => !i.allDay && i.kind !== "deadline" && !i.cancelled && new Date(i.start).toLocaleDateString("sv-SE") === day);
   const courseOf = (item: CalendarItem) => courses.find((c) => c.id === item.courseId);
   const title = (item: CalendarItem) => (item.kind === "session" ? (courseOf(item)?.title ?? item.title) : item.title);
-  const meta = (item: CalendarItem) => [item.kind === "task" ? (courseOf(item)?.title ?? de.tasks.general) : item.kind === "session" ? item.title : null, item.location].filter(Boolean).join(" · ");
+  const meta = (item: CalendarItem) => [item.kind === "task" ? (courseOf(item)?.title ?? t.tasks.general) : item.kind === "session" ? item.title : null, item.location].filter(Boolean).join(" · ");
   const target = (item: CalendarItem) => (item.kind === "session" && item.courseId ? `/fach/${item.courseId}` : "/planung");
 
   const running = timed.find((i) => new Date(i.start) <= now && new Date(i.end) > now);
   const coming = timed.find((i) => new Date(i.start) > now);
   const status = running
-    ? de.overview.running(title(running), Math.ceil((new Date(running.end).getTime() - now.getTime()) / 60_000))
+    ? t.overview.running(title(running), Math.ceil((new Date(running.end).getTime() - now.getTime()) / 60_000))
     : coming
-      ? de.overview.coming(title(coming), formatTime(coming.start))
+      ? t.overview.coming(title(coming), formatTime(coming.start))
       : timed.length > 0
-        ? de.overview.dayOver
-        : de.overview.nothingToday;
+        ? t.overview.dayOver
+        : t.overview.nothingToday;
 
   return (
     <Card as="section" tone="blau" glow grain className="day-card" aria-labelledby="day">
       <div className="day-card-head">
-        <SectionHeader id="day" title={de.overview.today} description={status} size="lg" />
+        <SectionHeader id="day" title={t.overview.today} description={status} size="lg" />
         <Illustration kind={timed.length > 0 ? "schreibtisch" : "tasse"} className="day-card-picture" />
       </div>
       {timed.length > 0 && (
@@ -71,7 +71,7 @@ function DayCard({ items }: { items: CalendarItem[] }) {
               }
               title={title(item)}
               meta={meta(item) || undefined}
-              trailing={running?.id === item.id ? <Chip tone="gruen" size="sm">{de.overview.now}</Chip> : `bis ${formatTime(item.end)}`}
+              trailing={running?.id === item.id ? <Chip tone="gruen" size="sm">{t.overview.now}</Chip> : `bis ${formatTime(item.end)}`}
             />
           ))}
         </List>
@@ -85,9 +85,9 @@ function DeadlinesCard({ all, onChanged }: { all: Deadline[]; onChanged: () => v
   const settled = all.length - deadlines.length;
   return (
     <Card as="section" tone="gelb" aria-labelledby="due">
-      <SectionHeader id="due" title={de.overview.nextDue} action={<LinkButton as={Link} to="/todos" variant="ghost" size="sm">{de.overview.allTasks}</LinkButton>} />
+      <SectionHeader id="due" title={t.overview.nextDue} action={<LinkButton as={Link} to="/todos" variant="ghost" size="sm">{t.overview.allTasks}</LinkButton>} />
       {deadlines.length === 0 ? (
-        <p className="card-quiet">{de.overview.deadlinesEmpty}</p>
+        <p className="card-quiet">{t.overview.deadlinesEmpty}</p>
       ) : (
         <List variant="raised" className="card-list">
           {deadlines.slice(0, 4).map((deadline) => (
@@ -97,7 +97,7 @@ function DeadlinesCard({ all, onChanged }: { all: Deadline[]; onChanged: () => v
       )}
       {settled > 0 && (
         <LinkButton as={Link} to="/todos#erledigt" variant="ghost" size="sm" icon="check-circle" className="settled-link">
-          {de.deadlines.settledCount(settled)}
+          {t.deadlines.settledCount(settled)}
         </LinkButton>
       )}
     </Card>
@@ -111,11 +111,11 @@ function CardsCard({ due, courses }: { due: Record<string, number>; courses: Cou
   return (
     <Card as="section" tone="violett" glow className="cards-card" aria-labelledby="cards">
       <div className="cards-card-text">
-        <SectionHeader id="cards" title={de.overview.cards} />
+        <SectionHeader id="cards" title={t.overview.cards} />
         <p className="big-number ui-display">{total}</p>
-        <p className="cards-card-sub">{de.overview.cardsToday(withCards.length)}</p>
+        <p className="cards-card-sub">{t.overview.cardsToday(withCards.length)}</p>
         <LinkButton as={Link} to={`/fach/${withCards[0]!.id}?tab=lernkarten`} variant="primary" iconEnd="arrow-right">
-          {de.overview.learnNow}
+          {t.overview.learnNow}
         </LinkButton>
       </div>
       <Illustration kind="karten" className="cards-card-picture" />
@@ -150,7 +150,7 @@ export function CourseGrid({ list, progress, deadlines, due, onChanged, onRemove
           <span className="course-add-icon" aria-hidden="true">
             +
           </span>
-          {de.overview.newSubject}
+          {t.overview.newSubject}
         </Card>
       )}
     </div>
@@ -224,12 +224,12 @@ export function OverviewView() {
         level={1}
         size="xl"
         title={greeting(me?.displayName ?? "")}
-        description={`${new Date().toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "long" })} · ${semesterName(current)}`}
+        description={`${formatLongDate(new Date())} · ${semesterName(current)}`}
         action={
           <>
-            <SearchButton label={de.nav.search} shortcut="⌘K" onOpen={openPalette} className="today-search" />
+            <SearchButton label={t.nav.search} shortcut="⌘K" onOpen={openPalette} className="today-search" />
             <Button variant="primary" icon="plus" onClick={openPalette}>
-              {de.overview.add}
+              {t.overview.add}
             </Button>
           </>
         }
@@ -240,10 +240,10 @@ export function OverviewView() {
         <DayCard items={items} />
 
         <Card as="section" aria-labelledby="todo" className="todo-card">
-          <SectionHeader id="todo" title={de.overview.toDo} action={plannedToday.length > 0 && <Chip tone="gruen">{de.overview.open(doneToday, plannedToday.length)}</Chip>} />
+          <SectionHeader id="todo" title={t.overview.toDo} action={plannedToday.length > 0 && <Chip tone="gruen">{t.overview.open(doneToday, plannedToday.length)}</Chip>} />
           {toDo.length === 0 ? (
-            <EmptyState variant="plain" size="sm" illustration="fertig" title={plannedToday.length > 0 ? de.overview.allDone : de.overview.nothingToday}>
-              {plannedToday.length > 0 ? de.overview.allDoneText : null}
+            <EmptyState variant="plain" size="sm" illustration="fertig" title={plannedToday.length > 0 ? t.overview.allDone : t.overview.nothingToday}>
+              {plannedToday.length > 0 ? t.overview.allDoneText : null}
             </EmptyState>
           ) : (
             <List className="card-list">
@@ -254,7 +254,7 @@ export function OverviewView() {
           )}
           {toDo.length > 5 && (
             <LinkButton as={Link} to="/todos" variant="ghost" size="sm" iconEnd="arrow-right">
-              {de.overview.moreTasks(toDo.length - 5)}
+              {t.overview.moreTasks(toDo.length - 5)}
             </LinkButton>
           )}
         </Card>
@@ -264,20 +264,20 @@ export function OverviewView() {
 
         {inbox.length > 0 && (
           <Card as="section" tone="gelb" aria-labelledby="claude">
-            <SectionHeader id="claude" title={de.inbox.title} description={de.inbox.text(inbox.length)} />
+            <SectionHeader id="claude" title={t.inbox.title} description={t.inbox.text(inbox.length)} />
             <List variant="raised" className="card-list">
               {inbox.slice(0, 3).map((item) => (
                 <ListRow key={item.id} title={item.title} meta={item.course} />
               ))}
             </List>
-            <p className="card-quiet">{de.inbox.how}</p>
+            <p className="card-quiet">{t.inbox.how}</p>
           </Card>
         )}
       </div>
 
       <section aria-labelledby="subjects" className="page-section">
-        <SectionHeader id="subjects" title={de.overview.yourSubjects} size="lg" action={<LinkButton as={Link} to="/faecher" variant="ghost" size="sm">{de.nav.subjects}</LinkButton>} />
-        {courses.length === 0 && <p className="quiet">{de.overview.noSubjects}</p>}
+        <SectionHeader id="subjects" title={t.overview.yourSubjects} size="lg" action={<LinkButton as={Link} to="/faecher" variant="ghost" size="sm">{t.nav.subjects}</LinkButton>} />
+        {courses.length === 0 && <p className="quiet">{t.overview.noSubjects}</p>}
         {grid(now, true)}
       </section>
 
@@ -303,9 +303,9 @@ export function OverviewView() {
       )}
       {removing && (
         <ConfirmDialog
-          title={removing.role === "owner" ? de.overview.deleteSubject.replace(" …", "") : de.overview.leave}
-          text={removing.role === "owner" ? de.course.deleteConfirm(removing.title) : de.course.leaveConfirm(removing.title)}
-          confirm={removing.role === "owner" ? de.common.delete : de.members.leave}
+          title={removing.role === "owner" ? t.overview.deleteSubject.replace(" …", "") : t.overview.leave}
+          text={removing.role === "owner" ? t.course.deleteConfirm(removing.title) : t.course.leaveConfirm(removing.title)}
+          confirm={removing.role === "owner" ? t.common.delete : t.members.leave}
           danger
           onClose={() => setRemoving(null)}
           onConfirm={async () => {

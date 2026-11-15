@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import { Link, useSearchParams } from "react-router";
 import { atLeast } from "@study/shared";
-import { de, errorMessage, formatDate, today } from "../i18n/de";
+import { LANGUAGE_NAMES, t, errorMessage, formatDate, today } from "../i18n";
 import { api, type Course, type Recording, type Session } from "../lib/api";
 import {
   checkBrowser,
@@ -52,14 +52,14 @@ export function LecturesTab({ course }: { course: Course }) {
     <div className="narrow ui-stack">
       {error && <Notice tone="danger">{error}</Notice>}
       <SectionHeader
-        title={de.course.tabs.lectures}
-        description={de.lectures.text}
+        title={t.course.tabs.lectures}
+        description={t.lectures.text}
         action={
           canEdit &&
           !transcribing &&
           !!recordings?.length && (
             <Button variant="primary" icon="mic" onClick={() => setTranscribing(true)}>
-              {de.lectures.transcribe}
+              {t.lectures.transcribe}
             </Button>
           )
         }
@@ -78,10 +78,10 @@ export function LecturesTab({ course }: { course: Course }) {
       {recordings && recordings.length === 0 && !transcribing && (
         <EmptyState
           illustration="kalender"
-          title={de.lectures.emptyTitle}
-          actions={canEdit && <Button variant="primary" icon="mic" onClick={() => setTranscribing(true)}>{de.lectures.transcribe}</Button>}
+          title={t.lectures.emptyTitle}
+          actions={canEdit && <Button variant="primary" icon="mic" onClick={() => setTranscribing(true)}>{t.lectures.transcribe}</Button>}
         >
-          {de.lectures.emptyText}
+          {t.lectures.emptyText}
         </EmptyState>
       )}
       {recordings && recordings.length > 0 && (
@@ -99,13 +99,13 @@ export function LecturesTab({ course }: { course: Course }) {
                     {r.durationSeconds ? ` · ${timestamp(r.durationSeconds)}` : ""} · <Person userId={r.createdById} name={r.createdBy} size={16} />
                   </>
                 }
-                trailing={r.analysedAt ? <Chip tone="gruen" icon="check" size="sm">{de.lectures.analysed(r.analysedBy)}</Chip> : <Chip size="sm">{de.lectures.waiting}</Chip>}
+                trailing={r.analysedAt ? <Chip tone="gruen" icon="check" size="sm">{t.lectures.analysed(r.analysedBy)}</Chip> : <Chip size="sm">{t.lectures.waiting}</Chip>}
               />
             ))}
           </List>
         </Card>
       )}
-      <p className="quiet small">{de.lectures.claudeHint}</p>
+      <p className="quiet small">{t.lectures.claudeHint}</p>
     </div>
   );
 }
@@ -121,7 +121,7 @@ function Transcript({ id, canEdit, onBack, onChanged }: { id: string; canEdit: b
     <div className="narrow ui-stack">
       <div className="toolbar-row">
         <Button size="sm" variant="ghost" icon="arrow-left" onClick={onBack}>
-          {de.lectures.all}
+          {t.lectures.all}
         </Button>
         <span className="spacer" />
         {recording && (
@@ -137,12 +137,12 @@ function Transcript({ id, canEdit, onBack, onChanged }: { id: string; canEdit: b
               setTimeout(() => URL.revokeObjectURL(url), 5000);
             }}
           >
-            {de.common.download}
+            {t.common.download}
           </Button>
         )}
         {canEdit && (
           <Button size="sm" variant="danger" icon="trash" onClick={() => setDeleting(true)}>
-            {de.common.delete}
+            {t.common.delete}
           </Button>
         )}
       </div>
@@ -154,9 +154,9 @@ function Transcript({ id, canEdit, onBack, onChanged }: { id: string; canEdit: b
       )}
       {deleting && recording && (
         <ConfirmDialog
-          title={de.common.delete}
-          text={de.lectures.deleteConfirm(recording.title)}
-          confirm={de.common.delete}
+          title={t.common.delete}
+          text={t.lectures.deleteConfirm(recording.title)}
+          confirm={t.common.delete}
           danger
           onClose={() => setDeleting(false)}
           onConfirm={async () => {
@@ -206,7 +206,7 @@ function TranscribePanel({ course, onClose, onDone }: { course: Course; onClose:
       } else {
         segments = await transcribeInBrowser(samples, lang, progress, abort.current.signal);
       }
-      if (segments.length === 0) throw new Error(de.lectures.nothingHeard);
+      if (segments.length === 0) throw new Error(t.lectures.nothingHeard);
       progress("uploading", 0);
       const name = title.trim() || file.name.replace(/\.[^.]+$/, "");
       const markdown = toMarkdown(name, course.title, formatDate(date), lang, duration, segments);
@@ -215,7 +215,7 @@ function TranscribePanel({ course, onClose, onDone }: { course: Course; onClose:
     } catch (e) {
       if ((e as Error).name === "AbortError") return;
       // A broken download of the model reads as a bare "Failed to fetch".
-      setError(/failed to fetch|network/i.test((e as Error).message ?? "") ? de.lectures.downloadFailed : errorMessage(e));
+      setError(/failed to fetch|network/i.test((e as Error).message ?? "") ? t.lectures.downloadFailed : errorMessage(e));
       setPhase(null);
     }
   }
@@ -225,22 +225,22 @@ function TranscribePanel({ course, onClose, onDone }: { course: Course; onClose:
   const slow = method === "browser" && rating === "slow";
   return (
     <Card as="form" tone="violett" className="ui-stack" onSubmit={start}>
-      <SectionHeader title={de.lectures.transcribe} />
+      <SectionHeader title={t.lectures.transcribe} />
       {file ? (
         <Card variant="surface" padding="sm" className="chosen-file">
           <span className="chosen-file-name">{file.name}</span>
           {!busy && (
             <Button size="sm" variant="ghost" onClick={() => setFile(null)}>
-              {de.lectures.otherFile}
+              {t.lectures.otherFile}
             </Button>
           )}
         </Card>
       ) : (
-        <FileDrop label={de.lectures.file} hint={de.lectures.fileHint} accept="audio/*,video/*" multiple={false} disabled={busy} onFiles={(files) => setFile(files[0] ?? null)} />
+        <FileDrop label={t.lectures.file} hint={t.lectures.fileHint} accept="audio/*,video/*" multiple={false} disabled={busy} onFiles={(files) => setFile(files[0] ?? null)} />
       )}
       {sessions.length > 0 && (
         <Select
-          label={de.lectures.session}
+          label={t.lectures.session}
           disabled={busy}
           defaultValue=""
           onChange={(e) => {
@@ -259,22 +259,22 @@ function TranscribePanel({ course, onClose, onDone }: { course: Course; onClose:
         </Select>
       )}
       <div className="form-grid three">
-        <TextField label={de.lectures.title} value={title} disabled={busy} onChange={(e) => setTitle(e.target.value)} placeholder={file?.name} />
-        <TextField label={de.lectures.date} type="date" value={date} disabled={busy} onChange={(e) => setDate(e.target.value)} required />
-        <Select label={de.lectures.language} value={language} disabled={busy} onChange={(e) => setLanguage(e.target.value)}>
-          <option value="de">Deutsch</option>
-          <option value="en">Englisch</option>
-          <option value="auto">{de.lectures.auto}</option>
+        <TextField label={t.lectures.title} value={title} disabled={busy} onChange={(e) => setTitle(e.target.value)} placeholder={file?.name} />
+        <TextField label={t.lectures.date} type="date" value={date} disabled={busy} onChange={(e) => setDate(e.target.value)} required />
+        <Select label={t.lectures.language} value={language} disabled={busy} onChange={(e) => setLanguage(e.target.value)}>
+          <option value="de">{LANGUAGE_NAMES.de}</option>
+          <option value="en">{LANGUAGE_NAMES.en}</option>
+          <option value="auto">{t.lectures.auto}</option>
         </Select>
       </div>
       <Notice tone={missingKey ? "warning" : slow ? "warning" : "info"}>
-        {missingKey ? de.lectures.noKey : method === "api" ? de.lectures.usesKey(PROVIDERS[provider].name) : slow ? de.lectures.usesSlowBrowser : de.lectures.usesBrowser}{" "}
-        <Link to="/einstellungen/transkription">{de.lectures.toSettings}</Link>
+        {missingKey ? t.lectures.noKey : method === "api" ? t.lectures.usesKey(PROVIDERS[provider].name) : slow ? t.lectures.usesSlowBrowser : t.lectures.usesBrowser}{" "}
+        <Link to="/einstellungen/transkription">{t.lectures.toSettings}</Link>
       </Notice>
       {phase && (
         <div className="ui-stack">
-          <ProgressBar value={phase.fraction} label={de.lectures.phases[phase.phase]} tone="violett" />
-          <p className="quiet small">{de.lectures.keepOpen}</p>
+          <ProgressBar value={phase.fraction} label={t.lectures.phases[phase.phase]} tone="violett" />
+          <p className="quiet small">{t.lectures.keepOpen}</p>
         </div>
       )}
       {error && <Notice tone="danger">{error}</Notice>}
@@ -285,11 +285,11 @@ function TranscribePanel({ course, onClose, onDone }: { course: Course; onClose:
             onClose();
           }}
         >
-          {busy ? de.lectures.cancel : de.common.cancel}
+          {busy ? t.lectures.cancel : t.common.cancel}
         </Button>
         {!busy && (
           <Button type="submit" variant="primary" icon="play" disabled={!file || missingKey}>
-            {de.lectures.start}
+            {t.lectures.start}
           </Button>
         )}
       </div>
