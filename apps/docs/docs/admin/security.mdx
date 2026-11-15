@@ -1,0 +1,54 @@
+---
+title: "Security"
+sidebar_position: 7
+description: "Recommendations to protect your installation and your study group's data."
+---
+
+# Security
+
+Study Manager manages accounts, documents and notes. These recommendations keep the risk small.
+
+## Basics
+
+- **Only HTTPS** to the outside; redirect HTTP requests to HTTPS at the proxy.
+- **Do not expose port 8080 to the internet.** `BIND_ADDRESS=127.0.0.1` (default) only allows the server itself; if your proxy runs elsewhere, limit access to it with a firewall.
+- **Install updates**: of Study Manager ([Operations](/admin/operations)) and of the operating system. Automatic security updates (`unattended-upgrades` on Debian/Ubuntu) make sense.
+- **SSH with keys only**, ideally only from your network or through a VPN.
+- **Protect the `.env`** (`chmod 600`), never put it in a repository, and keep `BACKUP_PASSPHRASE` separately.
+
+## Sign-in
+
+- There is **no open registration**; accounts are only created through invitations.
+- **Admins** need a passkey or an authenticator app (second factor).
+- The app limits requests per visitor (rate limits) and blocks requests to internal addresses when users enter calendar links (protection against server-side request forgery).
+
+## Verifying the images
+
+Every **release image** is signed with [cosign](https://docs.sigstore.dev/cosign/) when it is published and gets a provenance attestation from GitHub. That way you can check that an image really comes from this project's release workflow and that nobody swapped it afterwards:
+
+```sh
+cosign verify docker.io/erik1g/study-manager-server:0.1.0 \
+  --certificate-identity-regexp 'https://github.com/erik1g/study-manager/\.github/workflows/release\.yml@.*' \
+  --certificate-oidc-issuer https://token.actions.githubusercontent.com
+```
+
+The same applies to `study-manager-web`. Replace `0.1.0` with your version.
+
+You check **the operator package** with the checksum and GitHub's provenance attestation:
+
+```sh
+sha256sum -c study-manager.sha256 --ignore-missing
+gh attestation verify study-manager.tar.gz --repo erik1g/study-manager
+```
+
+The development builds (`edge`, `sha-…`) are **not signed**; use fixed versions in production.
+
+## Containers
+
+- The **server container does not run as root** (user `node`); `web` is the unchanged Caddy image.
+- If you want to separate the network cleanly, you can restrict the containers so that they reach the internet (search model, calendar feeds) but **not your home network**. That is optional and depends on your firewall (e.g. rules in the `DOCKER-USER` chain of `iptables`).
+- The database studio only exists in development (`infra/compose/dev.yml`); do not run it publicly.
+
+## If something happens
+
+If you suspect a break-in: stop the containers, renew `JWT_SECRET`/`JWT_KEYS`/`APP_SECRET` and passwords, ask users to sign in again. You report a **vulnerability in the project** privately, see [SECURITY.md](https://github.com/erik1g/study-manager/blob/main/.github/SECURITY.md).

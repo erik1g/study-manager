@@ -1,38 +1,38 @@
 ---
-title: "Überblick für Admins"
+title: "Overview for admins"
 sidebar_position: 1
-description: "Was du brauchst, um den Study Manager für dich und deine Lerngruppe zu betreiben."
+description: "What you need to run Study Manager for yourself and your study group."
 ---
 
-# Überblick für Admins
+# Overview for admins
 
-Der Study Manager läuft bei dir: auf einem kleinen Server, einem Raspberry Pi oder einem Rechner zu Hause. Diese Anleitung richtet sich an Studierende, die sich **mit Docker und einem Reverse Proxy auskennen** (oder es lernen möchten).
+Study Manager runs at your place: on a small server, a Raspberry Pi or a computer at home. This guide is for students who **know their way around Docker and a reverse proxy** (or want to learn it).
 
-## Was du brauchst
+## What you need
 
-- Einen **Linux-Server** (oder Mac/Windows mit Docker) mit **Docker Compose**. 2 GB Arbeitsspeicher und ein paar GB Platz reichen für eine Lerngruppe; Dokumente und Backups brauchen Platz je nach Menge.
-- Eine **Domain** (oder Subdomain), die auf den Server oder deinen Tunnel zeigt.
-- Einen **Reverse Proxy mit HTTPS** davor (Nginx Proxy Manager, Traefik, Caddy, Cloudflare Tunnel …). Die App spricht auf Port 80 nur unverschlüsselt; TLS endet bei deinem Proxy. Das ist nötig, weil Passkeys und die Anmeldung von Claude (OAuth) HTTPS verlangen.
-- Optional: einen **SMTP-Zugang** für Einladungs- und Passwort-Mails. Ohne ihn gibst du Links von Hand weiter.
+- A **Linux server** (or Mac/Windows with Docker) with **Docker Compose**. 2 GB of memory and a few GB of disk are enough for a study group; documents and backups need space depending on how many there are.
+- A **domain** (or subdomain) that points to the server or your tunnel.
+- A **reverse proxy with HTTPS** in front (Nginx Proxy Manager, Traefik, Caddy, Cloudflare Tunnel …). The app only speaks unencrypted HTTP on port 80; TLS ends at your proxy. This is necessary because passkeys and Claude's sign-in (OAuth) require HTTPS.
+- Optional: an **SMTP account** for invitation and password mails. Without it you pass on links by hand.
 
-## Woraus die App besteht
+## What the app consists of
 
-Vier Container in einem Docker-Compose-Projekt:
+Four containers in one Docker Compose project:
 
-| Container | Aufgabe |
+| Container | Job |
 |---|---|
-| `web` | Caddy mit der fertigen Web-App; die **eine Adresse**, auf die dein Proxy zeigt. Reicht `/api`, `/mcp`, `/ical` und `/auth` an die anderen weiter. |
-| `server` | API, MCP-Server und Hintergrundjobs (Kalender-Abos, Suche, Backups) |
-| `auth` | Anmeldung, Passkeys und OAuth (Supabase Auth / GoTrue) |
+| `web` | Caddy with the built web app; the **one address** your proxy points to. Passes `/api`, `/mcp`, `/ical` and `/auth` on to the others. |
+| `server` | API, MCP server and background jobs (calendar subscriptions, search, backups) |
+| `auth` | Sign-in, passkeys and OAuth (Supabase Auth / GoTrue) |
 | `db` | PostgreSQL 17 |
 
-Die Images kommen von Docker Hub (`erik1g/study-manager-server`, `erik1g/study-manager-web`); Datenbank und Anmeldung nutzen die Images von Supabase. Alles läuft bei dir – nichts davon geht zu Supabase oder zu uns.
+The images come from Docker Hub (`erik1g/study-manager-server`, `erik1g/study-manager-web`); database and sign-in use the images from Supabase. Everything runs at your place – none of it goes to Supabase or to us.
 
-## Der Weg
+## The way
 
-1. [Installieren](/admin/installation)
-2. [Reverse Proxy einrichten](/admin/reverse-proxy)
-3. [Konfigurieren](/admin/konfiguration) (Mail, Zeitzone, Speicherorte)
-4. [Betrieb: Konten, Updates, Logs](/admin/betrieb)
-5. [Backups](/admin/backups) einrichten und die Wiederherstellung **einmal ausprobieren**
-6. [Sicherheit](/admin/sicherheit) lesen
+1. [Install](/admin/installation)
+2. [Set up the reverse proxy](/admin/reverse-proxy)
+3. [Configure](/admin/configuration) (mail, time zone, storage locations)
+4. [Operations: accounts, updates, logs](/admin/operations)
+5. Set up [backups](/admin/backups) and **try the restore once**
+6. Read [Security](/admin/security)

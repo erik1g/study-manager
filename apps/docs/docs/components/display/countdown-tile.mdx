@@ -1,0 +1,43 @@
+---
+title: CountdownTile
+sidebar_position: 5
+description: How long until a deadline.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { DoDont, Do, Dont } from "@site/src/components/DoDont";
+import { CountdownTile, List, ListRow } from "@study/ui";
+
+# CountdownTile
+
+`import { CountdownTile } from "@study/ui"`
+
+```jsx live
+<List variant="raised" style={{ maxWidth: 440 }}>
+  <ListRow leading={<CountdownTile value={2} unit="days" tone="orange" />} title="Submit exercise sheet 4" meta="Engineering Mechanics · Thu, 5 Nov" />
+  <ListRow leading={<CountdownTile value="Today" unit="23:59" tone="rot" />} title="Exam registration" meta="Examination office" />
+</List>
+```
+
+## Variants and states
+
+<Preview>
+  <CountdownTile value={1} unit="day" tone="rot" />
+  <CountdownTile value={9} unit="days" tone="petrol" />
+  <CountdownTile value={106} unit="days" tone="blau" />
+  <CountdownTile value={3} unit="weeks" size="sm" />
+</Preview>
+
+## When to use
+
+- In front of deadlines in lists. The colour is the course's – not "red because soon".
+- Mind the singular: "1 day", "2 days". Today: `value="Today"` and the time as `unit`.
+
+## Props
+
+<PropsTable of="CountdownTile" />
+
+## Accessibility
+
+- Number and unit are text and are read together ("2 days").

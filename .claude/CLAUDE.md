@@ -4,8 +4,8 @@ Study Manager is free software (GPL-3.0): a self-hosted web app for students wit
 
 ## Read first
 
-- Glossary (terms such as course, deadline, task, owner, editor, reader): @../apps/docs/docs/entwickler/glossar.mdx
-- Architecture decisions live in `apps/docs/docs/entwickler/entscheidungen/` (read them for questions about the "why", above all `0002`: no AI on the server).
+- Glossary (terms such as course, deadline, task, owner, editor, reader): @../apps/docs/docs/developers/glossary.mdx
+- Architecture decisions live in `apps/docs/docs/developers/decisions/` (read them for questions about the "why", above all `0002`: no AI on the server).
 - The documentation for users, admins and developers is `apps/docs/docs/` (site: https://erik1g.github.io/study-manager).
 
 ## What is where

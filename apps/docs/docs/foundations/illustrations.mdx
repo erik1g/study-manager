@@ -1,0 +1,45 @@
+---
+title: Illustrations
+sidebar_position: 6
+description: Small scenes for empty states, the sign-in and the cards on Today.
+---
+
+import { IllustrationGallery } from "@site/src/components/Foundations";
+import { PropsTable } from "@site/src/components/PropsTable";
+
+# Illustrations
+
+```tsx
+import { Illustration } from "@study/ui";
+
+<Illustration kind="karten" width={240} />
+```
+
+Round shapes, a dark outline, the course colours as fill. The colours come from the tokens – a scene adapts to light and dark by itself.
+
+<IllustrationGallery theme="light" />
+<IllustrationGallery theme="dark" />
+
+## Which for what
+
+| Scene | For |
+| --- | --- |
+| `schreibtisch` (desk) | Today, welcome |
+| `buecher` (books) | courses, course page, sign-in |
+| `tasse` (cup) | sign-in, breaks, "all done for today" |
+| `kalender` (calendar) | calendar, no dates |
+| `stern` (star) | success, learning streak |
+| `karten` (cards) | flashcards |
+| `fertig` (done) | tasks done, upload finished |
+| `pflanze` (plant) | empty notes, quiet states |
+| `suche` (search) | no results |
+| `fehler` (error) | something went wrong, page not found |
+
+## Rules
+
+- One illustration per view, no more. It decorates, it does not explain – the text next to it does that.
+- Not narrower than 100 px, otherwise the outlines get too thick.
+
+## Props
+
+<PropsTable of="Illustration" />

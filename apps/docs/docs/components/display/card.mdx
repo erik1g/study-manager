@@ -1,0 +1,68 @@
+---
+title: Card
+sidebar_position: 1
+description: The ground everything sits on.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { DoDont, Do, Dont } from "@site/src/components/DoDont";
+import { Card, Illustration, SectionHeader, Chip } from "@study/ui";
+
+# Card
+
+`import { Card } from "@study/ui"`
+
+White with a soft shadow – or in a course colour. Large cards at the top of a page may carry a gradient (`glow`) and grain (`grain`).
+
+```jsx live
+<div style={{ display: "grid", gap: 16, gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))" }}>
+  <Card tone="blau" glow grain>
+    <SectionHeader title="Today" description="3 dates" />
+    <div style={{ width: 140, marginLeft: "auto" }}><Illustration kind="schreibtisch" /></div>
+  </Card>
+  <Card>
+    <SectionHeader title="To do" action={<Chip tone="gruen">1 of 4</Chip>} />
+  </Card>
+</div>
+```
+
+## Variants and states
+
+<Preview column>
+  <Card>White (default)</Card>
+  <Card tone="orange">Course colour</Card>
+  <Card tone="violett" glow grain>With gradient and grain</Card>
+  <Card variant="sunken">Sunken – inside other cards</Card>
+  <Card variant="outline">Dashed – a place to fill</Card>
+  <Card as="a" href="#" interactive tone="petrol">Card as a link (lifts on hover)</Card>
+  <Card padding="sm">Little padding</Card>
+</Preview>
+
+## When to use
+
+<DoDont>
+  <Do caption="Course colour for things of a course; white for mixed things.">
+    <Card tone="blau" padding="sm">Control Engineering</Card>
+    <Card padding="sm">To do</Card>
+  </Do>
+  <Dont caption="Gradient and grain on every card – then nothing is special any more.">
+    <Card tone="blau" glow grain padding="sm">A</Card>
+    <Card tone="orange" glow grain padding="sm">B</Card>
+    <Card tone="gelb" glow grain padding="sm">C</Card>
+  </Dont>
+</DoDont>
+
+- A card that leads somewhere else: `as={Link}` and `interactive`. Then nothing else in it may be clickable – actions (⋯) sit next to it, not inside.
+- No cards in cards in cards. Inside: `variant="sunken"` or a [List](./list) with `variant="raised"`.
+
+## Props
+
+Plus all props of the element from `as`.
+
+<PropsTable of="Card" />
+
+## Accessibility
+
+- Choose the right element: `section` with a heading, `article`, `li` in lists.
+- Text on course colours always uses `ink` – the card sets this itself.

@@ -1,0 +1,33 @@
+---
+title: Empty states
+sidebar_position: 2
+description: When there is nothing there yet.
+---
+
+# Empty states
+
+Empty is not an error but a beginning. An empty state says **what goes here** and offers **the first step**.
+
+| Where | Scene | Title | Action |
+| --- | --- | --- | --- |
+| No courses | `buecher` | No courses yet | Create course |
+| No files | `buecher` | No files yet | Upload |
+| No flashcards | `karten` | No flashcards yet | Create deck · Create with Claude |
+| No notes | `pflanze` | No notes yet | Write |
+| Nothing today | `tasse` | Today is free | – |
+| All done | `fertig` | All done | – |
+| No results | `suche` | No results for "…" | Clear search |
+| Trash empty | – (small) | The trash is empty | – |
+
+```jsx live
+<div style={{ display: "grid", gap: 16, gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))" }}>
+  <EmptyState size="sm" illustration="tasse" title="Today is free">No dates and nothing due. Enjoy it.</EmptyState>
+  <EmptyState size="sm" illustration="suche" variant="plain" title="No results for “Laplas”" actions={<Button size="sm">Clear search</Button>}>Maybe “Laplace”?</EmptyState>
+</div>
+```
+
+## Rules
+
+- Readers (role "reader") see no action they may not perform – only the text.
+- In small areas (a card on Today) one sentence without an illustration is enough.
+- Never "No data" or "Nothing found" without context.

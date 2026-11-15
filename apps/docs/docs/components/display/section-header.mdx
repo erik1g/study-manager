@@ -1,0 +1,43 @@
+---
+title: SectionHeader
+sidebar_position: 8
+description: The title of a page or a section.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { DoDont, Do, Dont } from "@site/src/components/DoDont";
+import { SectionHeader, LinkButton, Button } from "@study/ui";
+
+# SectionHeader
+
+`import { SectionHeader } from "@study/ui"`
+
+```jsx live
+<div className="ui-stack">
+  <SectionHeader level={1} size="xl" title="Good morning, Mira" description="Tuesday, 3 November" action={<Button variant="primary" icon="plus">New</Button>} />
+  <SectionHeader title="Your courses" size="lg" action={<LinkButton href="#" variant="ghost" size="sm">Show all</LinkButton>} />
+</div>
+```
+
+## Variants and states
+
+<Preview column>
+  <SectionHeader size="xl" title="Page title" />
+  <SectionHeader size="lg" title="Section" description="with a description" />
+  <SectionHeader size="md" title="Card title" />
+</Preview>
+
+## When to use
+
+- Every page has exactly one title with `level={1}` and `size="xl"`.
+- `level` follows the outline, `size` the look – the two are separate.
+- At most two actions on the right.
+
+## Props
+
+<PropsTable of="SectionHeader" />
+
+## Accessibility
+
+- Real headings `h1`–`h3`; screen readers jump through the page with them.

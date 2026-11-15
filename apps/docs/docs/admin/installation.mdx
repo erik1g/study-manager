@@ -1,14 +1,14 @@
 ---
-title: "Installieren"
+title: "Install"
 sidebar_position: 2
-description: "In wenigen Schritten vom leeren Server zum laufenden Study Manager."
+description: "In a few steps from an empty server to a running Study Manager."
 ---
 
-# Installieren
+# Install
 
-## 1. Das Betreiber-Paket holen
+## 1. Get the operator package
 
-Du brauchst **keinen Quellcode**. Jedes Release hängt ein kleines Paket an: die Compose-Datei (auf diese Version festgelegt), das Skript `update.sh`, die Datenbank-Skripte und die `.env.example`.
+You need **no source code**. Every release has a small package attached: the compose file (pinned to this version), the script `update.sh`, the database scripts and the `.env.example`.
 
 ```sh
 mkdir study-manager && cd study-manager
@@ -16,49 +16,49 @@ curl -fsSL https://github.com/erik1g/study-manager/releases/latest/download/stud
 cat VERSION
 ```
 
-Für eine bestimmte Version nimm statt `latest/download/study-manager.tar.gz` die Adresse `download/v0.1.0/study-manager-0.1.0.tar.gz`. Die Prüfsummen (`study-manager.sha256`) und eine Herkunftsbestätigung stehen am selben Release; wie du sie prüfst, steht unter [Sicherheit](/admin/sicherheit).
+For a specific version, use the address `download/v0.1.0/study-manager-0.1.0.tar.gz` instead of `latest/download/study-manager.tar.gz`. The checksums (`study-manager.sha256`) and a provenance attestation are on the same release; how you check them is under [Security](/admin/security).
 
-## 2. Die Einstellungen erzeugen
+## 2. Create the settings
 
-Die Datei `.env` enthält die Geheimnisse deiner Installation. Ein Skript im Image erzeugt sie mit frischen Schlüsseln:
+The file `.env` holds the secrets of your installation. A script in the image creates it with fresh keys:
 
 ```sh
 docker run --rm \
-  -e ADMIN_EMAIL=du@example.org \
+  -e ADMIN_EMAIL=you@example.org \
   -e DOMAIN=study.example.org \
   docker.io/erik1g/study-manager-server:$(cat VERSION) \
   node /app/infra/scripts/setup.mjs --stdout > .env
 chmod 600 .env
 ```
 
-- `ADMIN_EMAIL` ist **deine** Adresse: Der erste Einrichtungslink ist für sie.
-- `DOMAIN` ist die öffentliche Adresse ohne `https://`. Ändere sie später nur mit Bedacht: **Passkeys sind an die Domain gebunden** und gehen bei einem Wechsel verloren.
+- `ADMIN_EMAIL` is **your** address: the first setup link is for it.
+- `DOMAIN` is the public address without `https://`. Change it later only with care: **passkeys are bound to the domain** and are lost when it changes.
 
-Öffne `.env` und prüfe sie; alle Einstellungen sind in der [Konfiguration](/admin/konfiguration) erklärt. **Sichere die Datei** (besonders `BACKUP_PASSPHRASE`) an einem zweiten Ort, zum Beispiel in deinem Passwortmanager: Ohne sie sind Backups nicht lesbar.
+Open `.env` and check it; all settings are explained under [Configuration](/admin/configuration). **Back up the file** (especially `BACKUP_PASSPHRASE`) in a second place, for example in your password manager: without it, backups cannot be read.
 
-## 3. Starten
+## 3. Start
 
 ```sh
 docker compose up -d
 docker compose logs server
 ```
 
-Beim ersten Start legt der Server die Datenbank an und gibt in einer Zeile einen **Link zum Einrichten des Admin-Kontos** aus (`No admin yet. Set up … with: https://…`). Öffne ihn, sobald dein Reverse Proxy läuft (nächster Schritt) und lege Passwort und Passkey oder Authenticator-App fest. Admins brauchen einen zweiten Faktor.
+On the first start, the server creates the database and prints a **link to set up the admin account** in one line (`No admin yet. Set up … with: https://…`). Open it as soon as your reverse proxy runs (next step) and set a password and a passkey or authenticator app. Admins need a second factor.
 
-Brauchst du den Link später noch einmal:
+If you need the link again later:
 
 ```sh
 docker compose exec server node --import tsx src/cli/admin-link.ts
 ```
 
-## 4. Den Reverse Proxy einrichten
+## 4. Set up the reverse proxy
 
-Die App lauscht standardmäßig nur auf `127.0.0.1:8080` deines Servers. Wie dein Proxy sie unter deiner Domain mit HTTPS erreichbar macht, steht unter [Reverse Proxy](/admin/reverse-proxy).
+By default the app only listens on `127.0.0.1:8080` of your server. How your proxy makes it reachable under your domain with HTTPS is described under [Reverse proxy](/admin/reverse-proxy).
 
-## 5. Prüfen
+## 5. Check
 
-- `https://<deine-domain>/api/health` antwortet mit `{"ok":true}`.
-- Die Startseite zeigt die Anmeldung.
-- `docker compose ps` zeigt alle vier Container als `running` (die Datenbank und `auth` zusätzlich als `healthy`).
+- `https://<your-domain>/api/health` answers with `{"ok":true}`.
+- The start page shows the sign-in.
+- `docker compose ps` shows all four containers as `running` (the database and `auth` also as `healthy`).
 
-Weiter: [Betrieb](/admin/betrieb).
+Next: [Operations](/admin/operations).

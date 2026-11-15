@@ -1,0 +1,48 @@
+---
+title: FileDrop
+sidebar_position: 7
+description: Drop or choose files.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { DoDont, Do, Dont } from "@site/src/components/DoDont";
+import { FileDrop } from "@study/ui";
+
+# FileDrop
+
+`import { FileDrop } from "@study/ui"`
+
+```jsx live
+function Example() {
+  const [names, setNames] = useState([]);
+  return (
+    <div className="ui-stack">
+      <FileDrop label="Upload files" hint="Drag here or click · PDF, Word, images · up to 95 MB" accept=".pdf,.docx,image/*" onFiles={(files) => setNames(files.map((f) => f.name))} />
+      {names.length > 0 && <p>Chosen: {names.join(", ")}</p>}
+    </div>
+  );
+}
+```
+
+## Variants and states
+
+<Preview column>
+  <FileDrop label="Upload files" hint="up to 95 MB" onFiles={() => {}} />
+  <FileDrop label="Disabled" hint="Readers may not upload." disabled onFiles={() => {}} />
+</Preview>
+
+## When to use
+
+- Where uploading is **the** task: the Documents tab, an empty folder.
+- Otherwise an "Upload" [Button](../actions/button) with the icon `upload` that opens a file dialog is enough.
+- The hint names kind and size – nobody should learn about the 95 MB limit per file only from an error.
+
+## Props
+
+<PropsTable of="FileDrop" />
+
+## Accessibility
+
+- Underneath is a real `<input type="file">`: reachable with Tab, Enter opens the dialog.
+- Drag and drop is an extra, never the only way.

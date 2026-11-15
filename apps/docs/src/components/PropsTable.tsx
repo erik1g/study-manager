@@ -13,16 +13,16 @@ const all = props as Record<string, { description: string; props: Prop[] }>;
 /** The props of a building block, read from its TypeScript types at build time. */
 export function PropsTable({ of }: { of: string }) {
   const component = all[of];
-  if (!component) return <p className="doc-props-none">Keine Props gefunden für {of}.</p>;
-  if (component.props.length === 0) return <p className="doc-props-none">{of} hat keine eigenen Props.</p>;
+  if (!component) return <p className="doc-props-none">No props found for {of}.</p>;
+  if (component.props.length === 0) return <p className="doc-props-none">{of} has no props of its own.</p>;
   return (
     <table>
       <thead>
         <tr>
           <th>Prop</th>
-          <th>Typ</th>
-          <th>Standard</th>
-          <th>Bedeutung</th>
+          <th>Type</th>
+          <th>Default</th>
+          <th>Meaning</th>
         </tr>
       </thead>
       <tbody>

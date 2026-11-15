@@ -1,0 +1,50 @@
+---
+title: Lists with actions
+sidebar_position: 5
+description: Rows that lead somewhere else and still have actions.
+---
+
+# Lists with actions
+
+A row leads to its thing (the file opens). What you can do **with** the thing – rename, move, delete – is behind ⋯ and on right-click in a [Menu](/components/navigation/menu).
+
+Because a row that is a link itself must not contain a button, the ⋯ stands **next to** the row (`actions`):
+
+```jsx live
+function Example() {
+  const [at, setAt] = useState(null);
+  const files = ["Script chapter 4.pdf", "Exercise sheet 5.pdf"];
+  return (
+    <Card style={{ maxWidth: 520 }}>
+      <List>
+        {files.map((name) => (
+          <ListRow
+            key={name}
+            href="#"
+            leading={<FileTile kind="pdf" />}
+            title={name}
+            meta="Scripts · today"
+            onContextMenu={(e) => { e.preventDefault(); setAt({ x: e.clientX, y: e.clientY }); }}
+            actions={<IconButton icon="more" label={`Actions for ${name}`} size="sm" onClick={(e) => setAt(menuPositionFrom(e.currentTarget))} />}
+          />
+        ))}
+      </List>
+      {at && (
+        <Menu at={at} label="Actions" onClose={() => setAt(null)}>
+          <MenuItem icon="edit" onSelect={() => setAt(null)}>Rename</MenuItem>
+          <MenuSeparator />
+          <MenuItem icon="trash" danger onSelect={() => setAt(null)}>Move to trash</MenuItem>
+        </Menu>
+      )}
+    </Card>
+  );
+}
+```
+
+`ListRow` has the prop `actions` for this: it puts the buttons **next to** the row. With `onContextMenu`, a right-click opens the same menu.
+
+## Rules
+
+- Right-click and ⋯ show the same menu.
+- The ⋯ has a name with the thing: "Actions for Script.pdf".
+- Multiple selection only where people really move many things at once (files).

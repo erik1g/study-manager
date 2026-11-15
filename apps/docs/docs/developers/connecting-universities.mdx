@@ -1,0 +1,39 @@
+---
+title: "Connecting universities"
+sidebar_position: 7
+description: "What is supported today, what is missing and how you connect another university or language."
+---
+
+# Connecting universities
+
+Study Manager should work for **all** students. Today it fits German-speaking universities with **CAMPUSonline** best. Here is what is tailored, what is not, and where you can help.
+
+## What is already general
+
+Courses, documents, deadlines, tasks, notes, flashcards, search, lecture mode, the **module handbook** (Claude reads any PDF) and the connection to Claude are **not** tied to a university.
+
+## What is tailored to one kind of university today
+
+| Area | Today | Where in the code |
+|---|---|---|
+| **Timetable feeds** | iCal in the style of CAMPUSonline: titles with abbreviations (`VO`, `UE`, `VU`, `SE`, `PR`), description with "fix; Abhaltung" or "Entfall" | `apps/server/src/domain/feeds.ts`, `apps/web/src/views/PlanningView.tsx` (`sessionKind`) |
+| **Detecting cancellations** | The words `entfall`, `abgesagt`, `cancelled` in the description | `isCancelled` in `feeds.ts` |
+| **Semester scheme** | `WiSe26-27`, `SoSe26` (German system; winter term from October) | `semesterOf` in `apps/web/src/i18n/de.ts` |
+| **Language** | The whole interface, the mails and the instructions for Claude are German; English is in the works | `i18n/de.ts`, `apps/server/src/mcp/server.ts`, `http/mails.ts` |
+| **Time zone** | Default `Europe/Berlin`, adjustable with `TZ` | `config.ts` |
+
+## Ideas for contributions
+
+Pick something or open an issue:
+
+1. **More timetable sources**: Stud.IP, HISinOne, Moodle and ILIAS calendars, generic iCal feeds. Matching a recurring title to a course (`suggestCourse`) works with any feed if the title contains part of the course name; abbreviations and cancellations are the university-specific part.
+2. **Configurable rules**: move the semester scheme (trimesters, quarters), words for cancelled dates and session abbreviations into a setting instead of the code.
+3. **More languages**: the texts are bundled in `i18n/de.ts`. An English version and a language setting are in the works; after that, a further language is one more file.
+4. **Getting content from a learning system** (e.g. ILIAS): an open question, because most universities do not open an interface for students. Ideas are a WebDAV import, if the university allows it, or a browser script that runs in the user's signed-in browser.
+
+## How to go about it
+
+1. **Sample data**: get a real feed from your university, but for tests only save an **invented** version (change names, rooms and addresses; see `apps/server/test/fixtures/timetable-sample.ics`).
+2. **Test first**: add a case with your sample to `apps/server/test/calendar.test.ts`.
+3. **Small steps**: one source per pull request, without changing the behaviour of the existing ones.
+4. **Document** in the [user docs](/users/planning-and-calendar) which systems work.

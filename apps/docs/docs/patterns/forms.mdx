@@ -1,0 +1,47 @@
+---
+title: Forms
+sidebar_position: 1
+description: Fields, hints, errors and the button to submit.
+---
+
+# Forms
+
+```jsx live
+function Example() {
+  const [name, setName] = useState("");
+  const [tried, setTried] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const error = tried && !name.trim() ? "Give the course a name." : undefined;
+  return (
+    <Card style={{ maxWidth: 480 }}>
+      <form className="ui-stack" onSubmit={(e) => {
+        e.preventDefault();
+        setTried(true);
+        if (!name.trim()) return;
+        setSaving(true);
+        setTimeout(() => { setSaving(false); toast("Course created", "success"); }, 900);
+      }}>
+        <SectionHeader title="New course" />
+        <TextField label="Name" placeholder="e.g. Control Engineering" value={name} onChange={(e) => setName(e.target.value)} error={error} />
+        <Select label="Semester" defaultValue="w"><option value="w">Winter 26/27</option><option value="s">Summer 27</option></Select>
+        <Checkbox label="Invite fellow students" description="You get a link to share afterwards." />
+        <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+          <Button>Cancel</Button>
+          <Button type="submit" variant="primary" loading={saving}>Create</Button>
+        </div>
+      </form>
+      <Toaster />
+    </Card>
+  );
+}
+```
+
+## Rules
+
+1. **Labels above the fields**, never only placeholders.
+2. **One column.** Fields below each other, in the order in which people think.
+3. **Required is the normal case.** Mark the optional ones ("optional" in the hint), not the required ones with asterisks.
+4. **Errors after submitting** or when leaving the field – at the field, as a whole sentence that says what to do.
+5. **An error from the server** (e.g. no connection) appears as `Notice tone="danger"` above the buttons; what was entered stays.
+6. **Buttons at the bottom right**: Cancel, then the main action. `loading` while saving.
+7. What applies at once needs no save button: `Switch`, `SegmentedControl`.

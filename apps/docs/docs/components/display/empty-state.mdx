@@ -1,0 +1,55 @@
+---
+title: EmptyState
+sidebar_position: 9
+description: Nothing there yet – said kindly, with the way forward.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { DoDont, Do, Dont } from "@site/src/components/DoDont";
+import { EmptyState, Button } from "@study/ui";
+
+# EmptyState
+
+`import { EmptyState } from "@study/ui"`
+
+```jsx live
+<EmptyState
+  illustration="karten"
+  title="No flashcards yet"
+  actions={<>
+    <Button variant="primary" icon="plus">Create deck</Button>
+    <Button variant="soft" tone="gelb" icon="claude">Create from the script with Claude</Button>
+  </>}
+>
+  Create a deck and write the first cards – or let Claude create them from your script.
+</EmptyState>
+```
+
+## Variants and states
+
+<Preview column>
+  <EmptyState size="sm" illustration="fertig" title="All done">Nothing else is due today.</EmptyState>
+  <EmptyState size="sm" variant="plain" illustration="suche" title="No results">Try another word.</EmptyState>
+</Preview>
+
+## When to use
+
+<DoDont>
+  <Do caption="Says why it is empty and offers the next step.">
+    <EmptyState size="sm" variant="plain" title="No files yet" actions={<Button icon="upload">Upload</Button>} />
+  </Do>
+  <Dont caption="Only “No data” – and then?">
+    <p style={{ color: "var(--ui-muted)" }}>No data.</p>
+  </Dont>
+</DoDont>
+
+More under [Patterns › Empty states](/patterns/empty-states).
+
+## Props
+
+<PropsTable of="EmptyState" />
+
+## Accessibility
+
+- The title is an `h2`; the illustration is decoration.

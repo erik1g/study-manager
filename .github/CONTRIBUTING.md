@@ -2,7 +2,7 @@
 
 Thank you for wanting to make Study Manager better! The project is meant for all students, and every bit of help counts: reporting bugs, improving the documentation, connecting a university or building a feature.
 
-The full guide is in the developer documentation: **https://erik1g.github.io/study-manager/entwickler/mitmachen**. Here are the essentials in short.
+The full guide is in the developer documentation: **https://erik1g.github.io/study-manager/developers/contributing**. Here are the essentials in short.
 
 ## Language
 
