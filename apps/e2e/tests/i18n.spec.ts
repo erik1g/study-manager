@@ -33,6 +33,10 @@ test.describe("Sprache", () => {
     await page.reload();
     await expect(page.getByRole("heading", { name: "Language" })).toBeVisible();
     await expect(page.getByLabel("Display name")).toBeVisible();
+    await page.goto("/");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Good morning, Sina");
+
+    await page.goto("/einstellungen/profil");
 
     // Back, for the tests after this one.
     await page.getByRole("combobox", { name: "Language" }).selectOption("de");
