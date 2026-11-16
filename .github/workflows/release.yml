@@ -32,6 +32,8 @@ jobs:
         id: release
         with:
           token: ${{ secrets.RELEASE_TOKEN }}
+          # The release PR goes to main; without this it would go to the default branch, which is dev.
+          target-branch: main
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
 
