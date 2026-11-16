@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.2.0](https://github.com/erik1g/study-manager/compare/v0.1.0...v0.2.0) (2026-11-16)
+
+
+### ⚠ BREAKING CHANGES
+
+* **i18n:** The mail subjects (GOTRUE_MAILER_SUBJECTS_*) in docker-compose.yml are now templates that pick the recipient's language. update.sh does not replace the compose file: take over the new GOTRUE_MAILER_SUBJECTS_* lines from docker-compose.yml of this release, otherwise subjects stay German while the mail text follows the language.
+
+### Neu
+
+* **course:** courses have a language for what is written into them ([#36](https://github.com/erik1g/study-manager/issues/36)) ([0a1c91e](https://github.com/erik1g/study-manager/commit/0a1c91eebfc25ce8c0838db4648170d33997b826))
+* **i18n:** English and German interface, chosen per user ([#35](https://github.com/erik1g/study-manager/issues/35)) ([9ac5660](https://github.com/erik1g/study-manager/commit/9ac56600fffad54626d45a8b437fc51fced05342))
+* **mcp:** English instructions and tools, with the user's and courses' languages ([#37](https://github.com/erik1g/study-manager/issues/37)) ([c4f7b73](https://github.com/erik1g/study-manager/commit/c4f7b7337ffd63b1d47a9141d1c9d89fa5aaf364))
+* **search:** match words alike in every language ([#38](https://github.com/erik1g/study-manager/issues/38)) ([37da159](https://github.com/erik1g/study-manager/commit/37da1592d506106b87d46dde8526b1b5314677e6))
+
+
+### Behoben
+
+* **i18n:** greeting, "until" and free disk space were always German ([#39](https://github.com/erik1g/study-manager/issues/39)) ([73154de](https://github.com/erik1g/study-manager/commit/73154def8f099d42a59ad96a5b56e27f34f6783a))
+
 ## 0.1.0 (2026-11-10)
 
 
