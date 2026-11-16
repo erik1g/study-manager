@@ -1,5 +1,6 @@
 // The admin side of Supabase Auth: accounts are made by invitation, and
 // there is no mail server, so links are handed to the admin to pass on.
+import type { Locale } from "@study/shared";
 
 export interface AuthAccount {
   id: string;
@@ -9,10 +10,15 @@ export interface AuthAccount {
 }
 
 export interface Accounts {
-  /** Creates the account if needed and returns a link to set it up. */
-  inviteLink(email: string): Promise<{ userId: string; link: string }>;
+  /**
+   * Creates the account if needed and returns a link to set it up. The
+   * language goes into the account's metadata, where the mail templates read it.
+   */
+  inviteLink(email: string, locale: Locale): Promise<{ userId: string; link: string }>;
   /** Creates the account and mails the invitation; null if the address was invited before. */
-  sendInvite(email: string): Promise<{ userId: string } | null>;
+  sendInvite(email: string, locale: Locale): Promise<{ userId: string } | null>;
+  /** The language the mail templates use for this account (`user_metadata.locale`). */
+  setLocale(userId: string, locale: Locale): Promise<void>;
   /** A link with which a forgotten password can be replaced. */
   recoveryLink(email: string): Promise<string>;
   list(): Promise<AuthAccount[]>;
@@ -48,33 +54,38 @@ export function gotrueAccounts(options: { url: string; serviceKey: string; siteU
     return data;
   };
 
-  const link = async (type: "invite" | "recovery" | "magiclink", email: string) => {
+  const link = async (type: "invite" | "recovery" | "magiclink", email: string, locale?: Locale) => {
     const data = await call("POST", "/admin/generate_link", {
       type,
       email,
+      ...(locale && { data: { locale } }),
       redirect_to: `${options.siteUrl}/willkommen`,
     });
     return { userId: data.id as string, link: (data.action_link ?? data.properties?.action_link) as string };
   };
 
   return {
-    async sendInvite(email) {
+    async sendInvite(email, locale) {
       try {
-        const data = await call("POST", `/invite?redirect_to=${encodeURIComponent(`${options.siteUrl}/willkommen`)}`, { email });
+        const data = await call("POST", `/invite?redirect_to=${encodeURIComponent(`${options.siteUrl}/willkommen`)}`, { email, data: { locale } });
         return { userId: data.id as string };
       } catch (error) {
         if (error instanceof AuthError && error.status === 422) return null;
         throw error;
       }
     },
-    async inviteLink(email) {
+    async inviteLink(email, locale) {
       try {
-        return await link("invite", email);
+        return await link("invite", email, locale);
       } catch (error) {
         // Invited before but never set up: a sign-in link does the same.
         if (error instanceof AuthError && error.status === 422) return link("magiclink", email);
         throw error;
       }
+    },
+    async setLocale(userId, locale) {
+      // GoTrue merges user_metadata, so other keys stay.
+      await call("PUT", `/admin/users/${userId}`, { user_metadata: { locale } });
     },
     async recoveryLink(email) {
       return (await link("recovery", email)).link;

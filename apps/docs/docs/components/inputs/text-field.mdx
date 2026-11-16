@@ -1,0 +1,75 @@
+---
+title: TextField and TextArea
+sidebar_position: 1
+description: Enter text – one line or several.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { DoDont, Do, Dont } from "@site/src/components/DoDont";
+import { TextField, TextArea, IconButton } from "@study/ui";
+
+# TextField and TextArea
+
+`import { TextField, TextArea } from "@study/ui"`
+
+A field with a **label above it**, optionally a hint below it and an error when something does not fit.
+
+```jsx live
+function Example() {
+  const [title, setTitle] = useState("");
+  return (
+    <div className="ui-stack" style={{ maxWidth: 420 }}>
+      <TextField
+        label="Deadline title"
+        placeholder="e.g. Submit exercise sheet 5"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        error={title.length > 60 ? "At most 60 characters." : undefined}
+        hint="Shown like this in the calendar and on Today."
+      />
+      <TextArea label="Note" placeholder="What you want to remember …" />
+    </div>
+  );
+}
+```
+
+## Variants and states
+
+<Preview column>
+  <TextField label="Email" type="email" placeholder="mira@example.org" />
+  <TextField label="Search in course" icon="search" placeholder="Keyword" />
+  <TextField label="Size" defaultValue="95" trailing="MB" />
+  <TextField label="Password" type="password" defaultValue="short" error="At least 10 characters." />
+  <TextField label="Disabled" defaultValue="mira@example.org" disabled />
+  <TextField label="Link" defaultValue="https://study.example.org/join/…" readOnly trailing={<IconButton icon="copy" label="Copy" size="sm" />} />
+</Preview>
+
+## When to use
+
+<DoDont>
+  <Do caption="The label says what goes in; the placeholder shows an example.">
+    <TextField label="Course name" placeholder="e.g. Control Engineering" />
+  </Do>
+  <Dont caption="Only a placeholder as a label – it disappears while typing.">
+    <TextField label="Course name" hideLabel placeholder="Course name" />
+  </Dont>
+</DoDont>
+
+- `hideLabel` only when the purpose is clear from the surroundings (e.g. the "Add task" row in a list).
+- Show errors only once someone has left the field or submitted – not on the first key press.
+- For searches [SearchField](./search-field), for choosing from a list [Select](./select).
+- `TextArea` grows with its content up to half the window height.
+
+## Props
+
+Plus all attributes of an `<input>` or `<textarea>`.
+
+<PropsTable of="TextField" />
+<PropsTable of="TextArea" />
+
+## Accessibility
+
+- Label, hint and error are connected to the field through `for`, `aria-describedby` and `aria-invalid`.
+- Text in fields is 16 px – so the iPhone does not zoom.
+- Errors are there as text, not only as a red border.

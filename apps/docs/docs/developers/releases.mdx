@@ -1,0 +1,133 @@
+---
+title: "Releases and versions"
+sidebar_position: 6
+description: "The branches dev and main, how a release is made and how commits turn into versions, changelog and Docker images."
+---
+
+# Releases and versions
+
+Study Manager follows **Semantic Versioning** (`MAJOR.MINOR.PATCH`). Versions, changelog and Docker images are made automatically from the [Conventional Commits](/developers/contributing).
+
+## The flow
+
+There are two fixed branches, similar to Home Assistant:
+
+- **`dev`** is the development state and the **default branch**. Everything for the next version lands here, and it is **always releasable**.
+- **`main`** is **always the published state**. It only gets pull requests from `dev` and the release PR.
+
+```
+Fork / branch from dev ──PR (squash)──►  dev        (CI and E2E in the pull request, required)
+                                         │  images "edge" and "sha-…" to try out
+                                         ▼
+                   pull request dev → main  (merge commit, no squash)
+                   only when publishing right away
+                                         │
+                    release-please collects the commits
+                                         ▼
+                 release PR "chore(main): release 0.2.0"  (version + CHANGELOG.md)
+                                         │  you merge it
+                                         ▼
+            Git tag v0.2.0  +  GitHub release with changelog
+                     │                               │
+                     │ approval in the               │ automatically
+                     │ environment release           ▼
+                     ▼                     pull request main → dev
+     Docker Hub: study-manager-server      (changelog and version back,
+     and study-manager-web with the tags    merge commit)
+     0.2.0, 0.2, 0 and latest
+     (amd64 and arm64)
+```
+
+### Rules
+
+- **Everything goes to `dev`**: features, bug fixes, docs, urgent fixes too. There are no hotfixes directly against `main`; an urgent fix is published through `dev` with an earlier release.
+- **`dev` is always releasable.** Only what is finished gets merged: tested, documented, usable. Larger features stay in their branch (or open as a draft PR) until they are done, or come in several small pull requests that are each finished.
+- **Pull requests to `dev`** are squashed. The **title** follows Conventional Commits and becomes the commit title. Every pull request to `dev` goes through CI **and** E2E; both must be green, for everyone, maintainers too.
+- **`dev` → `main`** always as a **merge commit**, never as a squash: only then does every `feat:` and `fix:` remain its own changelog entry. A pull request to `main` from any other branch is rejected by the check "Quelle erlaubt".
+- **After every release** the release workflow opens a pull request `main → dev`. It brings `CHANGELOG.md` and `.release-please-manifest.json` back; you merge it as a **merge commit**.
+- **You decide when to release, as needed**: fixes soon, features collected, and do not leave `dev` lying around for longer than about a month when something has changed. release-please calculates the version from the commits; if it should be different, put `Release-As: 0.2.0` in the body of a commit.
+
+### A release, step by step (maintainers)
+
+```sh
+# 1. Get it into dev and try the state first, e.g. with the images
+#    study-manager-server:edge and study-manager-web:edge.
+
+# 2. dev to main – as a merge commit, only if you publish now.
+gh pr create --base main --head dev --title "chore: release dev"
+gh pr merge <number> --merge          # never --squash
+
+# 3. Merge the release PR from release-please (as soon as its checks are green)
+#    and click "Approve" in the environment release.
+
+# 4. Merge the automatically opened pull request main → dev, as a merge commit.
+gh pr merge <number> --merge
+```
+
+Only minutes pass between steps 2 and 3: `main` should never hold an unpublished state for long.
+
+As long as the version is below **1.0**, a breaking change raises the minor version (`0.2.0` → `0.3.0`). From 1.0 it raises the major version.
+
+## Trying out a pull request in the interface
+
+Pull requests that change the interface contain screenshots or a short video. Larger features come as a **draft PR**; before you accept them, you start them locally:
+
+```sh
+gh pr checkout <number>     # also works for pull requests from forks
+pnpm install
+pnpm dev                    # starts the development stack (infra/compose/dev.yml);
+                            # set it up once beforehand, see Running locally
+```
+
+Then click through in the browser at laptop and phone width. After the merge, the same state runs as the image `edge`, which you can look at on a server of your own before the release.
+
+## The images
+
+| Image | Content |
+|---|---|
+| `docker.io/erik1g/study-manager-server` | API, MCP server and jobs |
+| `docker.io/erik1g/study-manager-web` | Caddy with the built web app |
+
+Tags per release: `X.Y.Z`, `X.Y`, `X` and `latest`. Every commit on `dev` additionally gives `edge` and `sha-<commit>`. These test images are **not signed** and never `latest`. Both images exist for `linux/amd64` and `linux/arm64` (for example for a Raspberry Pi).
+
+## Who may trigger a release
+
+**Nobody except the maintainers** should be able to trigger a release. Several layers work together for that:
+
+1. **`main` and `dev` are protected** (rulesets): pull requests only; the checks "Typen, Tests, Build", "Titel folgt Conventional Commits" and "Playwright" must be green, on `main` also "Quelle erlaubt"; no force pushes, no deletion, **no exception**, not even for maintainers. Only those with write access can merge. Outside contributions come through forks without write access, and their workflows run without access to secrets.
+2. **Tags `v*` are protected** (tag ruleset): only maintainers and the release bot create or change them.
+3. **Publishing waits for an approval**: the job that publishes the images to Docker Hub runs in the GitHub environment `release`. It has required reviewers and is limited to `main`. Even whoever merges the release PR publishes nothing with it until a maintainer clicks **Approve** in GitHub.
+4. **The workflows are hardened**: all third-party actions are pinned to commit hashes (updated by hand, before a release), every job only has the permissions it needs, `zizmor` checks the workflows in CI, and publishing only runs in the original repository, never in a fork.
+5. **The images are signed** (cosign, keyless) and have a provenance attestation; operators verify them with [`cosign verify`](/admin/security).
+
+## One-time setup (maintainers)
+
+- Create the **branch `dev`** from `main` and make it the default under *Settings → General → Default branch*.
+- **Secrets** (*Settings → Secrets and variables → Actions*): `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN` (an access token with write access) as well as `RELEASE_TOKEN` (see below).
+- **Actions** (*Settings → Actions → General*): pull requests from all outside contributors need an approval; default permissions read only.
+- **Environment `release`** (*Settings → Environments*): required reviewers = the maintainers; branches: only `main`.
+- **Environment `edge`** (*Settings → Environments*): branch only `dev` (for the test images).
+- **Rulesets** (*Settings → Rules*):
+  - `main`: pull request with 0 required approvals, merge method **merge commit only**, checks "Typen, Tests, Build", "Titel folgt Conventional Commits", "Playwright" and "Quelle erlaubt", no force pushes, no deletion, **no exceptions**.
+  - `dev`: pull request with 0 required approvals, merge methods **squash and merge commit**, checks "Typen, Tests, Build", "Titel folgt Conventional Commits" and "Playwright", no force pushes, no deletion, **no exceptions**.
+  - Tags `v*`: no changes, no deletion (maintainers only).
+- **Pages**: *Settings → Pages → Source: GitHub Actions* (for these docs).
+- **Security**: turn on private vulnerability reporting and push protection for secrets.
+
+There are deliberately no required approvals: you cannot approve your own pull request on GitHub, and only those with write access can merge anyway. The green checks are the hurdle, the same for everyone. If CI itself is broken (for example during a GitHub outage), you loosen the ruleset briefly by hand.
+
+### The token `RELEASE_TOKEN`
+
+Pull requests that a workflow opens with the normal `GITHUB_TOKEN` start no workflows. Their required checks would never run, and without an exception they could never be merged. That is why the release workflow opens the release PR and the pull request `main → dev` with a maintainer's token:
+
+1. *GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token*.
+2. **Repository access:** *Only select repositories* → only `study-manager`.
+3. **Permissions:** *Contents: Read and write* and *Pull requests: Read and write* (Metadata: Read comes by itself).
+4. **Expiration:** choose one and **put the date in your calendar**.
+5. Store it as a secret without the value appearing in a command: `pbpaste | gh secret set RELEASE_TOKEN --repo erik1g/study-manager` (Linux: `xclip -o -sel clip | …`).
+
+**Renewing:** before it expires, create a new token the same way, overwrite the secret, delete the old token. If it expires, the job `release-please` fails with a sign-in error, and the release PR is no longer updated.
+
+## Withdrawing a version
+
+You fix a faulty release with a `fix:` and a new release. Delete the tag or the image only in an extreme emergency; operators who have already updated need a follow-up release.

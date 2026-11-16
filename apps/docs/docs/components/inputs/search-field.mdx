@@ -1,0 +1,61 @@
+---
+title: SearchField and SearchButton
+sidebar_position: 2
+description: Search – right in the field or through the command palette.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { DoDont, Do, Dont } from "@site/src/components/DoDont";
+import { SearchField, SearchButton } from "@study/ui";
+
+# SearchField and SearchButton
+
+`import { SearchField, SearchButton } from "@study/ui"`
+
+**SearchField** filters while typing, e.g. a course's files. **SearchButton** looks just the same but opens a search somewhere else – in the app, the command palette (⌘K).
+
+```jsx live
+function Example() {
+  const [q, setQ] = useState("");
+  const files = ["Script chapter 4", "Exercise sheet 5", "Laplace formula sheet"];
+  return (
+    <div className="ui-stack" style={{ maxWidth: 420 }}>
+      <SearchButton label="Search or create" shortcut="⌘K" onOpen={() => toast("The command palette opens here")} />
+      <SearchField label="Search documents" value={q} onChange={(e) => setQ(e.target.value)} onClear={() => setQ("")} />
+      <ul>{files.filter((f) => f.toLowerCase().includes(q.toLowerCase())).map((f) => <li key={f}>{f}</li>)}</ul>
+      <Toaster />
+    </div>
+  );
+}
+```
+
+## Variants and states
+
+<Preview column>
+  <SearchButton label="Search or create" shortcut="⌘K" onOpen={() => {}} />
+  <SearchField label="Search all courses" />
+  <SearchField label="Large" size="lg" />
+</Preview>
+
+## When to use
+
+<DoDont>
+  <Do caption="One search per area, at the top, where people expect it.">
+    <SearchField label="Search documents" />
+  </Do>
+  <Dont caption="A normal TextField with a magnifier – without a role, without a clear button.">
+    <div style={{ width: "100%" }}><input placeholder="Search …" /></div>
+  </Dont>
+</DoDont>
+
+## Props
+
+<PropsTable of="SearchField" />
+<PropsTable of="SearchButton" />
+
+## Accessibility
+
+- The field sits in a `role="search"` region and has a label (hidden from the eye).
+- The clear button is called "Suche leeren" (clear search).
+- `SearchButton` states the shortcut as `aria-keyshortcuts`.

@@ -1,0 +1,43 @@
+---
+title: TonePicker
+sidebar_position: 8
+description: Choose one of the eight course colours.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { TonePicker } from "@study/ui";
+
+# TonePicker
+
+`import { TonePicker } from "@study/ui"`
+
+```jsx live
+function Example() {
+  const [tone, setTone] = useState("blau");
+  return (
+    <div className="ui-stack">
+      <TonePicker label="Course colour" value={tone} onChange={setTone} allowNone />
+      <Card tone={tone ?? "grau"} padding="sm">Control Engineering</Card>
+    </div>
+  );
+}
+```
+
+<Preview>
+  <TonePicker label="Colour" value="petrol" onChange={() => {}} allowNone />
+</Preview>
+
+## When to use
+
+- For the colour of a course – in the course card's menu and when creating it.
+- Only the eight course colours; there are no custom colours, so that everything fits together.
+
+## Props
+
+<PropsTable of="TonePicker" />
+
+## Accessibility
+
+- Real radio buttons in a `radiogroup`: arrow keys switch, every colour has its name.
+- The chosen colour has a ring, not just a different colour.

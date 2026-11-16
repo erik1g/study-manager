@@ -11,7 +11,7 @@ export interface TabItem {
 }
 
 export interface TabsProps {
-  /** What the tabs switch between, e.g. "Bereiche des Fachs". */
+  /** What the tabs switch between, e.g. "Areas of the course". */
   label: string;
   items: TabItem[];
   /** The id of the current tab. */
@@ -19,7 +19,7 @@ export interface TabsProps {
   onSelect?: (id: string) => void;
   /** The link element for `href` tabs, e.g. react-router's `Link` (it gets `to`). */
   linkAs?: ElementType;
-  /** At the end of the bar, e.g. an `IconButton` "Weitere Bereiche". */
+  /** At the end of the bar, e.g. an `IconButton` "More areas". */
   trailing?: ReactNode;
   size?: "sm" | "md";
   className?: string;

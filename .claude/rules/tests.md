@@ -1,26 +1,26 @@
-# Prüfen und Testen
+# Checking and testing
 
-Vor jedem Commit laufen lassen und **erst dann sagen, dass etwas fertig ist**, wenn sie grün sind:
+Run these before every commit and **only say something is done once they are green**:
 
 ```sh
-node infra/scripts/ui-gate.mjs   # nur Bausteine aus @study/ui (keine nackten <button>, <input>, …, keine Hex-Farben)
-pnpm typecheck                   # TypeScript aller Pakete (die Doku erzeugt dabei ihre props.json)
-pnpm test                        # Unit-Tests; schließt das E2E-Paket aus
+node infra/scripts/ui-gate.mjs   # only building blocks from @study/ui (no bare <button>, <input>, …, no hex colours)
+pnpm typecheck                   # TypeScript of all packages (the docs generate their props.json on the way)
+pnpm test                        # unit tests; leaves out the E2E package
 ```
 
-- **Server-Tests** brauchen eine PostgreSQL-Datenbank: `DATABASE_URL` setzen oder im Dev-Container laufen lassen (`docker compose --project-directory . -f infra/compose/dev.yml exec server sh -c "cd apps/server && pnpm exec vitest run"`). Die Tests legen die Datenbank `study_test` selbst an. Der Suchpfad der Rolle muss das Schema `extensions` enthalten (so wie im Supabase-Image).
-- **Oberflächenänderungen** testest du zusätzlich im Browser auf Laptop **und** Handy-Breite und mit der Playwright-Suite.
-- **Ende zu Ende:** `./infra/test/stack.sh e2e` (siehe `e2e.md`). Das baut die Produktions-Images aus dem Checkout, startet den Test-Stack und lässt Playwright laufen. Einmal vorher `pnpm install`.
-- **Weitere Optionen:** `STACK_NO_BUILD=1` nutzt schon gebaute Images (`study-manager-server:test`, `study-manager-web:test`), `STACK_EXTRA=datei.yml` hängt eine eigene Compose-Datei an.
+- **Server tests** need a PostgreSQL database: set `DATABASE_URL` or run them in the dev container (`docker compose --project-directory . -f infra/compose/dev.yml exec server sh -c "cd apps/server && pnpm exec vitest run"`). The tests create the database `study_test` themselves. The role's search path must include the schema `extensions` (as in the Supabase image).
+- **Interface changes** you also test in the browser at laptop **and** phone width and with the Playwright suite.
+- **End to end:** `./infra/test/stack.sh e2e` (see `e2e.md`). It builds the production images from the checkout, starts the test stack and runs Playwright. Run `pnpm install` once beforehand.
+- **More options:** `STACK_NO_BUILD=1` uses images that are already built (`study-manager-server:test`, `study-manager-web:test`), `STACK_EXTRA=file.yml` adds your own compose file.
 
-## Der Test-Stack
+## The test stack
 
-Eine zweite, abgeschottete Instanz mit eigener Datenbank, eigenen Schlüsseln und **erfundenen Daten** (Mira ist Admin, Jonas ist Bearbeiter, Sina ist Leserin in „Regelungstechnik“). Sie lauscht nur auf `127.0.0.1:8090`. Die Tests laufen nie gegen eine echte Installation.
+A second, isolated instance with its own database, its own keys and **invented data** (Mira is admin, Jonas is editor, Sina is reader in "Regelungstechnik"). It only listens on `127.0.0.1:8090`. The tests never run against a real installation.
 
-`e2e` setzt den Stack zurück, füllt ihn mit den Daten vom **3. November 2026, 10:00 Uhr Berlin** und hält die Uhr im Browser dort an. Whisper wird nicht ausgeführt: Die Vorlesungs-Tests simulieren die Antwort des Dienstes.
+`e2e` resets the stack, fills it with the data of **3 November 2026, 10:00 Berlin time** and stops the browser clock there. Whisper is not run: the lecture tests simulate the service's answer.
 
-## Unit-Tests
+## Unit tests
 
-- `packages/ui/test`: Kontraste, Aufbau, Barrierefreiheit der Bausteine
-- `apps/server/test`: Fachlogik gegen die echte Datenbank; Anmeldung ersetzt `memoryAccounts`, Feeds ersetzen Dateien aus `test/fixtures/`
-- Neues Verhalten bekommt einen Test; ein Fehler bekommt zuerst einen Test, der ihn zeigt.
+- `packages/ui/test`: contrast, structure and accessibility of the building blocks
+- `apps/server/test`: domain logic against the real database; `memoryAccounts` replaces sign-in, files from `test/fixtures/` replace feeds
+- New behaviour gets a test; a bug first gets a test that shows it.

@@ -2,9 +2,9 @@
 // and, if wanted, a passkey.
 import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router";
-import { Button, Notice, SectionHeader, TextField } from "@study/ui";
+import { Button, Notice, SectionHeader, Select, TextField } from "@study/ui";
 import { AuthLayout } from "../components/AuthLayout";
-import { de, errorMessage } from "../i18n/de";
+import { LANGUAGE_NAMES, LOCALES, type Locale, locale, switchLocale, t, errorMessage } from "../i18n";
 import { api } from "../lib/api";
 import { auth } from "../lib/auth";
 import { useSession } from "../lib/session";
@@ -33,8 +33,8 @@ export function WelcomeView() {
     return (
       <AuthLayout>
         <div className="ui-stack">
-          <SectionHeader level={1} size="lg" title={de.welcome.title} />
-          {linkFailed ? <Notice tone="danger">{de.welcome.expired}</Notice> : <p className="quiet">{de.common.loading}</p>}
+          <SectionHeader level={1} size="lg" title={t.welcome.title} />
+          {linkFailed ? <Notice tone="danger">{t.welcome.expired}</Notice> : <p className="quiet">{t.common.loading}</p>}
         </div>
       </AuthLayout>
     );
@@ -42,14 +42,14 @@ export function WelcomeView() {
 
   async function saveAccount(event: FormEvent) {
     event.preventDefault();
-    if (password.length < MIN_PASSWORD) return setError(de.welcome.tooShort);
-    if (password !== again) return setError(de.welcome.mismatch);
+    if (password.length < MIN_PASSWORD) return setError(t.welcome.tooShort);
+    if (password !== again) return setError(t.welcome.mismatch);
     setBusy(true);
     setError(null);
     try {
       const { error } = await auth().auth.updateUser({ password });
       if (error) throw error;
-      if (name.trim() && !reset) await api.updateProfile({ displayName: name.trim() });
+      if (name.trim() && !reset) await api.updateProfile({ displayName: name.trim(), locale });
       await reloadMe();
       if (reset) navigate("/", { replace: true });
       else setStep("passkey");
@@ -71,29 +71,38 @@ export function WelcomeView() {
     <AuthLayout>
       {step === "account" ? (
         <form className="ui-stack" onSubmit={saveAccount}>
-          <SectionHeader level={1} size="lg" title={reset ? de.welcome.resetTitle : de.welcome.title} description={reset ? de.welcome.resetText : de.welcome.text} />
+          <SectionHeader level={1} size="lg" title={reset ? t.welcome.resetTitle : t.welcome.title} description={reset ? t.welcome.resetText : t.welcome.text} />
           <p className="quiet small">{session.user.email}</p>
-          {!reset && <TextField label={de.welcome.name} size="lg" value={name} onChange={(e) => setName(e.target.value)} required autoComplete="name" />}
-          <TextField label={de.welcome.password} type="password" size="lg" autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-          <TextField label={de.welcome.passwordAgain} type="password" size="lg" autoComplete="new-password" value={again} onChange={(e) => setAgain(e.target.value)} required />
+          {!reset && (
+            <Select label={t.welcome.language} size="lg" value={locale} onChange={(e) => switchLocale(e.target.value as Locale)}>
+              {LOCALES.map((l) => (
+                <option key={l} value={l} lang={l}>
+                  {LANGUAGE_NAMES[l]}
+                </option>
+              ))}
+            </Select>
+          )}
+          {!reset && <TextField label={t.welcome.name} size="lg" value={name} onChange={(e) => setName(e.target.value)} required autoComplete="name" />}
+          <TextField label={t.welcome.password} type="password" size="lg" autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          <TextField label={t.welcome.passwordAgain} type="password" size="lg" autoComplete="new-password" value={again} onChange={(e) => setAgain(e.target.value)} required />
           {error && <Notice tone="danger">{error}</Notice>}
           <Button type="submit" variant="primary" size="lg" wide loading={busy}>
-            {de.welcome.save}
+            {t.welcome.save}
           </Button>
         </form>
       ) : (
         <div className="ui-stack">
-          <SectionHeader level={1} size="lg" title={de.welcome.passkeyTitle} description={de.welcome.passkeyText} />
+          <SectionHeader level={1} size="lg" title={t.welcome.passkeyTitle} description={t.welcome.passkeyText} />
           {passkeyDone ? (
-            <Notice tone="success">{de.welcome.passkeyDone}</Notice>
+            <Notice tone="success">{t.welcome.passkeyDone}</Notice>
           ) : (
             <Button variant="primary" size="lg" wide icon="key" onClick={addPasskey}>
-              {de.welcome.passkeyAdd}
+              {t.welcome.passkeyAdd}
             </Button>
           )}
           {error && <Notice tone="danger">{error}</Notice>}
           <Button size="lg" wide onClick={() => navigate("/", { replace: true })}>
-            {passkeyDone ? de.welcome.finish : de.welcome.skip}
+            {passkeyDone ? t.welcome.finish : t.welcome.skip}
           </Button>
         </div>
       )}

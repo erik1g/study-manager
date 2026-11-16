@@ -1,0 +1,39 @@
+---
+title: Skeleton
+sidebar_position: 10
+description: Placeholders in the shape of what is loading.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { DoDont, Do, Dont } from "@site/src/components/DoDont";
+import { Skeleton, PageSkeleton } from "@study/ui";
+
+# Skeleton and PageSkeleton
+
+`import { Skeleton, PageSkeleton } from "@study/ui"`
+
+```jsx live
+<div className="ui-stack">
+  <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+    <Skeleton shape="circle" width={40} />
+    <div style={{ flex: 1 }}><Skeleton width="60%" /><Skeleton width="35%" height={12} /></div>
+  </div>
+  <PageSkeleton />
+</div>
+```
+
+## When to use
+
+- A page loads for the first time: `PageSkeleton`.
+- A part loads later: `Skeleton` in its shape.
+- Short waits after a click: `loading` on the Button, no skeleton.
+
+## Props
+
+<PropsTable of="Skeleton" />
+
+## Accessibility
+
+- `PageSkeleton` says "Wird geladen" (loading; `role="status"`, `aria-busy`); single skeletons are hidden.
+- With reduced motion nothing pulses.

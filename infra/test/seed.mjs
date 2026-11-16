@@ -64,7 +64,8 @@ async function account(email, name) {
     if (!r.ok) throw new Error(`${method} ${path}: ${r.status} ${await r.text()}`);
     return r.status === 204 ? null : r.json();
   };
-  await call("PATCH", "/api/me", { displayName: name });
+  // The tests read the German interface.
+  await call("PATCH", "/api/me", { displayName: name, locale: "de" });
   return { id, call };
 }
 

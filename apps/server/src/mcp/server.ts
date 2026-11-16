@@ -13,37 +13,42 @@ import { AppError } from "../domain/errors.ts";
 import type { Services } from "../services.ts";
 import { pdfText } from "../text/pdf.ts";
 
-const INSTRUCTIONS = `Study Manager: die Studien-Cloud des Nutzers. Fächer (geteilt mit Kommilitonen, mit Rollen), \
-Dokumente (Skripte, Übungen, Altklausuren), geteilte Deadlines, private Aufgaben mit Zeitplanung, \
-Studiengänge mit Modulkatalog.
+const INSTRUCTIONS = `Study Manager: the user's study cloud. Courses (shared with fellow students, with roles), \
+documents (scripts, exercises, past exams), shared deadlines, private tasks with time planning, \
+programmes with a module catalogue.
 
-Modulhandbuch importieren: create_program (oder bestehenden Studiengang nehmen), dann read_handbook \
-abschnittsweise lesen (höchstens 10 Seiten je Aufruf) und die Module mit submit_modules in Paketen von \
-höchstens ${MODULE_BATCH} einreichen. Nur Angaben übernehmen, die im Handbuch stehen; nichts erfinden.
+Language: talk to the user in their language (get_profile gives it as locale; otherwise the language \
+they write in). Write what you store in a course – key points, flashcards, tasks and deadlines of the \
+course – in the course's language (locale in list_courses and course_details), so that the course stays \
+in one language for all its members. Titles taken from a script or handbook keep their wording, and exam \
+hints are quoted verbatim in the language they were spoken in.
 
-Aufgaben planen: Aufgaben haben einen Tag (planned_date) und optional eine Uhrzeit (start_time) und \
-Dauer (estimate_minutes); das ergibt einen Zeitblock im Kalender. Vor dem Planen get_calendar aufrufen, \
-um freie Zeiten neben den Vorlesungen zu finden.
+Importing a module handbook: create_program (or take an existing programme), then read the handbook with \
+read_handbook section by section (at most 10 pages per call) and submit the modules with submit_modules \
+in batches of at most ${MODULE_BATCH}. Only take over what the handbook says; invent nothing.
 
-Arbeitseingang: work_inbox nennt, was auf dich wartet – Skripte ohne Gliederung in den Notizen und \
-transkribierte Vorlesungen, die noch nicht ausgewertet sind. Sagt der Nutzer „arbeite ab“, diese Punkte \
-nacheinander erledigen.
+Planning tasks: tasks have a day (planned_date) and optionally a time (start_time) and a duration \
+(estimate_minutes); that makes a time block in the calendar. Call get_calendar before planning to find \
+free time next to the lectures.
 
-Gliederung: Skript mit read_document lesen (bei Folien reichen meist die Folientitel), in Kapitel und \
-Abschnitte gliedern (zwei Ebenen, Nummern und Titel aus dem Skript, je Eintrag die Startseite) und mit \
-submit_outline einreichen. Es wird nur ergänzt, nie gelöscht.
+Work inbox: work_inbox lists what is waiting for you – scripts without an outline in the notes and \
+transcribed lectures not yet evaluated. When the user says "work through the inbox" (or similar), do \
+these one after the other.
 
-Vorlesung auswerten: notes_outline für die Kennungen der Abschnitte holen, das Transkript mit \
-read_transcript ganz lesen (es ist automatisch erstellt; Namen können falsch geschrieben sein), je \
-Abschnitt wenige knappe Kernpunkte zuordnen und Prüfungshinweise („das müssen Sie können“, „kommt in der \
-Klausur dran“, „this will be on the exam“ …) wörtlich mit Zeitmarke übernehmen – nie erfinden. Alles in \
-einem Aufruf von submit_lecture_notes; Organisatorisches unter ohne-kapitel.
+Outline: read the script with read_document (for slides the slide titles are usually enough), structure \
+it into chapters and sections (two levels, numbers and titles from the script, the start page for each \
+entry) and submit it with submit_outline. It only adds, never deletes.
 
-Lernkarten: propose_cards schlägt Karten vor; der Nutzer übernimmt sie in der App. Fragen präzise, \
-Antworten kurz, Formeln in LaTeX ($…$).
+Evaluating a lecture: get the section ids with notes_outline, read the whole transcript with \
+read_transcript (it is made automatically; names may be misspelt), assign a few concise key points to \
+each section and take over exam hints ("this will be on the exam", "you must be able to do this", \
+„das müssen Sie können“, „kommt in der Klausur dran“ …) verbatim with their timestamp – never invent \
+them. Everything in one call of submit_lecture_notes; organisational matters go under ohne-kapitel.
 
-Suchen: search_course findet Stellen in den Dokumenten eines Fachs nach Bedeutung und Wortlaut, mit \
-Seitenzahl.`;
+Flashcards: propose_cards suggests cards; the user accepts them in the app. Precise questions, short \
+answers, formulas in LaTeX ($…$).
+
+Searching: search_course finds passages in a course's documents by meaning and wording, with the page.`;
 
 const json = (data: unknown) => ({ content: [{ type: "text" as const, text: JSON.stringify(data, null, 2) }] });
 
@@ -68,7 +73,7 @@ export function mcpServer(services: Services, identity: Identity): McpServer {
           return json(await run(args));
         } catch (error) {
           const message = error instanceof AppError ? `${error.code}: ${error.message}` : String((error as Error).message ?? error);
-          return { content: [{ type: "text" as const, text: `Fehler – ${message}` }], isError: true };
+          return { content: [{ type: "text" as const, text: `Error – ${message}` }], isError: true };
         }
       }) as never,
     );
@@ -77,16 +82,18 @@ export function mcpServer(services: Services, identity: Identity): McpServer {
 
   tool(
     "overview",
-    "Überblick: Fächer des Nutzers mit Rolle, Studiengänge, offene Aufgaben und die nächsten Deadlines.",
+    "Overview: the user's profile with their language, their courses with role and language, programmes, open tasks and the next deadlines.",
     {},
     async () => {
-      const [courses, programs, tasks, deadlines] = await Promise.all([
+      const [profile, courses, programs, tasks, deadlines] = await Promise.all([
+        services.users.me(user),
         services.courses.list(user),
         services.programs.list(user),
         services.planning.tasks(user, { open: true }),
         services.planning.deadlines(user, { from: new Date() }),
       ]);
       return {
+        user: { name: profile.displayName, locale: profile.locale },
         courses,
         programs: programs.filter((p) => p.enrolled),
         openTasks: tasks,
@@ -100,28 +107,28 @@ export function mcpServer(services: Services, identity: Identity): McpServer {
 
   tool(
     "get_profile",
-    "Der Nutzer: Name, Uni und Studiengang (Freitext) und Fachsemester – für Pläne und Empfehlungen, die zu seinem Studium passen.",
+    "The user: name, university and programme (free text), semester of study and language (locale: en, de) – for plans and advice that fit their studies, and to talk to them in their language.",
     {},
     async () => {
       const profile = await services.users.me(user);
-      return { name: profile.displayName, email: profile.email, studies: profile.studies, semester: profile.semester };
+      return { name: profile.displayName, email: profile.email, studies: profile.studies, semester: profile.semester, locale: profile.locale };
     },
     true,
   );
 
   tool(
     "course_activity",
-    "Was zuletzt in einem Fach geändert wurde und von wem (Dateien, Deadlines, Lernkarten, Notizen, Mitglieder). via=claude heißt: über Claude.",
-    { course_id: z.string().uuid(), before: z.string().datetime().optional().describe("Für ältere Einträge: Zeitpunkt des ältesten bisher gesehenen") },
+    "What was changed in a course lately and by whom (files, deadlines, flashcards, notes, members). via=claude means: through Claude.",
+    { course_id: z.string().uuid(), before: z.string().datetime().optional().describe("For older entries: the time of the oldest one seen so far") },
     ({ course_id, before }) => services.activity.ofCourse(user, course_id, { before, limit: 50 }),
     true,
   );
 
-  tool("list_courses", "Alle Fächer des Nutzers mit Semester, Rolle und Mitgliederzahl.", {}, () => services.courses.list(user), true);
+  tool("list_courses", "All of the user's courses with semester, role, number of members and language (locale: what is written into the course is in it).", {}, () => services.courses.list(user), true);
 
   tool(
     "course_details",
-    "Ein Fach mit Dokumenten (id, Ordner, Name), Mitgliedern und Deadlines.",
+    "A course with its language (locale), documents (id, folder, name), members and deadlines.",
     { course_id: z.string().uuid() },
     async ({ course_id }) => ({
       course: await services.courses.get(user, course_id),
@@ -134,18 +141,18 @@ export function mcpServer(services: Services, identity: Identity): McpServer {
 
   tool(
     "create_course",
-    "Legt ein Fach an, am besten aus einem Modul (module_id) – dann kommen Titel, Nummer und LP aus dem Katalog. Der Nutzer wird Besitzer.",
+    "Creates a course, preferably from a module (module_id) – then title, number and credits come from the catalogue. The user becomes the owner; the course gets the user's language.",
     {
-      semester: z.string().describe("WiSe26-27 oder SoSe27"),
+      semester: z.string().describe("WiSe26-27 (winter) or SoSe27 (summer)"),
       module_id: z.string().uuid().optional(),
-      title: z.string().optional().describe("nur ohne Modul nötig"),
+      title: z.string().optional().describe("only needed without a module"),
     },
-    ({ semester, module_id, title }) => services.courses.create(user, { semester, moduleId: module_id ?? null, title: title ?? "Fach" }),
+    ({ semester, module_id, title }) => services.courses.create(user, { semester, moduleId: module_id ?? null, title: title ?? "" }),
   );
 
   tool(
     "read_document",
-    "Liest den Text eines Dokuments. PDFs seitenweise: höchstens 10 Seiten je Aufruf; die Antwort nennt die Seitenzahl.",
+    "Reads the text of a document. PDFs page by page: at most 10 pages per call; the answer gives the number of pages.",
     { file_id: z.string().uuid(), from_page: z.number().int().positive().default(1), to_page: z.number().int().positive().optional() },
     async ({ file_id, from_page, to_page }) => {
       const file = await services.files.open(user, file_id);
@@ -157,7 +164,7 @@ export function mcpServer(services: Services, identity: Identity): McpServer {
         const text = await readFile(file.path, "utf8");
         return { name: file.name, text: text.slice(0, 60_000), truncated: text.length > 60_000 };
       }
-      throw new AppError(400, "unreadable_type", `${file.mime} lässt sich nicht als Text lesen.`);
+      throw new AppError(400, "unreadable_type", `${file.mime} cannot be read as text.`);
     },
     true,
   );
@@ -166,7 +173,7 @@ export function mcpServer(services: Services, identity: Identity): McpServer {
 
   tool(
     "list_tasks",
-    "Aufgaben (privat) des Nutzers, optional eines Fachs und nur offene.",
+    "The user's (private) tasks, optionally of one course and only open ones.",
     { course_id: z.string().uuid().optional(), open_only: z.boolean().default(true) },
     ({ course_id, open_only }) => services.planning.tasks(user, { courseId: course_id, open: open_only }),
     true,
@@ -176,12 +183,12 @@ export function mcpServer(services: Services, identity: Identity): McpServer {
     title: z.string(),
     course_id: z.string().uuid().nullable().optional(),
     deadline_id: z.string().uuid().nullable().optional(),
-    planned_date: z.string().nullable().optional().describe("JJJJ-MM-TT, der Tag, an dem sie erledigt werden soll"),
-    start_time: z.string().nullable().optional().describe("HH:MM, ergibt einen Zeitblock"),
+    planned_date: z.string().nullable().optional().describe("YYYY-MM-DD, the day it is to be done"),
+    start_time: z.string().nullable().optional().describe("HH:MM, makes a time block"),
     estimate_minutes: z.number().int().positive().nullable().optional(),
   };
 
-  tool("create_task", "Legt eine Aufgabe an, optional geplant als Zeitblock.", taskFields, (a) =>
+  tool("create_task", "Creates a task, optionally planned as a time block.", taskFields, (a) =>
     services.planning.createTask(user, {
       title: a.title,
       courseId: a.course_id ?? null,
@@ -194,7 +201,7 @@ export function mcpServer(services: Services, identity: Identity): McpServer {
 
   tool(
     "update_task",
-    "Ändert eine Aufgabe: abhaken (done), umplanen, umbenennen. Nur übergebene Felder ändern sich.",
+    "Changes a task: tick off (done), replan, rename. Only the fields passed change.",
     { task_id: z.string().uuid(), done: z.boolean().optional(), ...taskFields, title: z.string().optional() },
     (a) =>
       services.planning.updateTask(user, a.task_id, {
@@ -210,7 +217,7 @@ export function mcpServer(services: Services, identity: Identity): McpServer {
 
   tool(
     "list_deadlines",
-    "Deadlines (Klausuren, Abgaben), ab heute oder eines Fachs.",
+    "Deadlines (exams, submissions), from today or of one course.",
     { course_id: z.string().uuid().optional(), include_past: z.boolean().default(false) },
     ({ course_id, include_past }) =>
       services.planning.deadlines(user, { courseId: course_id, from: include_past ? undefined : new Date(Date.now() - 86_400_000) }),
@@ -219,13 +226,13 @@ export function mcpServer(services: Services, identity: Identity): McpServer {
 
   tool(
     "create_deadline",
-    "Legt eine Deadline an. Mit course_id ist sie für alle Mitglieder des Fachs sichtbar (Bearbeiter-Rolle nötig).",
+    "Creates a deadline. With course_id it is visible to all members of the course (needs the editor role).",
     {
       title: z.string(),
       course_id: z.string().uuid().nullable(),
       all_day: z.boolean(),
-      date: z.string().optional().describe("JJJJ-MM-TT, bei ganztägig"),
-      starts_at: z.string().optional().describe("ISO-Zeit mit Zeitzone, z. B. 2027-02-15T08:00:00+01:00"),
+      date: z.string().optional().describe("YYYY-MM-DD, when all day"),
+      starts_at: z.string().optional().describe("ISO time with time zone, e.g. 2027-02-15T08:00:00+01:00"),
       ends_at: z.string().optional(),
       notes: z.string().optional(),
     },
@@ -243,19 +250,19 @@ export function mcpServer(services: Services, identity: Identity): McpServer {
 
   tool(
     "get_calendar",
-    "Kalender zwischen zwei Zeitpunkten: Vorlesungen (session), andere Termine, Deadlines und geplante Aufgaben.",
-    { from: z.string().describe("ISO-Datum"), to: z.string().describe("ISO-Datum") },
+    "The calendar between two points in time: lectures (session), other events, deadlines and planned tasks.",
+    { from: z.string().describe("ISO date"), to: z.string().describe("ISO date") },
     ({ from, to }) => services.calendar.items(user, new Date(from), new Date(to)),
     true,
   );
 
   // --- Work for Claude, notes and lectures --------------------------------
 
-  tool("work_inbox", "Was auf Claude wartet: Skripte ohne Gliederung und unausgewertete Vorlesungen, je mit Anweisung.", {}, () => services.inbox.items(user), true);
+  tool("work_inbox", "What is waiting for Claude: scripts without an outline and lectures not yet evaluated, each with an instruction and the course's language.", {}, () => services.inbox.items(user), true);
 
   tool(
     "get_notes",
-    "Die gemeinsamen Notizen eines Fachs (Markdown) und, falls vorhanden, die privaten Notizen des Nutzers.",
+    "The shared notes of a course (Markdown) and, if there are any, the user's private notes.",
     { course_id: z.string().uuid() },
     async ({ course_id }) => ({
       shared: (await services.notes.get(user, course_id)).content,
@@ -264,14 +271,14 @@ export function mcpServer(services: Services, identity: Identity): McpServer {
     true,
   );
 
-  tool("notes_outline", "Die Abschnitte der gemeinsamen Notizen mit ihren Kennungen (für submit_lecture_notes).", { course_id: z.string().uuid() }, ({ course_id }) =>
+  tool("notes_outline", "The sections of the shared notes with their ids (for submit_lecture_notes).", { course_id: z.string().uuid() }, ({ course_id }) =>
     services.notes.outline(user, course_id),
   true);
 
   const outlineItem = z.object({ title: z.string(), page: z.number().int().positive().nullable().optional() });
   tool(
     "submit_outline",
-    "Trägt die Gliederung eines Skripts in die gemeinsamen Notizen ein (Kapitel ## und Abschnitte ###). Ergänzt nur Fehlendes.",
+    "Adds a script's outline to the shared notes (chapters ## and sections ###). Only adds what is missing.",
     {
       course_id: z.string().uuid(),
       script_file_id: z.string().uuid(),
@@ -285,7 +292,7 @@ export function mcpServer(services: Services, identity: Identity): McpServer {
 
   tool(
     "search_course",
-    "Durchsucht die Dokumente eines Fachs nach Bedeutung und Wortlaut; liefert Stellen mit Datei und Seite.",
+    "Searches a course's documents by meaning and wording; returns passages with file and page.",
     { course_id: z.string().uuid(), query: z.string(), limit: z.number().int().min(1).max(20).default(8) },
     ({ course_id, query, limit }) => services.search.search(user, course_id, query, limit),
     true,
@@ -293,7 +300,7 @@ export function mcpServer(services: Services, identity: Identity): McpServer {
 
   tool(
     "list_recordings",
-    "Die transkribierten Vorlesungen eines Fachs, mit Datum und ob sie schon ausgewertet sind.",
+    "The transcribed lectures of a course, with date and whether they are evaluated yet.",
     { course_id: z.string().uuid() },
     ({ course_id }) => services.recordings.list(user, course_id),
     true,
@@ -301,7 +308,7 @@ export function mcpServer(services: Services, identity: Identity): McpServer {
 
   tool(
     "read_transcript",
-    "Liest das Transkript einer Vorlesung in Teilen (part beginnt bei 1); die Antwort nennt die Zahl der Teile.",
+    "Reads a lecture's transcript in parts (part starts at 1); the answer gives the number of parts.",
     { recording_id: z.string().uuid(), part: z.number().int().positive().default(1) },
     ({ recording_id, part }) => services.recordings.part(user, recording_id, part),
     true,
@@ -309,7 +316,7 @@ export function mcpServer(services: Services, identity: Identity): McpServer {
 
   tool(
     "submit_lecture_notes",
-    "Trägt die Auswertung einer Vorlesung in die gemeinsamen Notizen ein: je Abschnitt (id aus notes_outline) Kernpunkte und wörtliche Prüfungshinweise mit Zeitmarke. Eine erneute Auswertung ersetzt die alte.",
+    "Adds a lecture's evaluation to the shared notes: per section (id from notes_outline) key points in the course's language and verbatim exam hints with timestamp. Evaluating again replaces the old evaluation.",
     {
       recording_id: z.string().uuid(),
       sections: z.array(
@@ -332,18 +339,18 @@ export function mcpServer(services: Services, identity: Identity): McpServer {
 
   // --- Flashcards --------------------------------------------------------------
 
-  tool("list_decks", "Die Lernkarten-Stapel eines Fachs mit Kartenzahl und fälligen Karten des Nutzers.", { course_id: z.string().uuid() }, ({ course_id }) =>
+  tool("list_decks", "The flashcard decks of a course with their number of cards and the user's due cards.", { course_id: z.string().uuid() }, ({ course_id }) =>
     services.flashcards.decks(user, course_id),
   true);
 
   tool(
     "propose_cards",
-    "Schlägt Lernkarten für einen Stapel vor (höchstens 50). Der Nutzer übernimmt oder verwirft jede in der App.",
+    "Suggests flashcards for a deck (at most 50), in the course's language. The user accepts or discards each in the app.",
     {
       course_id: z.string().uuid(),
-      deck: z.string().describe("Name des Stapels; ein neuer wird beim Übernehmen angelegt"),
+      deck: z.string().describe("Name of the deck; a new one is created on accepting"),
       cards: z
-        .array(z.object({ front: z.string(), back: z.string(), source: z.string().optional().describe("Datei-ID#Seite") }))
+        .array(z.object({ front: z.string(), back: z.string(), source: z.string().optional().describe("file id#page") }))
         .min(1)
         .max(50),
     },
@@ -352,18 +359,18 @@ export function mcpServer(services: Services, identity: Identity): McpServer {
 
   // --- Degree programmes and handbooks ----------------------------------
 
-  tool("list_programs", "Alle Studiengänge der Cloud mit Modulzahl und ob der Nutzer sie studiert.", {}, () => services.programs.list(user), true);
+  tool("list_programs", "All programmes of the cloud with their number of modules and whether the user studies them.", {}, () => services.programs.list(user), true);
 
   tool(
     "create_program",
-    "Legt einen Studiengang an; der Nutzer verwaltet dann dessen Modulkatalog.",
+    "Creates a programme; the user then manages its module catalogue.",
     { university: z.string(), name: z.string(), degree: z.string().default(""), regulation: z.string().default("") },
     async (a) => ({ id: await services.programs.create(user, a) }),
   );
 
   tool(
     "read_handbook",
-    "Liest das hochgeladene Modulhandbuch eines Studiengangs seitenweise (höchstens 10 Seiten je Aufruf).",
+    "Reads a programme's uploaded module handbook page by page (at most 10 pages per call).",
     { program_id: z.string().uuid(), from_page: z.number().int().positive().default(1), to_page: z.number().int().positive().optional() },
     ({ program_id, from_page, to_page }) => services.programs.handbookText(program_id, from_page, Math.min(to_page ?? from_page + 9, from_page + 9)),
     true,
@@ -371,14 +378,14 @@ export function mcpServer(services: Services, identity: Identity): McpServer {
 
   tool(
     "submit_modules",
-    `Reicht Module für den Katalog ein (höchstens ${MODULE_BATCH} je Aufruf); bestehende mit gleicher Nummer werden ersetzt. Nur der Verwalter des Studiengangs darf.`,
+    `Submits modules for the catalogue (at most ${MODULE_BATCH} per call); existing ones with the same number are replaced. Only the programme's manager may.`,
     { program_id: z.string().uuid(), modules: z.array(moduleSchema).max(MODULE_BATCH) },
     ({ program_id, modules }) => services.programs.upsertModules(user, program_id, modules),
   );
 
   tool(
     "list_modules",
-    "Module eines Studiengangs, optional gefiltert nach Titel oder Nummer.",
+    "The modules of a programme, optionally filtered by title or number.",
     { program_id: z.string().uuid(), query: z.string().optional() },
     ({ program_id, query }) => services.programs.modules(program_id, query),
     true,
@@ -410,7 +417,7 @@ export function mountMcp(app: FastifyInstance, services: Services) {
         return reply
           .status(401)
           .header("WWW-Authenticate", `Bearer resource_metadata="${metadataUrl}"`)
-          .send({ error: "unauthorized", error_description: "Anmeldung nötig" });
+          .send({ error: "unauthorized", error_description: "Sign-in required" });
       }
       if (request.method !== "POST") {
         // Stateless: no server-initiated stream and no sessions to end.

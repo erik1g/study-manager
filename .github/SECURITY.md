@@ -1,21 +1,21 @@
-# Sicherheit
+# Security
 
-Der Study Manager verwaltet Accounts, Dokumente und Notizen von Studierenden. Sicherheitslücken nehmen wir ernst.
+Study Manager manages students' accounts, documents and notes. We take security vulnerabilities seriously.
 
-## Eine Lücke melden
+## Reporting a vulnerability
 
-**Bitte melde Sicherheitslücken nicht öffentlich in einem Issue.** Nutze stattdessen die privaten Meldungen von GitHub:
+**Please do not report security vulnerabilities publicly in an issue.** Use GitHub's private reports instead:
 
-[Sicherheitslücke melden](https://github.com/erik1g/study-manager/security/advisories/new)
+[Report a vulnerability](https://github.com/erik1g/study-manager/security/advisories/new)
 
-Beschreibe, was du gefunden hast, wie man es nachstellt und welche Version betroffen ist. Wir antworten so schnell wie möglich, in der Regel innerhalb weniger Tage, und halten dich über die Behebung auf dem Laufenden. Auf Wunsch nennen wir dich in den Hinweisen zum Release.
+Describe what you found, how to reproduce it and which version is affected. We answer as quickly as we can, usually within a few days, and keep you posted on the fix. If you like, we credit you in the release notes.
 
-## Welche Versionen Fehlerbehebungen bekommen
+## Which versions get fixes
 
-Solange das Projekt vor Version 1.0 steht, bekommt nur die **neueste Version** Sicherheitskorrekturen. Aktualisiere regelmäßig (`docker compose pull && docker compose up -d`).
+As long as the project is before version 1.0, only the **latest version** gets security fixes. Update regularly (`docker compose pull && docker compose up -d`).
 
-## Was du als Betreiber selbst tun solltest
+## What you should do yourself as an operator
 
-- Halte deine Installation aktuell und setze `STUDY_VERSION` auf eine feste Version.
-- Betreibe sie nur hinter HTTPS (siehe die Admin-Dokumentation).
-- Bewahre deine `.env` und das `BACKUP_PASSPHRASE` sicher auf; ohne die Passphrase lassen sich Backups nicht lesen.
+- Keep your installation up to date and set `STUDY_VERSION` to a fixed version.
+- Run it only behind HTTPS (see the admin documentation).
+- Keep your `.env` and the `BACKUP_PASSPHRASE` safe; without the passphrase, backups cannot be read.

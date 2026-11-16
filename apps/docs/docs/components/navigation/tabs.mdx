@@ -1,0 +1,64 @@
+---
+title: Tabs
+sidebar_position: 1
+description: The areas of a page as pills.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { DoDont, Do, Dont } from "@site/src/components/DoDont";
+import { Tabs, IconButton } from "@study/ui";
+
+# Tabs
+
+`import { Tabs } from "@study/ui"`
+
+```jsx live
+function Example() {
+  const [tab, setTab] = useState("overview");
+  return (
+    <Tabs
+      label="Areas of the course"
+      active={tab}
+      onSelect={setTab}
+      items={[
+        { id: "overview", label: "Overview" },
+        { id: "documents", label: "Documents" },
+        { id: "notes", label: "Notes" },
+        { id: "lectures", label: "Lectures" },
+        { id: "flashcards", label: "Flashcards", count: 11 },
+      ]}
+      trailing={<IconButton icon="more" label="More areas" />}
+    />
+  );
+}
+```
+
+In the app the tabs are links, so that every area has its own address:
+
+```tsx
+<Tabs label="Bereiche des Fachs" active={tab} linkAs={Link}
+  items={MAIN_TABS.map((t) => ({ id: t, label: de.tabs[t], href: `/faecher/${id}/${t}` }))} />
+```
+
+## Variants and states
+
+<Preview column>
+  <Tabs label="A" active="a" items={[{ id: "a", label: "Active" }, { id: "b", label: "Normal" }]} />
+  <Tabs label="B" size="sm" active="a" items={[{ id: "a", label: "Small" }, { id: "b", label: "Normal" }]} />
+</Preview>
+
+## When to use
+
+- For areas of **one** thing (a course, the settings) – not for the main navigation.
+- At most six visible; rare ones behind an `IconButton` ⋯ as `trailing`.
+- For choosing a value: [SegmentedControl](../inputs/segmented-control).
+
+## Props
+
+<PropsTable of="Tabs" />
+
+## Accessibility
+
+- A `nav` with a name; the active tab is `aria-current`.
+- Links stay links (Ctrl-click, back button); buttons stay buttons.

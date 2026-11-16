@@ -2,7 +2,7 @@
 // the whole cloud for admins.
 import { useCallback, useEffect, useState } from "react";
 import { Button, Chip, List, ListRow, Notice } from "@study/ui";
-import { de, errorMessage, formatDate, formatDateTime } from "../i18n/de";
+import { t, errorMessage, formatDate, formatDateTime } from "../i18n";
 import type { ActivityEntry } from "../lib/api";
 import { Avatar } from "./Avatar";
 
@@ -13,8 +13,8 @@ function shown(field: string, value: unknown, courseTitle: (id: string) => strin
   if (value === null || value === undefined || value === "") return "–";
   if (typeof value === "boolean") return value ? "ja" : "nein";
   if (field === "role") return ROLE[String(value)] ?? String(value);
-  if (field === "folder") return de.folders[value as keyof typeof de.folders] ?? String(value);
-  if (field === "courseId") return courseTitle(String(value)) ?? "anderes Fach";
+  if (field === "folder") return t.folders[value as keyof typeof t.folders] ?? String(value);
+  if (field === "courseId") return courseTitle(String(value)) ?? t.activity.otherCourse;
   if (field === "quotaBytes") return `${Math.round(Number(value) / 1e9)} GB`;
   if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value)) return formatDate(value);
   if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}T/.test(value)) return formatDateTime(value);
@@ -29,7 +29,7 @@ function Changes({ entry, courseTitle }: { entry: ActivityEntry; courseTitle: (i
     <span className="activity-changes">
       {pairs.map(([field, [before, after]]) => (
         <span key={field}>
-          {de.activity.fields[field] ?? field}: <s>{shown(field, before, courseTitle)}</s> → {shown(field, after, courseTitle)}
+          {t.activity.fields[field] ?? field}: <s>{shown(field, before, courseTitle)}</s> → {shown(field, after, courseTitle)}
         </span>
       ))}
     </span>
@@ -57,15 +57,15 @@ export function ActivityList({
           leading={<Avatar userId={entry.actorId} name={entry.actorName} size={32} decorative />}
           title={
             <span className="activity-text">
-              {entry.actorName ?? de.activity.deletedUser}{" "}
+              {entry.actorName ?? t.activity.deletedUser}{" "}
               <span className="activity-action">
-                {de.activity.actions[entry.action] ?? entry.action}{" "}
+                {t.activity.actions[entry.action] ?? entry.action}{" "}
                 {entry.action !== "notes.edited" && entry.action !== "member.joined" && entry.action !== "member.left" && <em>{entry.subject}</em>}
-                {entry.count > 1 && <span className="quiet"> · {de.activity.times(entry.count)}</span>}
+                {entry.count > 1 && <span className="quiet"> · {t.activity.times(entry.count)}</span>}
               </span>
               {entry.via === "claude" && (
                 <Chip tone="gelb" icon="claude" size="sm" className="activity-claude">
-                  {de.activity.viaClaude}
+                  {t.activity.viaClaude}
                 </Chip>
               )}
             </span>
@@ -111,7 +111,7 @@ export function ActivityFeed({
 
   if (error) return <Notice tone="danger">{error}</Notice>;
   if (!entries) return null;
-  if (entries.length === 0) return <p className="quiet">{de.activity.empty}</p>;
+  if (entries.length === 0) return <p className="quiet">{t.activity.empty}</p>;
 
   return (
     <div className="ui-stack">
@@ -129,7 +129,7 @@ export function ActivityFeed({
               setBusy(false);
             }}
           >
-            {de.activity.more}
+            {t.activity.more}
           </Button>
         </div>
       )}

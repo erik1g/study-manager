@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Button, List, ListRow, Notice, SearchField, SegmentedControl, Select, TextField } from "@study/ui";
-import { de, errorMessage, nextSemesters, semesterName, semesterOf } from "../i18n/de";
+import { t, errorMessage, nextSemesters, semesterName, semesterOf } from "../i18n";
 import { api, type Course, type Module, type Program } from "../lib/api";
 import { Dialog } from "./Dialog";
 
@@ -52,14 +52,14 @@ export function NewCourseDialog({ onClose, onCreated, module: preset }: { onClos
 
   return (
     <Dialog
-      title={de.newCourse.title}
+      title={t.newCourse.title}
       onClose={onClose}
       wide
       footer={
         <>
-          <Button onClick={onClose}>{de.common.cancel}</Button>
+          <Button onClick={onClose}>{t.common.cancel}</Button>
           <Button variant="primary" loading={busy} disabled={mode === "module" ? !moduleId : !title.trim()} onClick={() => void submit()}>
-            {de.newCourse.create}
+            {t.newCourse.create}
           </Button>
         </>
       }
@@ -67,18 +67,18 @@ export function NewCourseDialog({ onClose, onCreated, module: preset }: { onClos
       <form className="ui-stack" onSubmit={submit}>
         {!preset && (
           <SegmentedControl
-            label={de.newCourse.title}
+            label={t.newCourse.title}
             value={mode}
             onChange={setMode}
             options={[
-              { value: "module", label: de.newCourse.fromModule, icon: "book" },
-              { value: "hand", label: de.newCourse.byHand, icon: "edit" },
+              { value: "module", label: t.newCourse.fromModule, icon: "book" },
+              { value: "hand", label: t.newCourse.byHand, icon: "edit" },
             ]}
           />
         )}
         {mode === "module" ? (
           programs && programs.length === 0 && !preset ? (
-            <Notice>{de.newCourse.noPrograms}</Notice>
+            <Notice>{t.newCourse.noPrograms}</Notice>
           ) : preset ? (
             <p>
               <span className="mono">{preset.number}</span> {preset.title}
@@ -86,7 +86,7 @@ export function NewCourseDialog({ onClose, onCreated, module: preset }: { onClos
           ) : (
             <>
               {programs && programs.length > 1 && (
-                <Select label={de.newCourse.program} value={programId} onChange={(e) => setProgramId(e.target.value)}>
+                <Select label={t.newCourse.program} value={programId} onChange={(e) => setProgramId(e.target.value)}>
                   {programs.map((p) => (
                     <option key={p.id} value={p.id}>
                       {p.name} · {p.university}
@@ -94,7 +94,7 @@ export function NewCourseDialog({ onClose, onCreated, module: preset }: { onClos
                   ))}
                 </Select>
               )}
-              <SearchField label={de.newCourse.search} value={search} onChange={(e) => setSearch(e.target.value)} onClear={() => setSearch("")} autoFocus />
+              <SearchField label={t.newCourse.search} value={search} onChange={(e) => setSearch(e.target.value)} onClear={() => setSearch("")} autoFocus />
               <div className="pick-list">
                 <List>
                   {modules.map((m) => (
@@ -104,7 +104,7 @@ export function NewCourseDialog({ onClose, onCreated, module: preset }: { onClos
                       onClick={() => setModuleId(m.id)}
                       leading={<span className="mono quiet">{m.number}</span>}
                       title={m.title}
-                      trailing={de.programs.credits(m.credits ?? null)}
+                      trailing={t.programs.credits(m.credits ?? null)}
                     />
                   ))}
                 </List>
@@ -113,11 +113,11 @@ export function NewCourseDialog({ onClose, onCreated, module: preset }: { onClos
           )
         ) : (
           <div className="form-grid">
-            <TextField className="wide" label={de.newCourse.name} value={title} onChange={(e) => setTitle(e.target.value)} required autoFocus />
-            <TextField label={de.newCourse.credits} value={credits} onChange={(e) => setCredits(e.target.value)} inputMode="decimal" />
+            <TextField className="wide" label={t.newCourse.name} value={title} onChange={(e) => setTitle(e.target.value)} required autoFocus />
+            <TextField label={t.newCourse.credits} value={credits} onChange={(e) => setCredits(e.target.value)} inputMode="decimal" />
           </div>
         )}
-        <Select label={de.newCourse.semester} value={semester} onChange={(e) => setSemester(e.target.value)}>
+        <Select label={t.newCourse.semester} value={semester} onChange={(e) => setSemester(e.target.value)}>
           {nextSemesters().map((id) => (
             <option key={id} value={id}>
               {semesterName(id)}

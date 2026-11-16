@@ -49,7 +49,7 @@ export function Avatar({ name, src, size = 32, colorKey, gone, decorative, class
 }
 
 export interface AvatarGroupProps {
-  /** Who they are together, e.g. "3 Mitglieder". */
+  /** Who they are together, e.g. "3 members". */
   label: string;
   /** How many to show before "+n". */
   max?: number;

@@ -3,7 +3,10 @@
 // scripts, and for each evaluated lecture a block of key points and exam
 // hints. Its places are found again through markers in HTML comments, which
 // the Markdown view does not show, so headings may be renamed and moved.
-// Pure functions; taken over from the desktop app.
+// Pure functions; taken over from the desktop app. The words Claude's blocks
+// and the standard headings use follow the course's language; the markers
+// (ids, `skript:`) are the same in every language.
+import type { Locale } from "@study/shared";
 
 export const EXAM_ID = "pruefungsrelevant";
 export const OTHER_ID = "ohne-kapitel";
@@ -37,17 +40,53 @@ export interface SectionNotes {
   examHints?: ExamHint[];
 }
 
+interface Words {
+  notes: (course: string) => string;
+  exam: string;
+  other: string;
+  lecture: string;
+  transcript: string;
+  examHint: string;
+  quote: (text: string) => string;
+  date: (iso: string) => string;
+}
+
+const WORDS: Record<Locale, Words> = {
+  en: {
+    notes: (course) => `Notes · ${course}`,
+    exam: "Exam-relevant",
+    other: "From the lecture, without a chapter",
+    lecture: "Lecture",
+    transcript: "Transcript",
+    examHint: "Exam-relevant:",
+    quote: (text) => `“${text}”`,
+    date: (iso) => iso.split("-").reverse().join("/"),
+  },
+  de: {
+    notes: (course) => `Notizen · ${course}`,
+    exam: "Prüfungsrelevant",
+    other: "Aus der Vorlesung, ohne Kapitelbezug",
+    lecture: "Vorlesung",
+    transcript: "Transkript",
+    examHint: "Prüfungsrelevant:",
+    quote: (text) => `„${text}“`,
+    date: (iso) => iso.split("-").reverse().join("."),
+  },
+};
+
 export interface SessionInfo {
   /** Stable key; evaluating the same lecture again replaces its blocks. */
   key: string;
-  /** E.g. `19.10.2026`. */
+  /** The day of the lecture, `YYYY-MM-DD`. */
   date: string;
   /** Link to the transcript. */
   transcript: string;
 }
 
-export function newNotes(courseTitle: string): string {
-  return `# Notizen · ${courseTitle}\n\n## Prüfungsrelevant\n<!-- id: ${EXAM_ID} -->\n\n## Aus der Vorlesung, ohne Kapitelbezug\n<!-- id: ${OTHER_ID} -->\n`;
+/** The notes of a new course, in the course's language. */
+export function newNotes(courseTitle: string, locale: Locale): string {
+  const words = WORDS[locale];
+  return `# ${words.notes(courseTitle)}\n\n## ${words.exam}\n<!-- id: ${EXAM_ID} -->\n\n## ${words.other}\n<!-- id: ${OTHER_ID} -->\n`;
 }
 
 /** As the desktop app made folder names: lower case, umlauts spelled out. */
@@ -216,12 +255,14 @@ function chapterIndexBefore(
   return lines.length;
 }
 
-/** Enters what one lecture contributed; a block it added before is replaced. */
-export function addSession(text: string, session: SessionInfo, notes: SectionNotes[]): string {
+/** Enters what one lecture contributed, in the course's language; a block it added before is replaced. */
+export function addSession(text: string, session: SessionInfo, notes: SectionNotes[], locale: Locale): string {
+  const words = WORDS[locale];
+  const date = words.date(session.date);
   let lines = removeSession(split(text), session.key);
   const known = headings(lines).map((h) => h.id);
   // Without the two standard sections there is nowhere to put things.
-  if (!known.includes(OTHER_ID)) lines = tidy([...lines, "", "## Aus der Vorlesung, ohne Kapitelbezug", `<!-- id: ${OTHER_ID} -->`]);
+  if (!known.includes(OTHER_ID)) lines = tidy([...lines, "", `## ${words.other}`, `<!-- id: ${OTHER_ID} -->`]);
 
   const bySection: { id: string; points: string[]; hints: ExamHint[] }[] = [];
   for (const entry of notes) {
@@ -236,12 +277,13 @@ export function addSession(text: string, session: SessionInfo, notes: SectionNot
     if (points.length === 0 && hints.length === 0) continue;
     const heading = headings(lines).find((h) => h.id === id)!;
     const title = titleOf(lines, heading);
-    const block = [`<!-- session: ${session.key} -->`, `> **Vorlesung ${session.date}** · [Transkript](${session.transcript.replace(/ /g, "%20")})`];
+    const block = [`<!-- session: ${session.key} -->`, `> **${words.lecture} ${date}** · [${words.transcript}](${session.transcript.replace(/ /g, "%20")})`];
     block.push(...points.map((p) => `> - ${p.trim()}`));
     for (const hint of hints) {
       const time = hint.time ? ` [${hint.time}]` : "";
-      block.push(">", `> ⚠️ **Prüfungsrelevant:** „${hint.quote.trim()}“${time}`);
-      examList.push(`- ⚠️ „${hint.quote.trim()}“ → ${title} · Vorlesung ${session.date}${time} <!-- session: ${session.key} -->`);
+      const quote = words.quote(hint.quote.trim());
+      block.push(">", `> ⚠️ **${words.examHint}** ${quote}${time}`);
+      examList.push(`- ⚠️ ${quote} → ${title} · ${words.lecture} ${date}${time} <!-- session: ${session.key} -->`);
     }
     block.push("<!-- /session -->");
     lines = insertBlock(lines, endOfOwnText(lines, heading), block);

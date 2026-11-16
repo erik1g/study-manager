@@ -1,5 +1,6 @@
 // A person's picture or initials, with the picture found by their id.
 import { Avatar as UiAvatar } from "@study/ui";
+import { t } from "../i18n";
 import { usePeople } from "../lib/session";
 
 export { initials } from "@study/ui";
@@ -25,7 +26,7 @@ export function Avatar({
   const shown = name ?? person?.displayName ?? "";
   const picture = version !== undefined ? version : person?.hasAvatar ? person.avatarVersion : null;
   const src = userId && picture != null ? `/api/avatars/${userId}?v=${picture}` : null;
-  return <UiAvatar name={shown || "Gelöschter Nutzer"} src={src} size={size} colorKey={userId ?? undefined} gone={!userId} decorative={decorative} />;
+  return <UiAvatar name={shown || t.common.deletedUser} src={src} size={size} colorKey={userId ?? undefined} gone={!userId} decorative={decorative} />;
 }
 
 /** A name with its picture in front, as authors are shown. */
@@ -33,7 +34,7 @@ export function Person({ userId, name, size = 20 }: { userId: string | null; nam
   return (
     <span className="person">
       <Avatar userId={userId} name={name} size={size} decorative />
-      <span className="person-name">{userId && name ? name : (name ?? "Gelöschter Nutzer")}</span>
+      <span className="person-name">{userId && name ? name : (name ?? t.common.deletedUser)}</span>
     </span>
   );
 }

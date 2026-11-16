@@ -1,0 +1,65 @@
+---
+title: Checkbox
+sidebar_position: 4
+description: Tick off – yes or no for one thing.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { DoDont, Do, Dont } from "@site/src/components/DoDont";
+import { Checkbox, Switch } from "@study/ui";
+
+# Checkbox
+
+`import { Checkbox } from "@study/ui"`
+
+The round box for ticking off. With `strike`, a finished task is crossed out.
+
+```jsx live
+function Example() {
+  const [tasks, setTasks] = useState([
+    { title: "Read script chapter 3", done: true },
+    { title: "Do exercise sheet 4", done: false },
+  ]);
+  return (
+    <div>
+      {tasks.map((t, i) => (
+        <Checkbox key={t.title} label={t.title} strike checked={t.done} tone="gruen"
+          onChange={() => setTasks(tasks.map((x, j) => (j === i ? { ...x, done: !x.done } : x)))} />
+      ))}
+    </div>
+  );
+}
+```
+
+## Variants and states
+
+<Preview column>
+  <Checkbox label="Not ticked" />
+  <Checkbox label="Ticked" defaultChecked />
+  <Checkbox label="Done" defaultChecked strike tone="gruen" />
+  <Checkbox label="With description" description="A second, quieter line." />
+  <Checkbox label="Disabled" disabled />
+</Preview>
+
+## When to use
+
+<DoDont>
+  <Do caption="Ticking off tasks; agreements in a form that is saved later.">
+    <Checkbox label="Invite by email" defaultChecked />
+  </Do>
+  <Dont caption="A setting that applies at once – that is a Switch.">
+    <Checkbox label="Dark theme" />
+  </Dont>
+</DoDont>
+
+## Props
+
+Plus all attributes of an `<input type="checkbox">`.
+
+<PropsTable of="Checkbox" />
+
+## Accessibility
+
+- A real checkbox under the box: Space ticks it, screen readers say "checked".
+- The whole row is clickable and at least 44 px high.

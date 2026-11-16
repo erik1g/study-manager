@@ -52,7 +52,7 @@ export function calendarOf(db: Db, fetchText: (url: string) => Promise<string> =
       const now = Date.now();
       const text = await fetchText(feed.url);
       // A login page or an error page instead of the calendar must not empty it.
-      if (!text.includes("BEGIN:VCALENDAR")) throw new Error("Unter dem Link liegt gerade kein Kalender.");
+      if (!text.includes("BEGIN:VCALENDAR")) throw new Error("There is no calendar at this link right now.");
       const events = expandIcs(text, new Date(now - PAST_DAYS * 86_400_000), new Date(now + FUTURE_DAYS * 86_400_000));
       await db.transaction(async (tx) => {
         await tx.delete(feedEvents).where(eq(feedEvents.feedId, feedId));

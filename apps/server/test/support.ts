@@ -5,6 +5,7 @@ import { mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import postgres from "postgres";
+import type { Locale } from "@study/shared";
 import type { Accounts } from "../src/auth/accounts.ts";
 import type { Authenticator, Identity } from "../src/auth/identity.ts";
 import { createDb, migrateDb } from "../src/db/client.ts";
@@ -20,24 +21,32 @@ function testUrl() {
   return { base, test: base.replace(/\/[^/?]+(\?.*)?$/, "/study_test$1") };
 }
 
-export function memoryAccounts(): Accounts & { made: string[] } {
+export function memoryAccounts(): Accounts & { made: string[]; locales: Map<string, Locale> } {
   const known = new Map<string, string>();
   const made: string[] = [];
+  /** The language in the sign-in service's metadata, by user id. */
+  const locales = new Map<string, Locale>();
   return {
     made,
-    async inviteLink(email) {
+    locales,
+    async setLocale(userId, locale) {
+      locales.set(userId, locale);
+    },
+    async inviteLink(email, locale) {
       let id = known.get(email);
       if (!id) {
         id = randomUUID();
         known.set(email, id);
         made.push(email);
+        locales.set(id, locale);
       }
       return { userId: id, link: `https://study.test/auth/v1/verify?token=t-${id}&type=invite` };
     },
-    async sendInvite(email) {
+    async sendInvite(email, locale) {
       if (known.has(email)) return null;
       const id = randomUUID();
       known.set(email, id);
+      locales.set(id, locale);
       made.push(email);
       return { userId: id };
     },
@@ -99,7 +108,7 @@ export async function world(feeds: Record<string, string> = {}) {
   let counter = 0;
   /** A signed-up user, by display name. */
   const user = async (name: string, isAdmin = false): Promise<string> => {
-    const { userId } = await services.users.invite(`${name.toLowerCase()}${++counter}@example.org`, name, isAdmin);
+    const { userId } = await services.users.invite(`${name.toLowerCase()}${++counter}@example.org`, name, { makeAdmin: isAdmin });
     return userId;
   };
 

@@ -1,35 +1,35 @@
-name: Fehler melden
-description: Etwas funktioniert nicht wie erwartet.
+name: Report a bug
+description: Something does not work as expected.
 labels: [bug]
 body:
   - type: markdown
     attributes:
       value: |
-        Danke für deine Meldung! Sicherheitslücken bitte **nicht** hier melden, sondern privat (siehe SECURITY.md).
+        Thank you for your report! Please write in English. Please do **not** report security vulnerabilities here, but privately (see SECURITY.md).
   - type: textarea
-    id: was
+    id: what
     attributes:
-      label: Was ist passiert?
-      description: Was hast du getan, was hast du erwartet, was ist stattdessen passiert?
+      label: What happened?
+      description: What did you do, what did you expect, what happened instead?
     validations:
       required: true
   - type: textarea
-    id: nachstellen
+    id: reproduce
     attributes:
-      label: So lässt es sich nachstellen
+      label: How to reproduce it
       placeholder: "1. …\n2. …\n3. …"
   - type: input
     id: version
     attributes:
       label: Version
-      description: Aus dem Image-Tag (`STUDY_VERSION`), z. B. 0.1.0, oder der Commit-Hash bei einer eigenen Entwicklungsversion.
+      description: From the image tag (`STUDY_VERSION`), e.g. 0.1.0, or the commit hash for your own development build.
   - type: input
-    id: umgebung
+    id: environment
     attributes:
-      label: Browser und Gerät
-      placeholder: "z. B. Safari 18 auf iPhone, Chrome auf Windows"
+      label: Browser and device
+      placeholder: "e.g. Safari 18 on iPhone, Chrome on Windows"
   - type: textarea
     id: logs
     attributes:
-      label: Fehlermeldungen oder Logs
+      label: Error messages or logs
       render: shell

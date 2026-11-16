@@ -2,6 +2,7 @@ import type { ElementType, MouseEventHandler, ReactNode } from "react";
 import { cx } from "../cx";
 import type { Tone } from "../tokens";
 import { Icon, type IconName } from "./Icon";
+import { uiText } from "../text";
 
 export interface SidebarProps {
   /** At the top: usually the `Logo`. */
@@ -17,7 +18,7 @@ export interface SidebarProps {
 }
 
 /** The column at the left on wide screens with the places of the app. On phones use `TabBar`. */
-export function Sidebar({ brand, children, footer, label = "Hauptnavigation", collapsed, className }: SidebarProps) {
+export function Sidebar({ brand, children, footer, label = uiText().mainNav, collapsed, className }: SidebarProps) {
   return (
     <nav aria-label={label} className={cx("ui-sidebar", collapsed && "ui-collapsed", className)}>
       {brand && <div className="ui-sidebar-brand">{brand}</div>}
@@ -28,9 +29,9 @@ export function Sidebar({ brand, children, footer, label = "Hauptnavigation", co
 }
 
 export interface NavSectionProps {
-  /** A small heading, e.g. "Deine Fächer"; leave it out for the main places. */
+  /** A small heading, e.g. "Your courses"; leave it out for the main places. */
   title?: ReactNode;
-  /** At the right of the heading, e.g. an `IconButton` "Fach anlegen". */
+  /** At the right of the heading, e.g. an `IconButton` "Create course". */
   action?: ReactNode;
   children: ReactNode;
 }

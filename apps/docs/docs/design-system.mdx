@@ -1,0 +1,64 @@
+---
+title: Getting started
+slug: /design
+sidebar_position: 1
+description: What Snug Simple is, how to use the building blocks and the one rule that holds everything together.
+---
+
+import { Card, Illustration, Button, Chip, CountdownTile } from "@study/ui";
+
+# Snug Simple
+
+<Card tone="blau" glow grain padding="lg" style={{ display: "flex", flexWrap: "wrap", gap: 24, alignItems: "center", marginBottom: 32 }}>
+  <div style={{ flex: "1 1 320px" }}>
+    <p className="ui-display" style={{ fontSize: 30, margin: 0 }}>Your studies, comfortably sorted.</p>
+    <p style={{ margin: "10px 0 0", fontWeight: 600 }}>
+      The building blocks of Study Manager: a warm background, eight pastel colours for the courses, round shapes, bold headings and illustrations of its own.
+    </p>
+  </div>
+  <div style={{ width: 220 }}>
+    <Illustration kind="schreibtisch" />
+  </div>
+</Card>
+
+These docs show **every component for real**: what you see here is the same code that runs in the app. You can change examples with the "Live Editor" field directly.
+
+## The one rule
+
+> **The app only uses building blocks from `@study/ui`** – no bare `<button>`, `<input>`, `<select>` or `<textarea>`, no colours as hex values.
+
+That way a button looks the same everywhere, every one is reachable by keyboard, and light and dark are right by themselves. A check in CI watches this (see [Contributing](/design-system-contributing)).
+
+## Using it
+
+The package lives in the monorepo under `packages/ui`. In an app:
+
+```tsx
+// once, at the start (e.g. main.tsx)
+import "@study/ui/styles.css";
+
+// where needed
+import { Button, Card, TextField } from "@study/ui";
+```
+
+`@study/ui` brings its fonts (Bricolage Grotesque and Figtree) with it. Light and dark follow the system; `data-theme="light"` or `"dark"` on `<html>` fixes it.
+
+```jsx live
+<div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+  <Button variant="primary" icon="plus">New</Button>
+  <Chip tone="violett" icon="cards">24 due</Chip>
+  <CountdownTile value={2} unit="days" tone="orange" />
+</div>
+```
+
+## Structure
+
+- **[Foundations](/foundations/colors)** – colours, typography, spacing, radii, shadows, motion, icons and illustrations.
+- **Components** – each with an example, variants, when to use it, its props and what it does for accessibility.
+- **[Patterns](/patterns/forms)** – how components together make forms, empty states or delete questions.
+- **[Voice and tone](/voice-and-tone)** – how the app talks to you.
+- **[Contributing](/design-system-contributing)** – creating a component and what the check on deploy requires.
+
+## What stays in the app
+
+Domain-specific parts such as the course card (`CourseCard`), the command palette, the document view, the activity history and the calendar live in `apps/web`. They themselves consist only of building blocks.

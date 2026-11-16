@@ -1,0 +1,39 @@
+---
+title: "Overview for developers"
+sidebar_position: 1
+description: "The structure of the project and where you start as a contributor."
+---
+
+# Overview for developers
+
+Study Manager is a TypeScript monorepo (pnpm workspaces). It should work for **as many students as possible** – help is welcome, from typos to connecting a new university.
+
+## Where do I start?
+
+1. [Running locally](/developers/running-locally): get the project running on your machine.
+2. [Architecture](/developers/architecture): how the parts work together.
+3. Pick an issue with the label [`good first issue`](https://github.com/erik1g/study-manager/labels/good%20first%20issue) or an idea under [Connecting universities](/developers/connecting-universities).
+4. [Contributing](/developers/contributing): branches, commits, pull requests.
+5. [Tests](/developers/tests) and [releases](/developers/releases).
+
+## The parts
+
+| Folder | Content |
+|---|---|
+| `apps/web` | Web app (React 19, Vite, React Router, FullCalendar) |
+| `apps/server` | API, MCP server and background jobs (Node.js 24, Fastify, Drizzle, pg-boss) |
+| `packages/ui` | Building blocks and design ("Snug Simple") – see [design system](/developers/design) |
+| `packages/shared` | Shared types and rules (roles, drafts, module schema) |
+| `apps/e2e` | End-to-end tests with Playwright |
+| `apps/docs` | This documentation (Docusaurus) |
+| `infra` | Dockerfiles, Caddy, test data, scripts |
+| `apps/docs/docs/developers/decisions` | Architecture decisions (ADRs) |
+| `apps/docs/docs/developers/glossary.mdx` | [Glossary](/developers/glossary) of the terms (course, deadline, task …) |
+| `.claude/` | Instructions for Claude and developers (commit rules, check commands, rules per area), loaded automatically by Claude Code |
+
+## Principles
+
+- **No AI on the server.** Claude works through MCP with the user's permissions; what used to happen automatically is listed in a work inbox. See ADR `0002`.
+- **Only building blocks from `@study/ui`** in the interface (a CI check watches this).
+- **Self-host, keep it simple.** One Docker Compose project, one reverse proxy in front.
+- **Invented test data.** No real people, universities or credentials in tests, examples and docs.

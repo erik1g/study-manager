@@ -98,13 +98,14 @@ services:
       GOTRUE_MAILER_URLPATHS_RECOVERY: /auth/v1/verify
       GOTRUE_MAILER_URLPATHS_EMAIL_CHANGE: /auth/v1/verify
       GOTRUE_MAILER_URLPATHS_CONFIRMATION: /auth/v1/verify
-      # The mails in German, served by the app inside the stack.
-      GOTRUE_MAILER_SUBJECTS_INVITE: Du bist zum Study Manager eingeladen
-      GOTRUE_MAILER_SUBJECTS_RECOVERY: Neues Passwort für den Study Manager
-      GOTRUE_MAILER_SUBJECTS_MAGIC_LINK: Dein Link zum Study Manager
-      GOTRUE_MAILER_SUBJECTS_EMAIL_CHANGE: Neue E-Mail-Adresse bestätigen
-      GOTRUE_MAILER_SUBJECTS_CONFIRMATION: E-Mail-Adresse bestätigen
-      GOTRUE_MAILER_SUBJECTS_REAUTHENTICATION: Dein Bestätigungscode
+      # The mails in the recipient's language (user_metadata.locale), served by the app inside
+      # the stack. The subjects come from apps/server/src/http/mails.ts (a test keeps them equal).
+      GOTRUE_MAILER_SUBJECTS_INVITE: '{{ if eq (printf "%v" .Data.locale) "en" }}You are invited to Study Manager{{ else }}Du bist zum Study Manager eingeladen{{ end }}'
+      GOTRUE_MAILER_SUBJECTS_RECOVERY: '{{ if eq (printf "%v" .Data.locale) "en" }}New password for Study Manager{{ else }}Neues Passwort für den Study Manager{{ end }}'
+      GOTRUE_MAILER_SUBJECTS_MAGIC_LINK: '{{ if eq (printf "%v" .Data.locale) "en" }}Your link to Study Manager{{ else }}Dein Link zum Study Manager{{ end }}'
+      GOTRUE_MAILER_SUBJECTS_EMAIL_CHANGE: '{{ if eq (printf "%v" .Data.locale) "en" }}Confirm your new email address{{ else }}Neue E-Mail-Adresse bestätigen{{ end }}'
+      GOTRUE_MAILER_SUBJECTS_CONFIRMATION: '{{ if eq (printf "%v" .Data.locale) "en" }}Confirm your email address{{ else }}E-Mail-Adresse bestätigen{{ end }}'
+      GOTRUE_MAILER_SUBJECTS_REAUTHENTICATION: '{{ if eq (printf "%v" .Data.locale) "en" }}Your confirmation code{{ else }}Dein Bestätigungscode{{ end }}'
       GOTRUE_MAILER_TEMPLATES_INVITE: http://server:3000/api/mail/invite
       GOTRUE_MAILER_TEMPLATES_RECOVERY: http://server:3000/api/mail/recovery
       GOTRUE_MAILER_TEMPLATES_MAGIC_LINK: http://server:3000/api/mail/magic_link

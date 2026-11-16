@@ -1,0 +1,33 @@
+---
+title: "Connect Claude"
+sidebar_position: 9
+description: "Connect your own Claude to Study Manager through MCP – and what it can do then."
+---
+
+# Connect Claude
+
+Study Manager runs **no AI**. Instead you connect **your own Claude** through the app's MCP server. It works with **your permissions**: it only sees what you see.
+
+## Connecting
+
+- **Claude.ai and Claude Desktop**: *Settings → Connectors → add custom connector*, URL `https://<your-domain>/mcp`. Sign-in uses OAuth; for that the address must be reachable from the internet.
+- **Claude Code**: Create a personal key in the app under *Settings → Claude* and run:
+
+```sh
+claude mcp add --transport http study-manager https://<your-domain>/mcp \
+  --header "Authorization: Bearer sm_…"
+```
+
+You can disconnect at any time under *Settings → Claude*.
+
+## What Claude can do
+
+- **Work inbox**: Say *"Work through my Study Manager inbox"*. Claude outlines scripts that have no outline yet, evaluates transcribed lectures and adds key points and exam hints to the notes.
+- Read in a **module handbook** and fill programmes.
+- **Search courses, documents and notes** and answer from them, with page numbers.
+- Create **tasks and deadlines** and plan your week (it looks at the calendar first to find free time).
+- **Suggest flashcards**, which you accept in the app.
+
+None of this happens on its own: Claude works when you ask it to.
+
+**Languages**: Claude talks to you in your language (the one in your profile, or the one you write in). What it writes into a course – key points in the notes, flashcards, tasks and deadlines of the course – is in the **course's language**, so that a shared course stays in one language for everyone. Titles from a script and exam hints keep their original wording.

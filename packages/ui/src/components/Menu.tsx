@@ -18,7 +18,7 @@ export function menuPositionFrom(button: HTMLElement, align: "start" | "end" = "
 
 export interface MenuProps {
   at: MenuPosition;
-  /** The menu's accessible name, e.g. "Aktionen für Skript.pdf". */
+  /** The menu's accessible name, e.g. "Actions for Script.pdf". */
   label: string;
   onClose: () => void;
   /** `MenuItem`s and `MenuSeparator`s. */

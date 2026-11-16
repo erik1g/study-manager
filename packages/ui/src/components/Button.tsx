@@ -11,7 +11,7 @@ export interface ButtonLook {
   /**
    * primary – the one main action of a view (dark).
    * secondary – everything else (outlined); the default.
-   * soft – a friendly side action on a tint, e.g. "Mit Claude".
+   * soft – a friendly side action on a tint, e.g. "With Claude".
    * danger – deleting and leaving.
    * ghost – quiet actions in toolbars and lists.
    */
@@ -22,7 +22,7 @@ export interface ButtonLook {
   tone?: Tone;
   /** An icon before the text. */
   icon?: IconName;
-  /** An icon after the text, e.g. an arrow for "weiter". */
+  /** An icon after the text, e.g. an arrow for "Next". */
   iconEnd?: IconName;
   /** As wide as its place. */
   wide?: boolean;
@@ -53,7 +53,7 @@ export interface ButtonProps extends ButtonLook, Omit<ButtonHTMLAttributes<HTMLB
   ref?: Ref<HTMLButtonElement>;
 }
 
-/** A button: something happens here. Its text says what, as a verb ("Speichern", not "OK"). */
+/** A button: something happens here. Its text says what, as a verb ("Save", not "OK"). */
 export function Button({ variant, size, tone, icon, iconEnd, wide, loading, type = "button", disabled, className, children, ...rest }: ButtonProps) {
   return (
     <button

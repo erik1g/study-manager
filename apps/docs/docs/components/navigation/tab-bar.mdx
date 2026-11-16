@@ -1,0 +1,46 @@
+---
+title: TabBar
+sidebar_position: 3
+description: The places of the app at the bottom on phones.
+---
+
+import { PropsTable } from "@site/src/components/PropsTable";
+import { Preview } from "@site/src/components/Preview";
+import { DoDont, Do, Dont } from "@site/src/components/DoDont";
+import { TabBar } from "@study/ui";
+
+# TabBar
+
+`import { TabBar } from "@study/ui"`
+
+```jsx live
+<div style={{ maxWidth: 390, padding: 12, background: "var(--ui-sunken)", borderRadius: 32 }}>
+  <TabBar
+    fixed={false}
+    active="today"
+    items={[
+      { id: "today", label: "Today", icon: "sun", href: "#" },
+      { id: "courses", label: "Courses", icon: "grid", href: "#" },
+      { id: "calendar", label: "Calendar", icon: "calendar", href: "#" },
+      { id: "search", label: "Search", icon: "search", href: "#" },
+    ]}
+    action={{ label: "Create new", icon: "plus", onClick: () => toast("New …") }}
+  />
+  <Toaster />
+</div>
+```
+
+## When to use
+
+- Only below about 900 px width; above that the [Sidebar](./sidebar).
+- Four places, in the middle at most one round action ("New").
+- With `fixed` (default) it sticks to the bottom and leaves room for the iPhone's home bar. The content above it needs about 100 px of space at the bottom.
+
+## Props
+
+<PropsTable of="TabBar" />
+
+## Accessibility
+
+- Every place has an icon **and** text; the active one is `aria-current="page"`.
+- The round action carries its name as `aria-label`.

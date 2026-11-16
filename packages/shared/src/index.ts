@@ -15,6 +15,18 @@ export function atLeast(role: CourseRole | null | undefined, needed: CourseRole)
   return role != null && RANK[role] >= RANK[needed];
 }
 
+// --- Languages -----------------------------------------------------------
+
+/** The languages of the interface and the mails; the first is the fallback. */
+export const LOCALES = ["en", "de"] as const;
+export type Locale = (typeof LOCALES)[number];
+
+/** The supported language a language tag such as `de-AT` or `en` belongs to, or null. */
+export function matchLocale(tag: string | null | undefined): Locale | null {
+  const base = tag?.toLowerCase().split(/[-_]/)[0];
+  return (LOCALES as readonly string[]).includes(base ?? "") ? (base as Locale) : null;
+}
+
 // --- Subjects ------------------------------------------------------------
 
 /** The folders every subject has; nothing else is created. */
@@ -22,7 +34,7 @@ export const FILE_FOLDERS = ["skripte", "uebungen", "altklausuren", "sonstiges"]
 export type FileFolder = (typeof FILE_FOLDERS)[number];
 
 /** `WiSe26-27` or `SoSe27`. */
-export const semesterSchema = z.string().regex(/^(WiSe\d{2}-\d{2}|SoSe\d{2})$/, "Semester wie WiSe26-27 oder SoSe27");
+export const semesterSchema = z.string().regex(/^(WiSe\d{2}-\d{2}|SoSe\d{2})$/, "Semester like WiSe26-27 or SoSe27");
 
 /** A subject comes from a module of the catalogue, or is made by hand with a title. */
 export const courseDraftSchema = z
@@ -33,7 +45,7 @@ export const courseDraftSchema = z
     number: z.string().trim().max(40).nullable().optional(),
     credits: z.number().min(0).max(60).nullable().optional(),
   })
-  .refine((d) => !!d.moduleId || d.title.length > 0, { message: "Ein Fach braucht einen Titel.", path: ["title"] });
+  .refine((d) => !!d.moduleId || d.title.length > 0, { message: "A course needs a title.", path: ["title"] });
 export type CourseDraft = z.infer<typeof courseDraftSchema>;
 
 // --- Degree programmes and their modules ---------------------------------
@@ -98,7 +110,7 @@ export const deadlineDraftSchema = z
     notes: z.string().trim().max(2000).nullable().optional(),
   })
   .refine((d) => (d.allDay ? !!d.date : !!d.startsAt), {
-    message: "Ganztägige Termine brauchen ein Datum, andere eine Startzeit.",
+    message: "All-day dates need a date, others a start time.",
   });
 export type DeadlineDraft = z.infer<typeof deadlineDraftSchema>;
 

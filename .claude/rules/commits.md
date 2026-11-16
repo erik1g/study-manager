@@ -1,36 +1,36 @@
-# Commits und Versionen
+# Commits and versions
 
-Versionen und Changelog entstehen **automatisch** aus den Commit-Nachrichten (`release-please`, Semantic Versioning, Start bei `0.1.0`). Darum folgt **jeder Commit und jeder Pull-Request-Titel Conventional Commits.** Der PR-Titel wird beim Squash-Merge zum Commit-Titel, und die CI prüft ihn.
+Versions and the changelog are made **automatically** from the commit messages (`release-please`, Semantic Versioning, starting at `0.1.0`). That is why **every commit and every pull request title follows Conventional Commits, in English.** The PR title becomes the commit title on squash merge, and CI checks it.
 
 ```
-<typ>(<bereich>): <kurze Beschreibung, klein, ohne Punkt, deutsch oder englisch>
+<type>(<scope>): <short description, lower case, no full stop, in English>
 
-<optional: das Warum, wenn es nicht offensichtlich ist>
+<optional: the why, when it is not obvious>
 
-<optional: BREAKING CHANGE: was Betreiber beim Update tun müssen>
+<optional: BREAKING CHANGE: what operators must do when updating>
 ```
 
-| Typ | Wofür | Wirkung |
+| Type | For | Effect |
 |---|---|---|
-| `feat` | neue Funktion | Minor (`0.1.0` → `0.2.0`) |
-| `fix` | Fehlerbehebung | Patch |
-| `perf` | schneller | Patch |
-| `docs`, `test`, `refactor`, `style`, `build`, `ci`, `chore`, `revert` | alles andere | allein kein Release |
-| `feat!`, `fix!` oder `BREAKING CHANGE:` im Text | Betreiber müssen etwas tun | vor 1.0 Minor, ab 1.0 Major |
+| `feat` | a new feature | minor (`0.1.0` → `0.2.0`) |
+| `fix` | a bug fix | patch |
+| `perf` | faster | patch |
+| `docs`, `test`, `refactor`, `style`, `build`, `ci`, `chore`, `revert` | everything else | no release on its own |
+| `feat!`, `fix!` or `BREAKING CHANGE:` in the body | operators must do something | minor before 1.0, major from 1.0 |
 
-- Setze `BREAKING CHANGE` immer dann, wenn Betreiber beim Update etwas tun müssen: neue oder geänderte Umgebungsvariable, geänderte Compose-Datei, ein Schritt außerhalb der automatischen Migration.
-- Der Bereich ist optional, aber hilfreich: `planung`, `fach`, `deadlines`, `vorlesungsmodus`, `server`, `mcp`, `ui`, `docs`, `docker`, `ci` …
-- **Ein Commit, eine Sache.** Mische kein Aufräumen in eine Funktion.
-- **Fasse nie von Hand an:** Versionsnummern in `package.json`, `CHANGELOG.md`, `.release-please-manifest.json`. Das macht der Release-PR.
-- Commit-Trailer, wenn du als Assistent committest: `Co-Authored-By: Claude <noreply@anthropic.com>` (mit dem Modellnamen, den die Sitzung vorgibt).
+- Set `BREAKING CHANGE` whenever operators must do something when updating: a new or changed environment variable, a changed compose file, a step outside the automatic migration.
+- The scope is optional but helpful: `planning`, `course`, `deadlines`, `lecture-mode`, `server`, `mcp`, `ui`, `docs`, `docker`, `ci` …
+- **One commit, one thing.** Do not mix tidying into a feature.
+- **Never touch by hand:** version numbers in `package.json`, `CHANGELOG.md`, `.release-please-manifest.json`. The release PR does that.
+- Commit trailer when you commit as an assistant: `Co-Authored-By: Claude <noreply@anthropic.com>` (with the model name the session gives).
 
-Beispiele:
+Examples:
 
 ```
-feat(vorlesungsmodus): Tabs und zwei Hälften nebeneinander
-fix(deadlines): Bearbeiten stürzte ab, weil Hooks nach einem return standen
-docs(admin): Beispiel für Traefik ergänzt
-feat(docker)!: Daten liegen jetzt in benannten Volumes
+feat(lecture-mode): tabs and two halves side by side
+fix(deadlines): editing crashed because hooks came after a return
+docs(admin): add an example for Traefik
+feat(docker)!: data now lives in named volumes
 
-BREAKING CHANGE: Wer Ordner auf dem Host nutzt, setzt DATA_DIR und DB_DIR in der .env.
+BREAKING CHANGE: If you use folders on the host, set DATA_DIR and DB_DIR in the .env.
 ```

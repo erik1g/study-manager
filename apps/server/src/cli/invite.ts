@@ -7,7 +7,7 @@ import { users } from "../domain/users.ts";
 
 const [email, name = ""] = process.argv.slice(2);
 if (!email) {
-  console.error("Aufruf: invite <email> [name]");
+  console.error("Usage: invite <email> [name]");
   process.exit(1);
 }
 const config = loadConfig();

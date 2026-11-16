@@ -16,6 +16,8 @@ async function subject() {
   const alex = await w.user("Alex");
   const lena = await w.user("Lena");
   const tom = await w.user("Tom");
+  // Alex uses the German interface, so the course and its notes are German.
+  await w.services.users.updateProfile(alex, { locale: "de" });
   const course = await w.services.courses.create(alex, { title: "Real-time Systems", semester: "WiSe26-27" });
   await w.services.courses.acceptInvite(lena, (await w.services.courses.createInvite(alex, course.id)).token);
   await w.services.courses.acceptInvite(tom, (await w.services.courses.createInvite(alex, course.id, "viewer")).token);
@@ -150,6 +152,21 @@ describe("search", () => {
     await w.services.files.trash(alex, notes.id);
     expect((await w.services.search.search(tom, course.id, "Frist Algorithmus")).some((h) => h.fileId === notes.id)).toBe(false);
     expect(await w.services.search.status(course.id)).toMatchObject({ total: 1, indexed: 1 });
+  });
+
+  it("matches words alike in every language, without German stems or stop words", async () => {
+    const { alex, tom, course } = await subject();
+    const english = await w.services.files.upload(
+      alex,
+      course.id,
+      "sonstiges",
+      await w.upload("casting.md", "In die casting, the die is a steel mould. The controller tracks the setpoint.", "text/markdown"),
+    );
+    await w.services.search.index(english.id);
+    // "die" is a German stop word; the German configuration would drop it.
+    const [row] = await w.client`select words @@ websearch_to_tsquery('simple', 'die') as hit from chunks where file_id = ${english.id}`;
+    expect(row!.hit).toBe(true);
+    expect((await w.services.search.search(tom, course.id, "die casting"))[0]).toMatchObject({ fileId: english.id });
   });
 
   it("cuts long pages into overlapping passages at sentence ends", () => {
